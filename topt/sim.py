@@ -103,17 +103,30 @@ def run_pass(p: Pass, src: np.ndarray, full_shape: tuple, address: str = "mirror
     return out
 
 
-def run(pl: Pipeline, img: np.ndarray, address: str = "mirror", quantize_bits: int | None = None,
+def quantize(a: np.ndarray, fmt) -> np.ndarray:
+    """Round to a storage format: int n = n-bit UNORM, 'f6' / 'f5' = unsigned small
+    float with 5-bit exponent and 6 / 5 mantissa bits (R11G11B10F red,green / blue)."""
+    if isinstance(fmt, int):
+        q = float((1 << fmt) - 1)
+        return np.round(np.clip(a, 0.0, 1.0) * q) / q
+    m = {"f6": 6, "f5": 5}[fmt]
+    a = np.clip(a, 0.0, None)
+    e = np.floor(np.log2(np.maximum(a, 2.0 ** -14)))  # denormals below 2^-14
+    step = 2.0 ** (e - m)
+    return np.round(a / step) * step
+
+
+def run(pl: Pipeline, img: np.ndarray, address: str = "mirror", quantize_bits=None,
         subtexel_bits: int | None = None) -> np.ndarray:
-    """Run the pipeline on a single-channel image (the filter is linear per channel)."""
+    """Run the pipeline on a single-channel image (the filter is linear per channel).
+    quantize_bits: storage format of every intermediate (see `quantize`)."""
     bufs = []
     for i, p in enumerate(pl.passes):
         j = pl.src_index(i)
         src = img if j < 0 else bufs[j]
         out = run_pass(p, src, img.shape, address, subtexel_bits)
-        if quantize_bits is not None:
-            q = float((1 << quantize_bits) - 1)
-            out = np.round(np.clip(out, 0.0, 1.0) * q) / q
+        if quantize_bits is not None and i < len(pl.passes) - 1:  # the last pass writes the screen
+            out = quantize(out, quantize_bits)
         bufs.append(out)
     return bufs[-1]
 

@@ -50,7 +50,10 @@ See `results/analysis.md` (winners), `results/hybrid.md`, `results/baseline.md`.
 * Strict quality costs little extra (e.g. sigma 16: 155 vs 142 us; sigma >= 48
   about the same).
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
-* Storing every pass as RGB10A2 adds <= 1.4 LSB (10-bit) error, ~0.35 LSB RMS.
+* Storing every pass as RGB10A2 adds <= 1.4 LSB (10-bit) error, ~0.35 LSB RMS
+  (<= 0.17 8-bit levels on smooth ramps). R11G11B10F intermediates give up to
+  1.1 (R, G) / 2.0 (B) 8-bit levels on mid/bright ramps: banding and hue shift
+  unless dithered, so use it only when values above 1 (HDR) must be kept.
 * FFT and full-res IIR/moving-average methods need >= 2 full-res read+write
   passes (>= ~220 us), so they cannot beat the hybrid in this sigma range.
 
