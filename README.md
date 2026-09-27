@@ -55,8 +55,7 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   (~167 us at 1080p, sigma 1-2); doing the composite in the compute shader and
   only copying in the pixel shader is modelled at ~113 us; compute H + pixel V
   fused with the composite wins at sigma ~4 (167 vs 204 us). To be timed.
-* Strict quality costs little extra (e.g. sigma 16: 155 vs 142 us; sigma >= 48
-  about the same).
+* Strict quality costs little extra (sigma 16: 96 vs 83 us; sigma >= 64 the same).
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
 * RGB10A2 intermediates add <= 0.17 8-bit levels of error on smooth ramps.
   R11G11B10F gives up to 1.1 (R, G) / 2.0 (B) levels on mid/bright ramps:
