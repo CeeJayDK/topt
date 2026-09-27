@@ -14,9 +14,10 @@ from pathlib import Path
 from topt import methods as M
 from topt.cost import pipeline_cost
 from topt.quality import metrics
+from topt.search import PROFILES
 
-# Provisional limits, to be calibrated by eye.
-LIMITS = {"leak": 0.02, "tv": 0.05, "aniso": 0.03, "phase": 0.03, "sigma_err": 0.02}
+# Provisional limits (the search's 'medium' profile), to be calibrated by eye.
+LIMITS = PROFILES["medium"]
 SIGMAS = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 100, 150, 200]
 REJECT_FACTOR = 3.0  # skip candidates costing more than this x the best passing one
 
@@ -73,8 +74,8 @@ def main():
     results = {}
     lines = ["# Baseline sweep (GTX 1660 model, 1920x1080, RGB10A2)", "",
              "Limits: " + ", ".join(f"{k} <= {v}" for k, v in LIMITS.items()), "",
-             "| sigma | family | us | passes | fetch/px | leak | tv | aniso | phase | params / status |",
-             "|---:|---|---:|---:|---:|---:|---:|---:|---:|---|"]
+             "| sigma | family | us | passes | fetch/px | leak | tv | aniso | phase | curv | params / status |",
+             "|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|"]
     for s in sigmas:
         t0 = time.time()
         rows = sweep(s)
@@ -83,10 +84,10 @@ def main():
         for fam, r in order:
             if "leak" in r:
                 lines.append(f"| {s:g} | {fam} | {r['us']:.0f} | {r['passes']} | {r['fetch_per_px']:.2f} | "
-                             f"{r['leak']:.3f} | {r['tv']:.3f} | {r['aniso']:.3f} | {r['phase']:.3f} | "
+                             f"{r['leak']:.3f} | {r['tv']:.3f} | {r['aniso']:.3f} | {r['phase']:.3f} | {r['curv']:.2f} | "
                              f"{fmt_params(r['params'])}{'' if r['status'] == 'ok' else ' — ' + r['status']} |")
             else:
-                lines.append(f"| {s:g} | {fam} | ≥{r['us']:.0f} | | | | | | | {r['status']} |")
+                lines.append(f"| {s:g} | {fam} | ≥{r['us']:.0f} | | | | | | | | {r['status']} |")
         print(f"sigma {s:g}: {time.time() - t0:.1f}s", file=sys.stderr)
     out = Path(__file__).resolve().parent.parent / "results"
     out.mkdir(exist_ok=True)

@@ -10,6 +10,9 @@ leak    worst stop-band gain: max |H(f)| where the matched Gaussian is < 1 %.
         Truncation (boxiness) and blocky resampling show up here as sidelobes.
 phase   mean TV distance of each phase's response to the phase average
         (shift variance -> visible blockiness / shimmering on motion)
+curv    mean over phases of |lap(K_i) - lap(G_i)|_1 / |lap(G_i)|_1, G_i the
+        Gaussian centred on that phase's response. Catches kinks: Mach bands
+        from linear upsampling and the edge of truncated kernels.
 """
 from __future__ import annotations
 
@@ -87,9 +90,25 @@ def _moments(k: np.ndarray, R: int):
     return math.sqrt((vx + vy) / 2), (mx, my), (vx, vy, cxy), (x, y)
 
 
+def _lap(a: np.ndarray) -> np.ndarray:
+    return a[1:-1, 2:] + a[1:-1, :-2] + a[2:, 1:-1] + a[:-2, 1:-1] - 4 * a[1:-1, 1:-1]
+
+
+def _curv_err(k: np.ndarray, x: np.ndarray, y: np.ndarray, sig: float) -> float:
+    mx, my = (k * x).sum(), (k * y).sum()
+    g = np.exp(-((x - mx) ** 2 + (y - my) ** 2) / (2 * sig * sig))
+    lg = _lap(g / g.sum())
+    return float(np.abs(_lap(k) - lg).sum() / np.abs(lg).sum())
+
+
 def metrics(pl: Pipeline, target_sigma: float | None = None, phases=None) -> dict:
     radius = eval_radius(target_sigma, pl.max_div) if target_sigma else None
     ks, R = responses(pl, phases, radius)
+    return score(ks, R, target_sigma)
+
+
+def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
+    """Metrics from per-phase impulse responses cropped to +-R."""
     k = ks.mean(0)
     k = k / k.sum()
     sig, (mx, my), (vx, vy, cxy), (x, y) = _moments(k, R)
@@ -102,12 +121,14 @@ def metrics(pl: Pipeline, target_sigma: float | None = None, phases=None) -> dic
     fr = np.sqrt(f[:, None] ** 2 + f[None, :] ** 2)
     stop = fr > GAUSS_STOP / sig
     phase = float(np.mean([0.5 * np.abs(ki / ki.sum() - k).sum() for ki in ks]))
+    curv = float(np.mean([_curv_err(ki / ki.sum(), x, y, sig) for ki in ks]))
     out = {
         "sigma": sig,
         "aniso": math.sqrt(max(vs) / min(vs)) - 1.0,
         "tv": 0.5 * float(np.abs(k - g).sum()),
         "leak": float(H[stop].max()) if stop.any() else 0.0,
         "phase": phase,
+        "curv": curv,
         "shift": math.hypot(mx, my),
     }
     if target_sigma:
