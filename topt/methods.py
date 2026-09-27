@@ -9,7 +9,7 @@ import math
 
 import numpy as np
 
-from .quality import measured_sigma, default_phases
+from .quality import default_phases, eval_radius, measured_sigma
 from .sim import Pass, Pipeline
 
 
@@ -181,11 +181,12 @@ def cand_kawase(sigma, max_passes: int = 64):
 
 def _fit_measured(make, sigma, lo, hi, iters=14):
     """Fit a scalar parameter by simulation (for shift-variant pipelines)."""
-    ph = default_phases(make(lo).max_div, 2)
+    F = make(lo).max_div
+    ph, rad = default_phases(F, 2), eval_radius(sigma, F)
 
     def fn(v):
         try:
-            return measured_sigma(make(v), ph)
+            return measured_sigma(make(v), ph, rad)
         except ValueError:  # too large to simulate: certainly above target
             return math.inf
 

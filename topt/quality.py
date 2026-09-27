@@ -17,7 +17,7 @@ import math
 
 import numpy as np
 
-from .sim import Pipeline, run
+from .sim import Pipeline, is_separable, run, run_1d
 
 GAUSS_STOP = math.sqrt(math.log(100.0) / (2 * math.pi ** 2))  # |G(f)| = 1% at f = this / sigma
 
@@ -35,16 +35,35 @@ def default_phases(F: int, n: int = 3) -> list:
     return [(py, px) for py in ph for px in ph]
 
 
-def responses(pl: Pipeline, phases=None) -> tuple:
+def eval_radius(sigma: float, F: int) -> int:
+    """Window that holds all but ~1e-6 of a Gaussian-like response."""
+    return int(math.ceil(5 * sigma)) + 2 * F + 4
+
+
+def responses(pl: Pipeline, phases=None, radius: int | None = None) -> tuple:
+    """Impulse responses (one per phase), cropped to +-R around the impulse."""
     F = pl.max_div
-    R = support_radius(pl)
+    R = support_radius(pl) if radius is None else min(radius, support_radius(pl))
     N = int(math.ceil((2 * R + 2 * F + 16) / F)) * F
-    if N > 8192:
-        raise ValueError(f"support radius {R} too large to simulate")
     c0 = (N // 2) // F * F
     if phases is None:
         phases = default_phases(F)
     ks = []
+    if is_separable(pl):  # two 1D runs per phase instead of one 2D run
+        cache = {}
+
+        def k1(p, axis):
+            if (p, axis) not in cache:
+                v = np.zeros(N)
+                v[c0 + p] = 1.0
+                cache[p, axis] = run_1d(pl, v, axis)[c0 + p - R:c0 + p + R + 1]
+            return cache[p, axis]
+
+        for py, px in phases:
+            ks.append(np.outer(k1(py, 1), k1(px, 0)))
+        return np.array(ks), R
+    if N > 8192:
+        raise ValueError(f"support radius {R} too large to simulate")
     for py, px in phases:
         img = np.zeros((N, N))
         img[c0 + py, c0 + px] = 1.0
@@ -53,8 +72,8 @@ def responses(pl: Pipeline, phases=None) -> tuple:
     return np.array(ks), R
 
 
-def measured_sigma(pl: Pipeline, phases=None) -> float:
-    ks, R = responses(pl, phases)
+def measured_sigma(pl: Pipeline, phases=None, radius: int | None = None) -> float:
+    ks, R = responses(pl, phases, radius)
     return _moments(ks.mean(0), R)[0]
 
 
@@ -69,7 +88,8 @@ def _moments(k: np.ndarray, R: int):
 
 
 def metrics(pl: Pipeline, target_sigma: float | None = None, phases=None) -> dict:
-    ks, R = responses(pl, phases)
+    radius = eval_radius(target_sigma, pl.max_div) if target_sigma else None
+    ks, R = responses(pl, phases, radius)
     k = ks.mean(0)
     k = k / k.sum()
     sig, (mx, my), (vx, vy, cxy), (x, y) = _moments(k, R)

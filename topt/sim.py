@@ -116,3 +116,33 @@ def run(pl: Pipeline, img: np.ndarray, address: str = "mirror", quantize_bits: i
             out = np.round(np.clip(out, 0.0, 1.0) * q) / q
         bufs.append(out)
     return bufs[-1]
+
+
+def factor_taps(taps) -> tuple | None:
+    """Split a pass's taps into 1D x and y tap lists if they form an outer product."""
+    xs = sorted({float(dx) for dx, _, _ in taps})
+    ys = sorted({float(dy) for _, dy, _ in taps})
+    w2 = np.zeros((len(ys), len(xs)))
+    for dx, dy, w in taps:
+        w2[ys.index(float(dy)), xs.index(float(dx))] += w
+    wx = w2.sum(0)
+    wy = w2.sum(1) / w2.sum()
+    if np.abs(np.outer(wy, wx) - w2).max() > 1e-12 * np.abs(w2).max():
+        return None
+    return tuple(zip(xs, wx)), tuple(zip(ys, wy))
+
+
+def is_separable(pl: Pipeline) -> bool:
+    return all(factor_taps(p.taps) is not None for p in pl.passes)
+
+
+def run_1d(pl: Pipeline, vec: np.ndarray, axis: int, address: str = "mirror") -> np.ndarray:
+    """Run a separable pipeline along one axis (0 = x, 1 = y) of a 1D signal."""
+    bufs = []
+    for i, p in enumerate(pl.passes):
+        j = pl.src_index(i)
+        src = vec if j < 0 else bufs[j]
+        nd = max(1, len(vec) // p.div)
+        m = sum(w * interp_matrix(nd, len(src), o, p.warp, address) for o, w in factor_taps(p.taps)[axis])
+        bufs.append(m @ src)
+    return bufs[-1]
