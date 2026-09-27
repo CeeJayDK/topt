@@ -13,6 +13,8 @@ from pathlib import Path
 
 from topt.search import PROFILES, pareto, passes_profile, search
 
+from .common import parse_args
+
 SIGMAS = [2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 100, 150, 200]
 OUT = Path(__file__).resolve().parent.parent / "results"
 
@@ -21,10 +23,10 @@ def log(msg: str):
     print(msg, file=sys.stderr, flush=True)
 
 
-def load_baseline() -> dict:
+def load_baseline(suffix: str = "") -> dict:
     """Cheapest baseline row per sigma that passes each profile (from baseline.json)."""
     from topt.search import passes_profile
-    p = OUT / "baseline.json"
+    p = OUT / f"baseline{suffix}.json"
     if not p.exists():
         return {}
     best = {}
@@ -41,20 +43,21 @@ def load_baseline() -> dict:
 
 
 def main():
-    sigmas = [float(a) for a in sys.argv[1:]] or SIGMAS
-    path = OUT / "hybrid.json"
+    sigmas, res, W, H, suffix = parse_args(SIGMAS)
+    path = OUT / f"hybrid{suffix}.json"
     allrecs = json.loads(path.read_text()) if path.exists() else {}
     for s in sigmas:
         t0 = time.time()
-        allrecs[f"{s:g}"] = search(s, log=log)
+        allrecs[f"{s:g}"] = search(s, W, H, log=log)
         log(f"sigma {s:g}: {len(allrecs[f'{s:g}'])} evaluated in {time.time() - t0:.0f}s")
         path.write_text(json.dumps(allrecs, default=str))
-    write_md(allrecs)
+    write_md(allrecs, W, H, suffix)
 
 
-def write_md(allrecs: dict):
-    base = load_baseline()
-    lines = ["# Hybrid down/blur/up search (GTX 1660 model, 1920x1080, RGB10A2)", "",
+def write_md(allrecs: dict, W: int = 1920, H: int = 1080, suffix: str = ""):
+    base = load_baseline(suffix)
+    lines = [f"# Hybrid down/blur/up search (GTX 1660 model, {W}x{H}, RGB10A2)", "",
+             "us = marginal cost over a plain composite pass (the last pass is the composite).", "",
              "Profiles: " + "; ".join(f"**{n}** " + ", ".join(f"{k}<={v}" for k, v in p.items())
                                       for n, p in PROFILES.items()), "",
              "## Cheapest design per profile", "",
@@ -79,7 +82,7 @@ def write_md(allrecs: dict):
         lines.append(f"**sigma {s}**: " + ", ".join(
             f"{r['us']:.0f} us / phase {r['phase']:.3f} ({r['design']})" for r in pareto(recs)[:6]))
         lines.append("")
-    (OUT / "hybrid.md").write_text("\n".join(lines) + "\n")
+    (OUT / f"hybrid{suffix}.md").write_text("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":

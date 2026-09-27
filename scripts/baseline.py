@@ -16,6 +16,8 @@ from topt.cost import pipeline_cost
 from topt.quality import metrics
 from topt.search import PROFILES
 
+from .common import parse_args
+
 # Provisional limits (the search's 'medium' profile), to be calibrated by eye.
 LIMITS = PROFILES["medium"]
 SIGMAS = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 100, 150, 200]
@@ -26,12 +28,12 @@ def failures(q: dict) -> list:
     return [k for k, lim in LIMITS.items() if abs(q[k]) > lim]
 
 
-def sweep(sigma: float) -> dict:
+def sweep(sigma: float, W: int = 1920, H: int = 1080) -> dict:
     cands = []
     for fam, gen in M.FAMILIES.items():
         try:
             for p in gen(sigma):
-                cands.append((pipeline_cost(p)["us"], fam, p))
+                cands.append((pipeline_cost(p, W, H)["us"], fam, p))
         except ValueError as e:  # too large to simulate
             print(f"  {fam}: {e}", file=sys.stderr)
     cands.sort(key=lambda c: c[0])
@@ -50,9 +52,9 @@ def sweep(sigma: float) -> dict:
         if not fail:
             done.add(fam)
             best_us = us if best_us is None else min(best_us, us)
-            rows[fam] = {"status": "ok", **pipeline_cost(p), **q, "params": p.params}
+            rows[fam] = {"status": "ok", **pipeline_cost(p, W, H), **q, "params": p.params}
         elif fam not in rows or rows[fam]["status"] != "ok":
-            rows[fam] = {"status": "best tried fails " + ",".join(fail), **pipeline_cost(p), **q,
+            rows[fam] = {"status": "best tried fails " + ",".join(fail), **pipeline_cost(p, W, H), **q,
                          "params": p.params}
     return rows
 
@@ -70,15 +72,16 @@ def fmt_params(pr: dict) -> str:
 
 
 def main():
-    sigmas = [float(a) for a in sys.argv[1:]] or SIGMAS
+    sigmas, res, W, H, suffix = parse_args(SIGMAS)
     results = {}
-    lines = ["# Baseline sweep (GTX 1660 model, 1920x1080, RGB10A2)", "",
+    lines = [f"# Baseline sweep (GTX 1660 model, {W}x{H}, RGB10A2)", "",
+             "us = marginal cost over a plain composite pass (the last pass is the composite).", "",
              "Limits: " + ", ".join(f"{k} <= {v}" for k, v in LIMITS.items()), "",
              "| sigma | family | us | passes | fetch/px | leak | tv | aniso | phase | curv | params / status |",
              "|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|"]
     for s in sigmas:
         t0 = time.time()
-        rows = sweep(s)
+        rows = sweep(s, W, H)
         results[s] = rows
         order = sorted(rows.items(), key=lambda kv: (kv[1]["status"] != "ok", kv[1]["us"]))
         for fam, r in order:
@@ -91,8 +94,8 @@ def main():
         print(f"sigma {s:g}: {time.time() - t0:.1f}s", file=sys.stderr)
     out = Path(__file__).resolve().parent.parent / "results"
     out.mkdir(exist_ok=True)
-    (out / "baseline.md").write_text("\n".join(lines) + "\n")
-    (out / "baseline.json").write_text(json.dumps(results, indent=1, default=str))
+    (out / f"baseline{suffix}.md").write_text("\n".join(lines) + "\n")
+    (out / f"baseline{suffix}.json").write_text(json.dumps(results, indent=1, default=str))
     print("\n".join(lines))
 
 
