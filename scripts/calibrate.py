@@ -150,6 +150,74 @@ def upsample(sigma: float = 16.0):
     grid(panels, 2).save(OUT / "upsample.png")
 
 
+def detail_scene(w: int, h: int, dx: int = 0, seed: int = 3) -> np.ndarray:
+    """Fine-detail test content, panned right by dx pixels."""
+    W = w + 64
+    rng = np.random.default_rng(seed)
+    y, x = np.mgrid[0:h, 0:W].astype(float)
+    tex = np.zeros((h, W))
+    for octave in range(1, 6):  # multi-octave value noise
+        s = 2 ** octave
+        g = rng.random((h // s + 2, W // s + 2))
+        tex += np.kron(g, np.ones((s, s)))[:h, :W] / 2 ** (6 - octave)
+    tex = 0.06 * tex / tex.max()  # dark, so the x8 view stays informative
+    im = Image.fromarray((tex * 255).astype(np.uint8))
+    d = ImageDraw.Draw(im)
+    for i in range(12):  # 1 px lines
+        x0 = 40 + 22 * i
+        d.line([x0, 10, x0 + 60, h - 10], fill=255, width=1)
+    f = ImageFont.truetype(FONT, 11)
+    for i in range(6):
+        d.text((W // 2, 8 + 18 * i), "Fine text 0123", fill=255, font=f)
+    a = np.asarray(im, float) / 255.0
+    cb = ((x // 2 + y // 2) % 2)[: h // 3, : W // 5]  # 2 px checkerboard
+    a[h - h // 3:, W - W // 5:] = cb
+    stars = rng.random((h, W)) > 0.996  # 1 px bright points
+    a[stars] = 1.0
+    return a[:, 32 - dx:32 - dx + w]
+
+
+def motion(sigma: float = 16.0, frames: int = 16):
+    """Fine detail panning 1 px/frame: blockiness, aliasing and flicker."""
+    from topt import search as S
+    W, H = 512, 256
+    methods = {"reference Gaussian": reference(sigma), **{
+        k: v for k, v in shift_methods(sigma).items()
+        if k in ("dual filter L=4", "pyramid k=3 up=chain", "pyramid k=3 up=direct")}}
+    for lab, d in {"hybrid 4x2 e5 | up 8": S.Design((4, 2), 5, "direct", 3.0, (8,), 1, None),
+                   "hybrid 4x2 e5 | up 2x4 e2": S.Design((4, 2), 5, "direct", 3.0, (2, 4), 2, None),
+                   "hybrid 4x2 e1 (box down) | up 2x4 e2": S.Design((4, 2), 1, "direct", 3.0, (2, 4), 2, None),
+                   }.items():
+        methods[lab] = S.fit(d, sigma)[0]
+    outs = {n: [] for n in methods}
+    for t in range(frames):
+        img = detail_scene(W, H, t)
+        for n, pl in methods.items():
+            outs[n].append(run(pl, img))
+    ref = outs["reference Gaussian"]
+    stats = {}
+    for n in methods:
+        e = np.array([o - r for o, r in zip(outs[n], ref)])[:, 32:-32, 32:-32] * 255
+        # flicker: temporal std of the error at each scene point (error follows the pan)
+        al = np.array([np.roll(e[t], -t, axis=1) for t in range(frames)])[:, :, frames:-frames]
+        stats[n] = (float(np.sqrt((e ** 2).mean())), float(al.std(0).mean()))
+    src = Image.fromarray((np.clip(detail_scene(W, H, 0), 0, 1) ** (1 / 2.2) * 255).astype(np.uint8))
+    src.save(OUT / "motion_source.png")
+    gif = []
+    for t in range(frames):
+        ps = []
+        for n in methods:
+            rms, fl = stats[n]
+            ps.append(panel(outs[n][t], f"{n}\nerr rms {rms:.2f}  flicker {fl:.2f} (8-bit levels)", ref[t]))
+        g = grid(ps, 2)
+        if t == 0:
+            g.save(OUT / "motion.png")
+        gif.append(g.resize((g.width // 2, g.height // 2)).convert("P"))
+    gif[0].save(OUT / "motion.gif", save_all=True, append_images=gif[1:], duration=120, loop=0)
+    for n, (rms, fl) in stats.items():
+        print(f"{n:40s} err rms {rms:5.2f}  flicker {fl:5.2f}")
+
+
 if __name__ == "__main__":
     import sys
     OUT.mkdir(parents=True, exist_ok=True)
