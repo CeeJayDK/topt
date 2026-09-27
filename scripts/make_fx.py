@@ -213,6 +213,19 @@ technique {NAME} < ui_tooltip = "Compute horizontal pass + pixel-shader vertical
 """
 
 
+CS_COMP_BLOCK = (CS_BLOCK
+    .replace("// ---- {NAME}: sigma {SIGMA}, radius {R}, {T}x{T} tile",
+             "// ---- {NAME}: sigma {SIGMA}, radius {R}, {T}x{T} tile. The compute shader also does the\n"
+             "// composite (the original pixel is already in its tile); the pixel shader only copies.")
+    .replace("\t\ttex2Dstore({NAME}_stOut, o, float4(c, 1.0));",
+             "\t\ttex2Dstore({NAME}_stOut, o, float4(lerp({NAME}_tile[(tid.y + {R}) * {S} + tid.x + {R}], c, TOPT_Strength), 1.0));")
+    .replace("""	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, tex2D({NAME}_sOut, uv).rgb, TOPT_Strength), 1.0);""",
+             """	return float4(tex2Dfetch({NAME}_sOut, int2(pos.xy)).rgb, 1.0);""")
+    .replace("Compute tile blur sigma {SIGMA} (r={R}) + composite pixel shader",
+             "Compute tile blur + composite sigma {SIGMA} (r={R}), pixel shader copy"))
+
+
 def cs_effect() -> str:
     blocks = []
     for sigma in (1, 2, 4):
@@ -223,6 +236,8 @@ def cs_effect() -> str:
         T = 16
         W = ", ".join(f"{v:.9g}" for v in w)
         blocks.append(CS_BLOCK.format(NAME=f"TOPT_C_Tile_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T, S=T + 2 * r, W=W))
+        blocks.append(CS_COMP_BLOCK.format(NAME=f"TOPT_C_TileComp_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T,
+                                           S=T + 2 * r, W=W))
         pos = np.arange(-r, r + 1, dtype=float)
         v = M.pair_taps(pos, M.gauss(pos, s))
         blocks.append(CS_SPLIT_BLOCK.format(NAME=f"TOPT_C_SplitHV_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T,
