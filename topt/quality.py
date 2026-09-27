@@ -8,6 +8,8 @@ aniso   sqrt(max/min) - 1 of the variance along x, y and both diagonals
 tv      total-variation distance (0..1) to the Gaussian of the same sigma
 leak    worst stop-band gain: max |H(f)| where the matched Gaussian is < 1 %.
         Truncation (boxiness) and blocky resampling show up here as sidelobes.
+        For sigma < ~1.5 a sampled Gaussian itself aliases above 1 %; that excess
+        is subtracted so small kernels are judged against what is attainable.
 phase   mean TV distance of each phase's response to the phase average
         (shift variance -> visible blockiness / shimmering on motion)
 curv    mean over phases of |lap(K_i) - lap(G_i)|_1 / |lap(G_i)|_1, G_i the
@@ -148,6 +150,9 @@ def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
     f = np.fft.fftfreq(M)
     fr = np.sqrt(f[:, None] ** 2 + f[None, :] ** 2)
     stop = fr > GAUSS_STOP / sig
+    alias = 0.0
+    if stop.any():  # aliasing of the sampled Gaussian itself, above its nominal 1 %
+        alias = max(0.0, float(np.abs(np.fft.fft2(g, s=(M, M)))[stop].max()) - 0.01)
     phase = float(np.mean([0.5 * np.abs(ki / ki.sum() - k).sum() for ki in ks]))
     curv = float(np.mean([_curv_err(ki / ki.sum(), sig) for ki in ks]))
     block = float(np.mean([_block_err(ki / ki.sum(), k, sig) for ki in ks]))
@@ -155,7 +160,7 @@ def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
         "sigma": sig,
         "aniso": math.sqrt(max(vs) / min(vs)) - 1.0,
         "tv": 0.5 * float(np.abs(k - g).sum()),
-        "leak": float(H[stop].max()) if stop.any() else 0.0,
+        "leak": max(0.0, float(H[stop].max()) - alias) if stop.any() else 0.0,
         "phase": phase,
         "curv": curv,
         "block": block,

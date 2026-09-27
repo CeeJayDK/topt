@@ -68,7 +68,8 @@ def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660
         ns_read = min(ns, nd * taps * 4)
         if composite and i == last:
             taps += 1
-            ns_read += W * H
+            if pl.src_index(i) >= 0:  # else the blur already reads the backbuffer
+                ns_read += W * H
         t, b = _pass_time(nd, ns_read, taps, gpu)
         bounds.append(b)
         total += t
