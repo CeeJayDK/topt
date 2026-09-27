@@ -28,13 +28,15 @@ PROFILES = {
     # leak/tv/curv calibrated on truncated Gaussians by eye (sigma 6):
     # strict ~ radius 3 sigma ("most smooth"), medium ~ 2.5 sigma ("useful and
     # smooth"), loose ~ 2.25 sigma ("borderline"). block: pyramid k=3 direct-up
-    # (0.69) and chain+iq (1.57) looked blocky, k=3 chain (0.31) did not.
-    # phase limits still provisional (motion test pending).
+    # (0.69) and chain+iq (1.57) looked blocky, k=2 chain+iq (0.41) a little,
+    # k=3 chain (0.31) not.
+    # phase: k=3 chain (0.097) looked fine and no method flickered visibly in
+    # the fine-detail motion test, so shift variance is limited mainly by block.
     "strict": {"leak": 0.01, "tv": 0.02, "curv": 0.2, "block": 0.1, "aniso": 0.03, "phase": 0.01,
                "sigma_err": 0.02},
-    "medium": {"leak": 0.015, "tv": 0.055, "curv": 0.7, "block": 0.45, "aniso": 0.03, "phase": 0.03,
+    "medium": {"leak": 0.015, "tv": 0.055, "curv": 0.7, "block": 0.35, "aniso": 0.03, "phase": 0.10,
                "sigma_err": 0.02},
-    "loose": {"leak": 0.02, "tv": 0.10, "curv": 1.7, "block": 0.6, "aniso": 0.05, "phase": 0.06,
+    "loose": {"leak": 0.02, "tv": 0.10, "curv": 1.7, "block": 0.45, "aniso": 0.05, "phase": 0.15,
               "sigma_err": 0.03},
 }
 

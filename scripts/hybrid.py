@@ -11,7 +11,7 @@ import sys
 import time
 from pathlib import Path
 
-from topt.search import PROFILES, pareto, search
+from topt.search import PROFILES, pareto, passes_profile, search
 
 SIGMAS = [2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 100, 150, 200]
 OUT = Path(__file__).resolve().parent.parent / "results"
@@ -63,7 +63,7 @@ def write_md(allrecs: dict):
     for s in sorted(allrecs, key=float):
         recs = allrecs[s]
         for name in PROFILES:
-            ok = [r for r in recs if name in r["profiles"]]
+            ok = [r for r in recs if passes_profile(r, PROFILES[name])]
             b = base.get(float(s), {}).get(name)
             bs = f"{b[0]} {b[1]:.0f} us" if b else "none"
             if ok:
