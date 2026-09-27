@@ -1,5 +1,5 @@
 {
- "1.0": {
+ "1": {
   "direct2d": {
    "status": "ok",
    "us": 216.21466768525593,
@@ -22,7 +22,7 @@
    }
   },
   "dual_filter": {
-   "status": "fails phase",
+   "status": "best tried fails phase",
    "us": 183.10733384262798,
    "passes": 2,
    "fetch_per_px": 9.25,
@@ -112,9 +112,9 @@
    }
   }
  },
- "2.0": {
+ "2": {
   "dual_filter": {
-   "status": "fails leak,tv,phase",
+   "status": "best tried fails leak,tv,phase",
    "us": 183.10733384262798,
    "passes": 2,
    "fetch_per_px": 9.25,
@@ -201,7 +201,7 @@
    }
   },
   "kawase": {
-   "status": "fails leak,tv",
+   "status": "best tried fails leak,tv",
    "us": 339.0,
    "passes": 3,
    "fetch_per_px": 12.0,
@@ -227,9 +227,153 @@
    }
   }
  },
- "4.0": {
+ "3": {
+  "dual_filter": {
+   "status": "best tried fails phase",
+   "us": 236.38416730328495,
+   "passes": 4,
+   "fetch_per_px": 11.5625,
+   "dram_mb": 25.92,
+   "bounds": [
+    "mem",
+    "mem",
+    "tex",
+    "tex"
+   ],
+   "sigma": 3.0507361630558587,
+   "aniso": 0.0015843284136756175,
+   "tv": 0.02620278824854109,
+   "leak": 0.0024722005320989924,
+   "phase": 0.12313334081555787,
+   "shift": 0.07580867421714804,
+   "sigma_err": 0.016912054351952976,
+   "params": {
+    "levels": 2,
+    "o": 0.7164382934570312
+   }
+  },
   "pyramid": {
-   "status": "fails phase",
+   "status": "best tried fails phase",
+   "us": 208.99999999999997,
+   "passes": 4,
+   "fetch_per_px": 3.75,
+   "dram_mb": 29.0304,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 3.000420077822961,
+   "aniso": 0.0,
+   "tv": 0.0033988622138360035,
+   "leak": 0.007733857605458806,
+   "phase": 0.09454517979340119,
+   "shift": 2.7755575615628914e-17,
+   "sigma_err": 0.0001400259409869431,
+   "params": {
+    "k": 1,
+    "m": 5,
+    "s": 1.3243352558664185,
+    "up": "direct",
+    "warp": null
+   }
+  },
+  "sep_linear": {
+   "status": "ok",
+   "us": 247.61650114591293,
+   "passes": 2,
+   "fetch_per_px": 18.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 2.9999999999996496,
+   "aniso": 0.0,
+   "tv": 0.020383187221175166,
+   "leak": 0.009916107780257262,
+   "phase": 0.0,
+   "shift": 1.1620938331323894e-15,
+   "sigma_err": -1.1679546219056647e-13,
+   "params": {
+    "r": 8,
+    "s": 3.073881989240735
+   }
+  },
+  "sep_bilinear": {
+   "status": "ok",
+   "us": 226.0,
+   "passes": 2,
+   "fetch_per_px": 16.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "mem",
+    "mem"
+   ],
+   "sigma": 3.0000000000001026,
+   "aniso": 0.0,
+   "tv": 0.026238970857450444,
+   "leak": 0.009493390877378776,
+   "phase": 0.0,
+   "shift": 2.220446049250313e-16,
+   "sigma_err": 3.419486915845482e-14,
+   "params": {
+    "m": 8,
+    "s": 3.0648116730841197
+   }
+  },
+  "kawase": {
+   "status": "best tried fails leak,tv",
+   "us": 339.0,
+   "passes": 3,
+   "fetch_per_px": 12.0,
+   "dram_mb": 49.7664,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 2.9999999999999987,
+   "aniso": 0.0,
+   "tv": 0.20320038403133187,
+   "leak": 0.1707376093910441,
+   "phase": 0.0,
+   "shift": 2.7755575615628914e-17,
+   "sigma_err": -4.440892098500626e-16,
+   "params": {
+    "offsets": [
+     0.5,
+     1.5,
+     2.4
+    ]
+   }
+  },
+  "direct2d": {
+   "status": "best tried fails leak,tv",
+   "us": 651.8449197860963,
+   "passes": 1,
+   "fetch_per_px": 49.0,
+   "dram_mb": 16.5888,
+   "bounds": [
+    "tex"
+   ],
+   "sigma": 3.000000000000098,
+   "aniso": 0.0,
+   "tv": 0.1111008869310322,
+   "leak": 0.03652513095472618,
+   "phase": 0.0,
+   "shift": 5.551115123125783e-17,
+   "sigma_err": 3.26405569239796e-14,
+   "params": {
+    "r": 6,
+    "s": 3.5864778099176546
+   }
+  }
+ },
+ "4": {
+  "pyramid": {
+   "status": "best tried fails phase",
    "us": 208.99999999999997,
    "passes": 4,
    "fetch_per_px": 4.25,
@@ -324,7 +468,7 @@
    }
   },
   "kawase": {
-   "status": "fails leak,tv",
+   "status": "best tried fails leak,tv",
    "us": 452.0,
    "passes": 4,
    "fetch_per_px": 16.0,
@@ -356,9 +500,142 @@
    "us": 849.8586707410237
   }
  },
- "8.0": {
+ "6": {
   "pyramid": {
-   "status": "fails phase",
+   "status": "best tried fails phase",
+   "us": 214.40412528647823,
+   "passes": 4,
+   "fetch_per_px": 5.75,
+   "dram_mb": 29.0304,
+   "bounds": [
+    "mem",
+    "tex",
+    "tex",
+    "mem"
+   ],
+   "sigma": 5.999337934622166,
+   "aniso": 0.0,
+   "tv": 0.008592183340876,
+   "leak": 0.008892404788814586,
+   "phase": 0.04680761376708571,
+   "shift": 4.440892098500626e-16,
+   "sigma_err": -0.00011034422963895896,
+   "params": {
+    "k": 1,
+    "m": 9,
+    "s": 2.948395463788457,
+    "up": "direct",
+    "warp": null
+   }
+  },
+  "dual_filter": {
+   "status": "best tried fails phase,sigma_err",
+   "us": 257.2033756684492,
+   "passes": 6,
+   "fetch_per_px": 12.140625,
+   "dram_mb": 27.216,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 6.174165790095755,
+   "aniso": 0.0008311425010891771,
+   "tv": 0.023763799235202276,
+   "leak": 0.002651573196748842,
+   "phase": 0.13896469596537686,
+   "shift": 0.006188790091304552,
+   "sigma_err": 0.0290276316826259,
+   "params": {
+    "levels": 3,
+    "o": 0.6818313598632812
+   }
+  },
+  "sep_linear": {
+   "status": "ok",
+   "us": 432.42933537051186,
+   "passes": 2,
+   "fetch_per_px": 32.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 6.000000000000193,
+   "aniso": 0.0,
+   "tv": 0.04104958950894873,
+   "leak": 0.012181768930961935,
+   "phase": 0.0,
+   "shift": 1.3877787807814457e-17,
+   "sigma_err": 3.219646771412954e-14,
+   "params": {
+    "r": 15,
+    "s": 6.315497916438764
+   }
+  },
+  "sep_bilinear": {
+   "status": "ok",
+   "us": 406.0275019098549,
+   "passes": 2,
+   "fetch_per_px": 30.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 5.999999999999905,
+   "aniso": 0.0,
+   "tv": 0.04696846556852434,
+   "leak": 0.013223806762201449,
+   "phase": 0.0,
+   "shift": 0.0,
+   "sigma_err": -1.587618925213974e-14,
+   "params": {
+    "m": 15,
+    "s": 6.371956993831986
+   }
+  },
+  "kawase": {
+   "status": "best tried fails leak,tv",
+   "us": 565.0,
+   "passes": 5,
+   "fetch_per_px": 20.0,
+   "dram_mb": 82.944,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 6.0,
+   "aniso": 0.0,
+   "tv": 0.10799246433919008,
+   "leak": 0.08344816140814787,
+   "phase": 0.0,
+   "shift": 0.0,
+   "sigma_err": 0.0,
+   "params": {
+    "offsets": [
+     0.5,
+     1.5,
+     2.5,
+     3.5,
+     3.714
+    ]
+   }
+  },
+  "direct2d": {
+   "status": "rejected (>3x cost)",
+   "us": 1602.310924369748
+  }
+ },
+ "8": {
+  "pyramid": {
+   "status": "best tried fails phase",
    "us": 234.20550038197095,
    "passes": 4,
    "fetch_per_px": 7.25,
@@ -455,7 +732,7 @@
    }
   },
   "kawase": {
-   "status": "fails leak,tv",
+   "status": "best tried fails leak,tv",
    "us": 678.0,
    "passes": 6,
    "fetch_per_px": 24.0,
@@ -491,7 +768,116 @@
    "us": 2975.206264323911
   }
  },
- "16.0": {
+ "12": {
+  "pyramid": {
+   "status": "ok",
+   "us": 273.8082505729564,
+   "passes": 4,
+   "fetch_per_px": 10.25,
+   "dram_mb": 29.0304,
+   "bounds": [
+    "mem",
+    "tex",
+    "tex",
+    "mem"
+   ],
+   "sigma": 11.998972458009922,
+   "aniso": 0.0,
+   "tv": 0.011494581028513005,
+   "leak": 0.008179060482224804,
+   "phase": 0.02332644347065533,
+   "shift": 0.0,
+   "sigma_err": -8.562849917315152e-05,
+   "params": {
+    "k": 1,
+    "m": 18,
+    "s": 6.042971762862555,
+    "up": "chain",
+    "warp": null
+   }
+  },
+  "dual_filter": {
+   "status": "best tried fails phase,sigma_err",
+   "us": 269.9066152597403,
+   "passes": 8,
+   "fetch_per_px": 12.285011574074074,
+   "dram_mb": 27.53952,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 12.401300176019285,
+   "aniso": 0.0005442839103995123,
+   "tv": 0.023427704232406532,
+   "leak": 0.002578403734471473,
+   "phase": 0.1380349804404439,
+   "shift": 0.12939014431533144,
+   "sigma_err": 0.03344168133494052,
+   "params": {
+    "levels": 4,
+    "o": 0.6682357788085938
+   }
+  },
+  "sep_bilinear": {
+   "status": "ok",
+   "us": 802.0550038197097,
+   "passes": 2,
+   "fetch_per_px": 60.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 11.9999999999999,
+   "aniso": 0.0,
+   "tv": 0.04952935114597197,
+   "leak": 0.011315328979251686,
+   "phase": 0.0,
+   "shift": 2.7755575615628914e-17,
+   "sigma_err": -8.326672684688674e-15,
+   "params": {
+    "m": 30,
+    "s": 12.7956024903166
+   }
+  },
+  "sep_linear": {
+   "status": "best tried fails tv",
+   "us": 775.6531703590528,
+   "passes": 2,
+   "fetch_per_px": 58.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 11.999999999999924,
+   "aniso": 0.0,
+   "tv": 0.0701263644990443,
+   "leak": 0.01565864512526551,
+   "phase": 0.0,
+   "shift": 1.0623534945633305e-15,
+   "sigma_err": -6.328271240363392e-15,
+   "params": {
+    "r": 28,
+    "s": 13.18898363805408
+   }
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 904.0000000000001
+  },
+  "direct2d": {
+   "status": "rejected (>3x cost)",
+   "us": 6394.243697478992
+  }
+ },
+ "16": {
   "pyramid": {
    "status": "ok",
    "us": 313.41100076394196,
@@ -548,7 +934,7 @@
    }
   },
   "sep_bilinear": {
-   "status": "fails leak,tv",
+   "status": "best tried fails leak,tv",
    "us": 802.0550038197097,
    "passes": 2,
    "fetch_per_px": 60.0,
@@ -570,7 +956,7 @@
    }
   },
   "sep_linear": {
-   "status": "fails leak,tv",
+   "status": "best tried fails leak,tv",
    "us": 775.6531703590528,
    "passes": 2,
    "fetch_per_px": 58.0,
@@ -598,6 +984,673 @@
   "direct2d": {
    "status": "rejected (>3x cost)",
    "us": 11106.970970206263
+  }
+ },
+ "24": {
+  "pyramid": {
+   "status": "ok",
+   "us": 196.45206264323912,
+   "passes": 5,
+   "fetch_per_px": 3.5625,
+   "dram_mb": 23.8464,
+   "bounds": [
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "mem"
+   ],
+   "sigma": 24.00952757629833,
+   "aniso": 0.0,
+   "tv": 0.011498529209500516,
+   "leak": 0.008874236292799808,
+   "phase": 0.027725493234911122,
+   "shift": 0.23570226039551323,
+   "sigma_err": 0.00039698234576368563,
+   "params": {
+    "k": 2,
+    "m": 18,
+    "s": 6.044476714612809,
+    "up": "direct",
+    "warp": null
+   }
+  },
+  "dual_filter": {
+   "status": "best tried fails phase,sigma_err",
+   "us": 280.5770256398014,
+   "passes": 10,
+   "fetch_per_px": 12.320804398148148,
+   "dram_mb": 27.61968,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 24.818049333826345,
+   "aniso": 0.0003857045873538745,
+   "tv": 0.02340637058672831,
+   "leak": 0.0029141187308149843,
+   "phase": 0.13023458514817443,
+   "shift": 0.36609015423145164,
+   "sigma_err": 0.034085388909431025,
+   "params": {
+    "levels": 5,
+    "o": 0.6610946655273438
+   }
+  },
+  "sep_bilinear": {
+   "status": "rejected (>3x cost)",
+   "us": 1118.8770053475935
+  },
+  "sep_linear": {
+   "status": "rejected (>3x cost)",
+   "us": 1145.2788388082506
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 1356.0000000000002
+  }
+ },
+ "32": {
+  "pyramid": {
+   "status": "ok",
+   "us": 206.3527501909855,
+   "passes": 5,
+   "fetch_per_px": 4.3125,
+   "dram_mb": 23.8464,
+   "bounds": [
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "mem"
+   ],
+   "sigma": 32.005949568950385,
+   "aniso": 0.0,
+   "tv": 0.012029031822055943,
+   "leak": 0.008243845728677606,
+   "phase": 0.02078189115105882,
+   "shift": 0.23570226039551542,
+   "sigma_err": 0.0001859240296995246,
+   "params": {
+    "k": 2,
+    "m": 24,
+    "s": 8.086857178600482,
+    "up": "direct",
+    "warp": null
+   }
+  },
+  "dual_filter": {
+   "status": "ok",
+   "us": 280.5770256398014,
+   "passes": 10,
+   "fetch_per_px": 12.320804398148148,
+   "dram_mb": 27.61968,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 31.9337451180511,
+   "aniso": 0.0010807451870020746,
+   "tv": 0.03433013208025412,
+   "leak": 0.004679894238448933,
+   "phase": 0.0091388584940817,
+   "shift": 0.06494505325912896,
+   "sigma_err": -0.002070465060903137,
+   "params": {
+    "levels": 5,
+    "o": 1.0494613647460938
+   }
+  },
+  "sep_linear": {
+   "status": "rejected (>3x cost)",
+   "us": 1488.5026737967914
+  },
+  "sep_bilinear": {
+   "status": "rejected (>3x cost)",
+   "us": 1488.5026737967914
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 1695.0000000000002
+  }
+ },
+ "48": {
+  "pyramid": {
+   "status": "best tried fails phase,sigma_err",
+   "us": 240.01250000000002,
+   "passes": 12,
+   "fetch_per_px": 1.674508101851852,
+   "dram_mb": 27.64992,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 48.99673465582606,
+   "aniso": 0.0,
+   "tv": 0.01242941998510003,
+   "leak": 0.009033734606275727,
+   "phase": 0.14343593873017313,
+   "shift": 0.23570226039551162,
+   "sigma_err": 0.02076530532970966,
+   "params": {
+    "k": 5,
+    "m": 5,
+    "s": 1.3243352558664185,
+    "up": "chain",
+    "warp": "iq"
+   }
+  },
+  "dual_filter": {
+   "status": "ok",
+   "us": 280.5770256398014,
+   "passes": 10,
+   "fetch_per_px": 12.320804398148148,
+   "dram_mb": 27.61968,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 48.01679221984757,
+   "aniso": 0.000907600047836965,
+   "tv": 0.04908405685985057,
+   "leak": 0.019046475795732185,
+   "phase": 0.0038144266993631742,
+   "shift": 0.03234720046993124,
+   "sigma_err": 0.00034983791349096904,
+   "params": {
+    "levels": 5,
+    "o": 1.7843093872070312
+   }
+  },
+  "sep_linear": {
+   "status": "rejected (>3x cost)",
+   "us": 2227.754010695187
+  },
+  "sep_bilinear": {
+   "status": "rejected (>3x cost)",
+   "us": 2227.754010695187
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 2260.0
+  }
+ },
+ "64": {
+  "pyramid": {
+   "status": "ok",
+   "us": 183.3381875477464,
+   "passes": 6,
+   "fetch_per_px": 2.078125,
+   "dram_mb": 22.5504,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "mem"
+   ],
+   "sigma": 64.03893928652252,
+   "aniso": 0.0,
+   "tv": 0.012034179425337542,
+   "leak": 0.008293801192028426,
+   "phase": 0.023583998741736542,
+   "shift": 0.2357022603955117,
+   "sigma_err": 0.0006084263519143818,
+   "params": {
+    "k": 3,
+    "m": 24,
+    "s": 8.088786759587464,
+    "up": "direct",
+    "warp": null
+   }
+  },
+  "dual_filter": {
+   "status": "ok",
+   "us": 290.7419284759359,
+   "passes": 12,
+   "fetch_per_px": 12.329600694444444,
+   "dram_mb": 27.63936,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 63.8681306230052,
+   "aniso": 0.0005480970695037612,
+   "tv": 0.03425931184582841,
+   "leak": 0.004714402508955931,
+   "phase": 0.00878091777709471,
+   "shift": 0.08105129971544303,
+   "sigma_err": -0.0020604590155437474,
+   "params": {
+    "levels": 6,
+    "o": 1.0489120483398438
+   }
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 2711.999999999999
+  },
+  "sep_bilinear": {
+   "status": "rejected (>3x cost)",
+   "us": 2940.6035141329257
+  },
+  "sep_linear": {
+   "status": "rejected (>3x cost)",
+   "us": 2967.005347593583
+  }
+ },
+ "100": {
+  "pyramid": {
+   "status": "best tried fails phase,sigma_err",
+   "us": 249.98281250000005,
+   "passes": 14,
+   "fetch_per_px": 1.668460648148148,
+   "dram_mb": 27.64536,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 102.01728961031547,
+   "aniso": 0.0,
+   "tv": 0.012142277315287353,
+   "leak": 0.008775675586434554,
+   "phase": 0.1395822190048711,
+   "shift": 0.23570226039551906,
+   "sigma_err": 0.020172896103154647,
+   "params": {
+    "k": 6,
+    "m": 5,
+    "s": 1.3961762502526043,
+    "up": "chain",
+    "warp": "iq"
+   }
+  },
+  "dual_filter": {
+   "status": "best tried fails phase,sigma_err",
+   "us": 300.78199961802903,
+   "passes": 14,
+   "fetch_per_px": 12.331741898148149,
+   "dram_mb": 27.64416,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 102.30908488422982,
+   "aniso": 0.00022471627870790378,
+   "tv": 0.024611556969067108,
+   "leak": 0.002528604334371754,
+   "phase": 0.0775422456283115,
+   "shift": 1.3429598323390304,
+   "sigma_err": 0.023090848842298284,
+   "params": {
+    "levels": 7,
+    "o": 0.7007827758789062
+   }
+  },
+  "kawase": {
+   "status": "ok",
+   "us": 3615.9999999999977,
+   "passes": 32,
+   "fetch_per_px": 128.0,
+   "dram_mb": 530.8416,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 100.0,
+   "aniso": 0.0,
+   "tv": 0.009866350344459974,
+   "leak": 0.006442270226195331,
+   "phase": 0.0,
+   "shift": 1.942890293094024e-16,
+   "sigma_err": 0.0,
+   "params": {
+    "offsets": [
+     0.5,
+     1.5,
+     2.5,
+     3.5,
+     4.5,
+     5.5,
+     6.5,
+     7.5,
+     8.5,
+     9.5,
+     10.5,
+     11.5,
+     12.5,
+     13.5,
+     14.5,
+     15.5,
+     16.5,
+     17.5,
+     18.5,
+     19.5,
+     20.5,
+     21.5,
+     22.5,
+     23.5,
+     24.5,
+     25.5,
+     26.5,
+     27.5,
+     28.5,
+     29.5,
+     30.5,
+     8.029
+    ]
+   }
+  },
+  "sep_linear": {
+   "status": "ok",
+   "us": 6900.878533231474,
+   "passes": 2,
+   "fetch_per_px": 522.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 99.99999999999973,
+   "aniso": 0.0,
+   "tv": 0.038955476192324326,
+   "leak": 0.011556976716948606,
+   "phase": 0.0,
+   "shift": 1.7208456881689926e-15,
+   "sigma_err": -2.6645352591003757e-15,
+   "params": {
+    "r": 260,
+    "s": 104.95566535586414
+   }
+  },
+  "sep_bilinear": {
+   "status": "ok",
+   "us": 6900.878533231474,
+   "passes": 2,
+   "fetch_per_px": 522.0,
+   "dram_mb": 33.1776,
+   "bounds": [
+    "tex",
+    "tex"
+   ],
+   "sigma": 99.99999999999984,
+   "aniso": 2.220446049250313e-16,
+   "tv": 0.0383527520662134,
+   "leak": 0.011618278242366751,
+   "phase": 0.0,
+   "shift": 1.1102230246251565e-16,
+   "sigma_err": -1.5543122344752192e-15,
+   "params": {
+    "m": 261,
+    "s": 104.88115222417665
+   }
+  }
+ },
+ "150": {
+  "pyramid": {
+   "status": "best tried fails tv,phase",
+   "us": 249.98281250000005,
+   "passes": 14,
+   "fetch_per_px": 1.668460648148148,
+   "dram_mb": 27.64536,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 151.34121459610037,
+   "aniso": 0.0,
+   "tv": 0.06540353670652245,
+   "leak": 0.012244013502954435,
+   "phase": 0.0883396130653229,
+   "shift": 0.23570226039551917,
+   "sigma_err": 0.008941430640669212,
+   "params": {
+    "k": 6,
+    "m": 5,
+    "s": 2.5732273745255547,
+    "up": "chain",
+    "warp": "iq"
+   }
+  },
+  "dual_filter": {
+   "status": "ok",
+   "us": 300.78199961802903,
+   "passes": 14,
+   "fetch_per_px": 12.331741898148149,
+   "dram_mb": 27.64416,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 148.37527542962232,
+   "aniso": 0.005557298729741866,
+   "tv": 0.04912339493228652,
+   "leak": 0.01367445758128894,
+   "phase": 0.020503811200862764,
+   "shift": 0.23547181099063458,
+   "sigma_err": -0.010831497135851187,
+   "params": {
+    "levels": 7,
+    "o": 1.3559799194335938
+   }
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 4632.999999999999
+  },
+  "sep_bilinear": {
+   "status": "rejected (>3x cost)",
+   "us": 6874.476699770817
+  },
+  "sep_linear": {
+   "status": "rejected (>3x cost)",
+   "us": 6900.878533231474
+  }
+ },
+ "200": {
+  "pyramid": {
+   "status": "best tried fails leak,tv,phase",
+   "us": 240.13398109243698,
+   "passes": 12,
+   "fetch_per_px": 1.6897858796296297,
+   "dram_mb": 27.64992,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem"
+   ],
+   "sigma": 200.22187034657904,
+   "aniso": 0.0,
+   "tv": 0.12015534030990513,
+   "leak": 0.03913474736110337,
+   "phase": 0.032024751297642005,
+   "shift": 0.2357022603955193,
+   "sigma_err": 0.0011093517328952807,
+   "params": {
+    "k": 5,
+    "m": 13,
+    "s": 7.8051314569877555,
+    "up": "chain",
+    "warp": "iq"
+   }
+  },
+  "dual_filter": {
+   "status": "ok",
+   "us": 300.78199961802903,
+   "passes": 14,
+   "fetch_per_px": 12.331741898148149,
+   "dram_mb": 27.64416,
+   "bounds": [
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "mem",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex",
+    "tex"
+   ],
+   "sigma": 200.1208641653991,
+   "aniso": 0.00013338959591258082,
+   "tv": 0.048566146938468016,
+   "leak": 0.019134747171289476,
+   "phase": 0.002202462689450299,
+   "shift": 0.10485326690018998,
+   "sigma_err": 0.0006043208269954636,
+   "params": {
+    "levels": 7,
+    "o": 1.8612136840820312
+   }
+  },
+  "kawase": {
+   "status": "rejected (>3x cost)",
+   "us": 5650.000000000002
+  },
+  "sep_linear": {
+   "status": "rejected (>3x cost)",
+   "us": 9171.436210847975
+  },
+  "sep_bilinear": {
+   "status": "rejected (>3x cost)",
+   "us": 9171.436210847975
   }
  }
 }
