@@ -25,9 +25,12 @@ from .sim import Pass, Pipeline
 
 # Quality profiles, strictest first. The search prunes against the first one.
 PROFILES = {
-    "strict": {"leak": 0.02, "tv": 0.05, "aniso": 0.03, "phase": 0.01, "curv": 0.35, "sigma_err": 0.02},
-    "medium": {"leak": 0.02, "tv": 0.05, "aniso": 0.03, "phase": 0.03, "curv": 1.5, "sigma_err": 0.02},
-    "loose": {"leak": 0.03, "tv": 0.08, "aniso": 0.05, "phase": 0.06, "curv": 3.0, "sigma_err": 0.03},
+    # leak/tv/curv calibrated on truncated Gaussians by eye (sigma 6):
+    # strict ~ radius 3 sigma ("most smooth"), medium ~ 2.5 sigma ("useful and
+    # smooth"), loose ~ 2.25 sigma ("borderline"). phase limits still provisional.
+    "strict": {"leak": 0.01, "tv": 0.02, "curv": 0.2, "aniso": 0.03, "phase": 0.01, "sigma_err": 0.02},
+    "medium": {"leak": 0.015, "tv": 0.055, "curv": 0.7, "aniso": 0.03, "phase": 0.03, "sigma_err": 0.02},
+    "loose": {"leak": 0.02, "tv": 0.10, "curv": 1.7, "aniso": 0.05, "phase": 0.06, "sigma_err": 0.03},
 }
 
 

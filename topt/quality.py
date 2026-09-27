@@ -11,8 +11,9 @@ leak    worst stop-band gain: max |H(f)| where the matched Gaussian is < 1 %.
 phase   mean TV distance of each phase's response to the phase average
         (shift variance -> visible blockiness / shimmering on motion)
 curv    mean over phases of |lap(K_i) - lap(G_i)|_1 / |lap(G_i)|_1, G_i the
-        Gaussian centred on that phase's response. Catches kinks: Mach bands
-        from linear upsampling and the edge of truncated kernels.
+        Gaussian matched to that phase's response. Catches kinks: Mach bands
+        from linear upsampling and the edge of truncated kernels. Responses are
+        first box-binned to sigma ~4 so the value does not grow with sigma.
 """
 from __future__ import annotations
 
@@ -94,8 +95,14 @@ def _lap(a: np.ndarray) -> np.ndarray:
     return a[1:-1, 2:] + a[1:-1, :-2] + a[2:, 1:-1] + a[:-2, 1:-1] - 4 * a[1:-1, 1:-1]
 
 
-def _curv_err(k: np.ndarray, x: np.ndarray, y: np.ndarray, sig: float) -> float:
+def _curv_err(k: np.ndarray, sig: float) -> float:
+    b = max(1, int(sig // 4))
+    if b > 1:
+        n = (k.shape[0] // b) * b
+        k = k[:n, :n].reshape(n // b, b, n // b, b).sum((1, 3))
+    y, x = np.mgrid[0:k.shape[0], 0:k.shape[1]].astype(float)
     mx, my = (k * x).sum(), (k * y).sum()
+    sig = math.sqrt(((k * (x - mx) ** 2).sum() + (k * (y - my) ** 2).sum()) / 2)
     g = np.exp(-((x - mx) ** 2 + (y - my) ** 2) / (2 * sig * sig))
     lg = _lap(g / g.sum())
     return float(np.abs(_lap(k) - lg).sum() / np.abs(lg).sum())
@@ -121,7 +128,7 @@ def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
     fr = np.sqrt(f[:, None] ** 2 + f[None, :] ** 2)
     stop = fr > GAUSS_STOP / sig
     phase = float(np.mean([0.5 * np.abs(ki / ki.sum() - k).sum() for ki in ks]))
-    curv = float(np.mean([_curv_err(ki / ki.sum(), x, y, sig) for ki in ks]))
+    curv = float(np.mean([_curv_err(ki / ki.sum(), sig) for ki in ks]))
     out = {
         "sigma": sig,
         "aniso": math.sqrt(max(vs) / min(vs)) - 1.0,
