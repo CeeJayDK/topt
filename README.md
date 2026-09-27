@@ -34,34 +34,42 @@ Results go to `results/baseline.md`.
 
 ## Findings so far (model estimates, not yet timed on hardware)
 
-See `results/analysis.md` (winners), `results/hybrid.md`, `results/baseline.md`.
+Target: the blur feeds the final composite pass (reads the backbuffer, writes
+the screen); costs are the marginal cost over a plain composite pass.
+See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*.md`.
 
-* **Full-res traffic sets the floor.** One 1080p RGB10A2 read + write is ~110 us
-  on a 1660 at 80 % of peak bandwidth; a full-res pass with fewer than ~6 taps is
-  memory-bound, so extra taps there are free.
-* **sigma 1-3:** a single compute dispatch (tile + halo in groupshared, separable
-  kernel in LDS) is estimated at ~113-126 us vs ~205-226 us for the best
-  pixel-shader methods (two full-res passes).
-* **sigma >= 4:** a hybrid wins: one pass reads full res once and goes straight
-  to 1/4 with a wide box*binomial filter (free, memory-bound), optional further
-  x2/x4 steps, a small fitted blur at the bottom, and a bilinear upsample.
-  Cost is ~140 us and nearly flat from sigma 16 to 200, vs ~180-215 us for the
-  best classic pyramid / dual filter at the same quality.
+| sigma | 1080p winner | 1080p us | 4K us |
+|---:|---|---:|---:|
+| 1 | single-pass 2D fused into the composite | 116 | 466 |
+| 2-3 | x2 down, small blur, x2 up in the composite | 129-144 | 484-545 |
+| 4-6 | x4 down (wide filter), blur, 2x2 up | 110-116 | 396-419 |
+| 8-12 | x4 down, blur, x4 up in the composite | 89 | 312 |
+| 16-200 | x4 x2..x4 down, one-pass blur, one direct up in the composite | 77-86 | 265-283 |
+
+* **Full-res traffic sets the floor.** A 1080p RGB10A2 read is ~55 us on a 1660
+  at 80 % of peak bandwidth; passes with fewer than ~6 taps are memory-bound,
+  so extra taps there are free. Above sigma ~8 the cost is ~1 full-res read
+  plus a few small passes, flat up to sigma 200.
+* Compute shaders must be followed by a pixel shader. A compute blur whose
+  output the composite reads costs the same as the pixel-shader separable blur
+  (~167 us at 1080p, sigma 1-2); doing the composite in the compute shader and
+  only copying in the pixel shader is modelled at ~113 us; compute H + pixel V
+  fused with the composite wins at sigma ~4 (167 vs 204 us). To be timed.
 * Strict quality costs little extra (e.g. sigma 16: 155 vs 142 us; sigma >= 48
   about the same).
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
-* Storing every pass as RGB10A2 adds <= 1.4 LSB (10-bit) error, ~0.35 LSB RMS
-  (<= 0.17 8-bit levels on smooth ramps). R11G11B10F intermediates give up to
-  1.1 (R, G) / 2.0 (B) 8-bit levels on mid/bright ramps: banding and hue shift
-  unless dithered, so use it only when values above 1 (HDR) must be kept.
+* RGB10A2 intermediates add <= 0.17 8-bit levels of error on smooth ramps.
+  R11G11B10F gives up to 1.1 (R, G) / 2.0 (B) levels on mid/bright ramps:
+  banding and hue shift unless dithered, so use it only for HDR (> 1) data.
 * FFT and full-res IIR/moving-average methods need >= 2 full-res read+write
-  passes (>= ~220 us), so they cannot beat the hybrid in this sigma range.
+  passes, so they cannot beat the hybrid in this sigma range.
 
 ## Status / next
 
 * Quality profiles in `topt/search.py` are calibrated by eye with
   `scripts/calibrate.py` renders (truncation, blockiness, motion).
-* The per-pass overhead (5 us) and the memory-bound claim need hardware timing.
+* The per-pass overhead (5 us) and the memory-bound claim need hardware timing:
+  see `fx/README.md`.
 * Planned: generic search over pass sequences, compute-shader (groupshared)
   cost model, stochastic methods, FFT for the largest radii, and `.fx`
   generators for hardware timing.

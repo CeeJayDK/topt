@@ -1,22 +1,24 @@
-# Summary: cheapest method per sigma (GTX 1660 model, 1080p, RGB10A2)
+# Summary: cheapest method per sigma (GTX 1660 model, 1920x1080, RGB10A2)
+
+us = marginal cost over a plain composite pass (blur fused into the consumer pass).
 
 Quality profile: medium (leak<=0.015, tv<=0.055, curv<=0.7, block<=0.35, aniso<=0.03, phase<=0.1, sigma_err<=0.02).
 Cost columns re-price every candidate with a different per-pass overhead (model default 5 us).
 
 | sigma | winner @5us | us @2 | us @5 | us @10 | us @20 | winner @20us if different | 10-bit err max/rms (LSB) |
 |---:|---|---:|---:|---:|---:|---|---|
-| 1 | cs_tile r=3 (T=8, mem-bound) | 110 | 113 | 118 | 128 |  |  |
-| 2 | cs_tile r=5 (T=16, mem-bound) | 110 | 113 | 118 | 128 |  |  |
-| 3 | cs_tile r=7 (T=32, lds-bound) | 123 | 126 | 131 | 141 |  |  |
-| 4 | hybrid: down 4 e5 | direct 2s | up 2x2 e2 | 157 | 169 | 189 | 202 | cs_tile r=10 (T=32, lds-bound) | 1.23 / 0.34 |
-| 6 | hybrid: down 4 e3 | direct 2s | up 2x2 e1 | 163 | 175 | 195 | 235 |  | 1.39 / 0.40 |
-| 8 | hybrid: down 4 e3 | sep 2s | up 4 e2 | 136 | 148 | 165 | 195 | hybrid: down 4 e3 | direct 2s | up 4 e2 | 1.06 / 0.32 |
-| 12 | hybrid: down 4 e1 | sep 2.5s | up 4 e1 | 136 | 148 | 168 | 208 |  | 1.14 / 0.36 |
-| 16 | hybrid: down 4x2 e3 | direct 2s | up 8 e1 | 130 | 142 | 162 | 202 |  | 1.08 / 0.35 |
-| 24 | hybrid: down 4x2 e1 | sep 2.5s | up 8 e1 | 130 | 145 | 170 | 220 |  | 1.15 / 0.35 |
-| 32 | hybrid: down 4x4 e5 | direct 2s | up 16 e1 | 124 | 136 | 156 | 196 |  | 1.06 / 0.35 |
-| 48 | hybrid: down 4x4 e1 | direct 2.5s | up 16 e1 | 126 | 139 | 159 | 199 |  | 1.03 / 0.34 |
-| 64 | hybrid: down 4x4x2 e3 | direct 2s | up 32 e1 | 126 | 141 | 161 | 201 | hybrid: down 4x4 e1 | direct 2.5s | up 16 e1 | 1.05 / 0.35 |
-| 100 | hybrid: down 4x4x2 e1 | direct 2s | up 32 e2 | 126 | 141 | 166 | 216 |  | 0.86 / 0.31 |
-| 150 | hybrid: down 4x4x4 e3 | direct 2s | up 64 e1 | 125 | 140 | 165 | 215 |  | 1.01 / 0.36 |
-| 200 | hybrid: down 4x4x4 e1 | direct 2s | up 64 e2 | 125 | 140 | 165 | 215 |  | 0.83 / 0.31 |
+| 1 | direct2d | 116 | 116 | 116 | 116 |  |  |
+| 2 | hybrid: down 2 e3 | direct 2s | up 2 e3 | 123 | 129 | 139 | 159 |  | 0.57 / 0.13 |
+| 3 | hybrid: down 2 e1 | direct 2s | up 2 e1 | 138 | 144 | 154 | 174 |  | 0.65 / 0.19 |
+| 4 | hybrid: down 4 e5 | direct 2s | up 2x2 e2 | 101 | 110 | 125 | 155 |  | 0.78 / 0.18 |
+| 6 | hybrid: down 4 e3 | direct 2s | up 2x2 e1 | 107 | 116 | 131 | 161 |  | 0.90 / 0.25 |
+| 8 | hybrid: down 4 e3 | sep 2s | up 4 e2 | 80 | 89 | 101 | 121 | hybrid: down 4 e3 | direct 2s | up 4 e2 | 0.59 / 0.14 |
+| 12 | hybrid: down 4 e1 | sep 2.5s | up 4 e1 | 80 | 89 | 104 | 134 |  | 0.65 / 0.20 |
+| 16 | hybrid: down 4x2 e3 | direct 2s | up 8 e1 | 74 | 83 | 98 | 128 |  | 0.59 / 0.20 |
+| 24 | hybrid: down 4x2 e1 | sep 2.5s | up 8 e1 | 74 | 86 | 106 | 146 |  | 0.71 / 0.20 |
+| 32 | hybrid: down 4x4 e5 | direct 2s | up 16 e1 | 68 | 77 | 92 | 122 |  | 0.59 / 0.20 |
+| 48 | hybrid: down 4x4 e1 | direct 2.5s | up 16 e1 | 71 | 80 | 95 | 125 |  | 0.54 / 0.19 |
+| 64 | hybrid: down 4x4x2 e3 | direct 2s | up 32 e1 | 70 | 82 | 97 | 127 | hybrid: down 4x4 e1 | direct 2.5s | up 16 e1 | 0.59 / 0.20 |
+| 100 | hybrid: down 4x4x2 e1 | direct 2s | up 32 e2 | 70 | 82 | 102 | 142 |  | 0.39 / 0.12 |
+| 150 | hybrid: down 4x4x4 e3 | direct 2s | up 64 e1 | 69 | 81 | 101 | 141 |  | 0.53 / 0.21 |
+| 200 | hybrid: down 4x4x4 e1 | direct 2s | up 64 e2 | 69 | 81 | 101 | 141 |  | 0.35 / 0.12 |

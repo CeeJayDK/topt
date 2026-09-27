@@ -293,6 +293,579 @@ technique TOPT_B_Hybrid_s16_strict < ui_tooltip = "sigma 16 strict hybrid: down 
 	pass p0_3 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s16_strict_PS3; }
 }
 
+// ---- TOPT_B_Hybrid_s64_medium: sigma 64 medium hybrid: down 4x4x2 e3 | direct 2s | up 32 e1 (model 82 us marginal @1080p)
+texture TOPT_B_Hybrid_s64_medium_t0 { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_medium_s0 { Texture = TOPT_B_Hybrid_s64_medium_t0; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s64_medium_t1 { Width = BUFFER_WIDTH / 16; Height = BUFFER_HEIGHT / 16; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_medium_s1 { Texture = TOPT_B_Hybrid_s64_medium_t1; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s64_medium_t2 { Width = BUFFER_WIDTH / 32; Height = BUFFER_HEIGHT / 32; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_medium_s2 { Texture = TOPT_B_Hybrid_s64_medium_t2; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s64_medium_t3 { Width = BUFFER_WIDTH / 32; Height = BUFFER_HEIGHT / 32; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_medium_s3 { Texture = TOPT_B_Hybrid_s64_medium_t3; AddressU = MIRROR; AddressV = MIRROR; };
+static const float3 TOPT_B_Hybrid_s64_medium_k0[9] = {
+	float3(-1.75, -1.75, 0.0625),
+	float3(-1.75, 0.0, 0.125),
+	float3(-1.75, 1.75, 0.0625),
+	float3(0.0, -1.75, 0.125),
+	float3(0.0, 0.0, 0.25),
+	float3(0.0, 1.75, 0.125),
+	float3(1.75, -1.75, 0.0625),
+	float3(1.75, 0.0, 0.125),
+	float3(1.75, 1.75, 0.0625)
+};
+float4 TOPT_B_Hybrid_s64_medium_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_Hybrid_s64_medium_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_Hybrid_s64_medium_k0[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_medium_k1[9] = {
+	float3(-1.75, -1.75, 0.0625),
+	float3(-1.75, 0.0, 0.125),
+	float3(-1.75, 1.75, 0.0625),
+	float3(0.0, -1.75, 0.125),
+	float3(0.0, 0.0, 0.25),
+	float3(0.0, 1.75, 0.125),
+	float3(1.75, -1.75, 0.0625),
+	float3(1.75, 0.0, 0.125),
+	float3(1.75, 1.75, 0.0625)
+};
+float4 TOPT_B_Hybrid_s64_medium_PS1(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 4, BUFFER_HEIGHT / 4);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_Hybrid_s64_medium_k1[i].z * tex2Dlod(TOPT_B_Hybrid_s64_medium_s0, float4(uv + TOPT_B_Hybrid_s64_medium_k1[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_medium_k2[4] = {
+	float3(-0.75, -0.75, 0.25),
+	float3(-0.75, 0.75, 0.25),
+	float3(0.75, -0.75, 0.25),
+	float3(0.75, 0.75, 0.25)
+};
+float4 TOPT_B_Hybrid_s64_medium_PS2(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 16, BUFFER_HEIGHT / 16);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s64_medium_k2[i].z * tex2Dlod(TOPT_B_Hybrid_s64_medium_s1, float4(uv + TOPT_B_Hybrid_s64_medium_k2[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_medium_k3[25] = {
+	float3(-3.30705812, -3.30705812, 0.0100704278),
+	float3(-3.30705812, -1.41366904, 0.03016996),
+	float3(-3.30705812, 0.470964523, 0.0375603274),
+	float3(-3.30705812, 2.35861888, 0.0194585996),
+	float3(-3.30705812, 4.0, 0.00309220663),
+	float3(-1.41366904, -3.30705812, 0.03016996),
+	float3(-1.41366904, -1.41366904, 0.0903860789),
+	float3(-1.41366904, 0.470964523, 0.112526855),
+	float3(-1.41366904, 2.35861888, 0.0582959512),
+	float3(-1.41366904, 4.0, 0.00926393116),
+	float3(0.470964523, -3.30705812, 0.0375603274),
+	float3(0.470964523, -1.41366904, 0.112526855),
+	float3(0.470964523, 0.470964523, 0.140091187),
+	float3(0.470964523, 2.35861888, 0.0725759998),
+	float3(0.470964523, 4.0, 0.0115332035),
+	float3(2.35861888, -3.30705812, 0.0194585996),
+	float3(2.35861888, -1.41366904, 0.0582959512),
+	float3(2.35861888, 0.470964523, 0.0725759998),
+	float3(2.35861888, 2.35861888, 0.0375989087),
+	float3(2.35861888, 4.0, 0.00597492098),
+	float3(4.0, -3.30705812, 0.00309220663),
+	float3(4.0, -1.41366904, 0.00926393116),
+	float3(4.0, 0.470964523, 0.0115332035),
+	float3(4.0, 2.35861888, 0.00597492098),
+	float3(4.0, 4.0, 0.000949487151)
+};
+float4 TOPT_B_Hybrid_s64_medium_PS3(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 32, BUFFER_HEIGHT / 32);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 25; i++)
+		c += TOPT_B_Hybrid_s64_medium_k3[i].z * tex2Dlod(TOPT_B_Hybrid_s64_medium_s2, float4(uv + TOPT_B_Hybrid_s64_medium_k3[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_medium_k4[1] = {
+	float3(0.0, 0.0, 1.0)
+};
+float4 TOPT_B_Hybrid_s64_medium_PS4(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 32, BUFFER_HEIGHT / 32);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 1; i++)
+		c += TOPT_B_Hybrid_s64_medium_k4[i].z * tex2Dlod(TOPT_B_Hybrid_s64_medium_s3, float4(uv + TOPT_B_Hybrid_s64_medium_k4[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_Hybrid_s64_medium < ui_tooltip = "sigma 64 medium hybrid: down 4x4x2 e3 | direct 2s | up 32 e1 (model 82 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_medium_PS0; RenderTarget = TOPT_B_Hybrid_s64_medium_t0; }
+	pass p0_1 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_medium_PS1; RenderTarget = TOPT_B_Hybrid_s64_medium_t1; }
+	pass p0_2 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_medium_PS2; RenderTarget = TOPT_B_Hybrid_s64_medium_t2; }
+	pass p0_3 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_medium_PS3; RenderTarget = TOPT_B_Hybrid_s64_medium_t3; }
+	pass p0_4 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_medium_PS4; }
+}
+
+// ---- TOPT_B_Hybrid_s64_strict: sigma 64 strict hybrid: down 4x4 e5 | sep 3s | up 16 e1 (model 82 us marginal @1080p)
+texture TOPT_B_Hybrid_s64_strict_t0 { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_strict_s0 { Texture = TOPT_B_Hybrid_s64_strict_t0; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s64_strict_t1 { Width = BUFFER_WIDTH / 16; Height = BUFFER_HEIGHT / 16; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_strict_s1 { Texture = TOPT_B_Hybrid_s64_strict_t1; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s64_strict_t2 { Width = BUFFER_WIDTH / 16; Height = BUFFER_HEIGHT / 16; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_strict_s2 { Texture = TOPT_B_Hybrid_s64_strict_t2; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s64_strict_t3 { Width = BUFFER_WIDTH / 16; Height = BUFFER_HEIGHT / 16; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s64_strict_s3 { Texture = TOPT_B_Hybrid_s64_strict_t3; AddressU = MIRROR; AddressV = MIRROR; };
+static const float3 TOPT_B_Hybrid_s64_strict_k0[16] = {
+	float3(-2.66666667, -2.66666667, 0.0087890625),
+	float3(-2.66666667, -0.923076923, 0.0380859375),
+	float3(-2.66666667, 0.923076923, 0.0380859375),
+	float3(-2.66666667, 2.66666667, 0.0087890625),
+	float3(-0.923076923, -2.66666667, 0.0380859375),
+	float3(-0.923076923, -0.923076923, 0.165039062),
+	float3(-0.923076923, 0.923076923, 0.165039062),
+	float3(-0.923076923, 2.66666667, 0.0380859375),
+	float3(0.923076923, -2.66666667, 0.0380859375),
+	float3(0.923076923, -0.923076923, 0.165039062),
+	float3(0.923076923, 0.923076923, 0.165039062),
+	float3(0.923076923, 2.66666667, 0.0380859375),
+	float3(2.66666667, -2.66666667, 0.0087890625),
+	float3(2.66666667, -0.923076923, 0.0380859375),
+	float3(2.66666667, 0.923076923, 0.0380859375),
+	float3(2.66666667, 2.66666667, 0.0087890625)
+};
+float4 TOPT_B_Hybrid_s64_strict_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 16; i++)
+		c += TOPT_B_Hybrid_s64_strict_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_Hybrid_s64_strict_k0[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_strict_k1[16] = {
+	float3(-2.66666667, -2.66666667, 0.0087890625),
+	float3(-2.66666667, -0.923076923, 0.0380859375),
+	float3(-2.66666667, 0.923076923, 0.0380859375),
+	float3(-2.66666667, 2.66666667, 0.0087890625),
+	float3(-0.923076923, -2.66666667, 0.0380859375),
+	float3(-0.923076923, -0.923076923, 0.165039062),
+	float3(-0.923076923, 0.923076923, 0.165039062),
+	float3(-0.923076923, 2.66666667, 0.0380859375),
+	float3(0.923076923, -2.66666667, 0.0380859375),
+	float3(0.923076923, -0.923076923, 0.165039062),
+	float3(0.923076923, 0.923076923, 0.165039062),
+	float3(0.923076923, 2.66666667, 0.0380859375),
+	float3(2.66666667, -2.66666667, 0.0087890625),
+	float3(2.66666667, -0.923076923, 0.0380859375),
+	float3(2.66666667, 0.923076923, 0.0380859375),
+	float3(2.66666667, 2.66666667, 0.0087890625)
+};
+float4 TOPT_B_Hybrid_s64_strict_PS1(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 4, BUFFER_HEIGHT / 4);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 16; i++)
+		c += TOPT_B_Hybrid_s64_strict_k1[i].z * tex2Dlod(TOPT_B_Hybrid_s64_strict_s0, float4(uv + TOPT_B_Hybrid_s64_strict_k1[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_strict_k2[12] = {
+	float3(-11.3325637, -0.5, 0.00459470805),
+	float3(-9.36124704, -0.5, 0.0159917227),
+	float3(-7.39095519, -0.5, 0.0433637304),
+	float3(-5.42149432, -0.5, 0.0916227324),
+	float3(-3.45264604, -0.5, 0.150856791),
+	float3(-1.48417319, -0.5, 0.193570315),
+	float3(0.484173186, -0.5, 0.193570315),
+	float3(2.45264604, -0.5, 0.150856791),
+	float3(4.42149432, -0.5, 0.0916227324),
+	float3(6.39095519, -0.5, 0.0433637304),
+	float3(8.36124704, -0.5, 0.0159917227),
+	float3(10.3325637, -0.5, 0.00459470805)
+};
+float4 TOPT_B_Hybrid_s64_strict_PS2(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 16, BUFFER_HEIGHT / 16);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 12; i++)
+		c += TOPT_B_Hybrid_s64_strict_k2[i].z * tex2Dlod(TOPT_B_Hybrid_s64_strict_s1, float4(uv + TOPT_B_Hybrid_s64_strict_k2[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_strict_k3[12] = {
+	float3(0.5, -10.3325637, 0.00459470805),
+	float3(0.5, -8.36124704, 0.0159917227),
+	float3(0.5, -6.39095519, 0.0433637304),
+	float3(0.5, -4.42149432, 0.0916227324),
+	float3(0.5, -2.45264604, 0.150856791),
+	float3(0.5, -0.484173186, 0.193570315),
+	float3(0.5, 1.48417319, 0.193570315),
+	float3(0.5, 3.45264604, 0.150856791),
+	float3(0.5, 5.42149432, 0.0916227324),
+	float3(0.5, 7.39095519, 0.0433637304),
+	float3(0.5, 9.36124704, 0.0159917227),
+	float3(0.5, 11.3325637, 0.00459470805)
+};
+float4 TOPT_B_Hybrid_s64_strict_PS3(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 16, BUFFER_HEIGHT / 16);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 12; i++)
+		c += TOPT_B_Hybrid_s64_strict_k3[i].z * tex2Dlod(TOPT_B_Hybrid_s64_strict_s2, float4(uv + TOPT_B_Hybrid_s64_strict_k3[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s64_strict_k4[1] = {
+	float3(0.0, 0.0, 1.0)
+};
+float4 TOPT_B_Hybrid_s64_strict_PS4(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 16, BUFFER_HEIGHT / 16);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 1; i++)
+		c += TOPT_B_Hybrid_s64_strict_k4[i].z * tex2Dlod(TOPT_B_Hybrid_s64_strict_s3, float4(uv + TOPT_B_Hybrid_s64_strict_k4[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_Hybrid_s64_strict < ui_tooltip = "sigma 64 strict hybrid: down 4x4 e5 | sep 3s | up 16 e1 (model 82 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_strict_PS0; RenderTarget = TOPT_B_Hybrid_s64_strict_t0; }
+	pass p0_1 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_strict_PS1; RenderTarget = TOPT_B_Hybrid_s64_strict_t1; }
+	pass p0_2 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_strict_PS2; RenderTarget = TOPT_B_Hybrid_s64_strict_t2; }
+	pass p0_3 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_strict_PS3; RenderTarget = TOPT_B_Hybrid_s64_strict_t3; }
+	pass p0_4 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s64_strict_PS4; }
+}
+
+// ---- TOPT_B_Hybrid_s200_medium: sigma 200 medium hybrid: down 4x4x4 e1 | direct 2s | up 64 e2 (model 81 us marginal @1080p)
+texture TOPT_B_Hybrid_s200_medium_t0 { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_medium_s0 { Texture = TOPT_B_Hybrid_s200_medium_t0; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s200_medium_t1 { Width = BUFFER_WIDTH / 16; Height = BUFFER_HEIGHT / 16; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_medium_s1 { Texture = TOPT_B_Hybrid_s200_medium_t1; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s200_medium_t2 { Width = BUFFER_WIDTH / 64; Height = BUFFER_HEIGHT / 64; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_medium_s2 { Texture = TOPT_B_Hybrid_s200_medium_t2; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s200_medium_t3 { Width = BUFFER_WIDTH / 64; Height = BUFFER_HEIGHT / 64; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_medium_s3 { Texture = TOPT_B_Hybrid_s200_medium_t3; AddressU = MIRROR; AddressV = MIRROR; };
+static const float3 TOPT_B_Hybrid_s200_medium_k0[4] = {
+	float3(-1.0, -1.0, 0.25),
+	float3(-1.0, 1.0, 0.25),
+	float3(1.0, -1.0, 0.25),
+	float3(1.0, 1.0, 0.25)
+};
+float4 TOPT_B_Hybrid_s200_medium_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s200_medium_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_Hybrid_s200_medium_k0[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_medium_k1[4] = {
+	float3(-1.0, -1.0, 0.25),
+	float3(-1.0, 1.0, 0.25),
+	float3(1.0, -1.0, 0.25),
+	float3(1.0, 1.0, 0.25)
+};
+float4 TOPT_B_Hybrid_s200_medium_PS1(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 4, BUFFER_HEIGHT / 4);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s200_medium_k1[i].z * tex2Dlod(TOPT_B_Hybrid_s200_medium_s0, float4(uv + TOPT_B_Hybrid_s200_medium_k1[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_medium_k2[4] = {
+	float3(-1.0, -1.0, 0.25),
+	float3(-1.0, 1.0, 0.25),
+	float3(1.0, -1.0, 0.25),
+	float3(1.0, 1.0, 0.25)
+};
+float4 TOPT_B_Hybrid_s200_medium_PS2(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 16, BUFFER_HEIGHT / 16);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s200_medium_k2[i].z * tex2Dlod(TOPT_B_Hybrid_s200_medium_s1, float4(uv + TOPT_B_Hybrid_s200_medium_k2[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_medium_k3[64] = {
+	float3(-6.3507667, -6.3507667, 0.00123180725),
+	float3(-6.3507667, -4.39502606, 0.00340850915),
+	float3(-6.3507667, -2.44107596, 0.00651272729),
+	float3(-6.3507667, -0.488162389, 0.00859518051),
+	float3(-6.3507667, 1.46454016, 0.00783596368),
+	float3(-6.3507667, 3.41787204, 0.00493466666),
+	float3(-6.3507667, 5.3726296, 0.00214618024),
+	float3(-6.3507667, 7.0, 0.000432076965),
+	float3(-4.39502606, -6.3507667, 0.00340850915),
+	float3(-4.39502606, -4.39502606, 0.00943161734),
+	float3(-4.39502606, -2.44107596, 0.0180212371),
+	float3(-4.39502606, -0.488162389, 0.0237835517),
+	float3(-4.39502606, 1.46454016, 0.021682738),
+	float3(-4.39502606, 3.41787204, 0.0136546172),
+	float3(-4.39502606, 5.3726296, 0.00593865232),
+	float3(-4.39502606, 7.0, 0.00119559151),
+	float3(-2.44107596, -6.3507667, 0.00651272729),
+	float3(-2.44107596, -4.39502606, 0.0180212371),
+	float3(-2.44107596, -2.44107596, 0.0344336475),
+	float3(-2.44107596, -0.488162389, 0.0454438521),
+	float3(-2.44107596, 1.46454016, 0.0414297727),
+	float3(-2.44107596, 3.41787204, 0.026090233),
+	float3(-2.44107596, 5.3726296, 0.0113471378),
+	float3(-2.44107596, 7.0, 0.00228444786),
+	float3(-0.488162389, -6.3507667, 0.00859518051),
+	float3(-0.488162389, -4.39502606, 0.0237835517),
+	float3(-0.488162389, -2.44107596, 0.0454438521),
+	float3(-0.488162389, -0.488162389, 0.0599745843),
+	float3(-0.488162389, 1.46454016, 0.0546769977),
+	float3(-0.488162389, 3.41787204, 0.0344326197),
+	float3(-0.488162389, 5.3726296, 0.0149754002),
+	float3(-0.488162389, 7.0, 0.0030149031),
+	float3(1.46454016, -6.3507667, 0.00783596368),
+	float3(1.46454016, -4.39502606, 0.021682738),
+	float3(1.46454016, -2.44107596, 0.0414297727),
+	float3(1.46454016, -0.488162389, 0.0546769977),
+	float3(1.46454016, 1.46454016, 0.0498473496),
+	float3(1.46454016, 3.41787204, 0.0313911682),
+	float3(1.46454016, 5.3726296, 0.0136526152),
+	float3(1.46454016, 7.0, 0.00274859512),
+	float3(3.41787204, -6.3507667, 0.00493466666),
+	float3(3.41787204, -4.39502606, 0.0136546172),
+	float3(3.41787204, -2.44107596, 0.026090233),
+	float3(3.41787204, -0.488162389, 0.0344326197),
+	float3(3.41787204, 1.46454016, 0.0313911682),
+	float3(3.41787204, 3.41787204, 0.0197684621),
+	float3(3.41787204, 5.3726296, 0.00859767959),
+	float3(3.41787204, 7.0, 0.00173091674),
+	float3(5.3726296, -6.3507667, 0.00214618024),
+	float3(5.3726296, -4.39502606, 0.00593865232),
+	float3(5.3726296, -2.44107596, 0.0113471378),
+	float3(5.3726296, -0.488162389, 0.0149754002),
+	float3(5.3726296, 1.46454016, 0.0136526152),
+	float3(5.3726296, 3.41787204, 0.00859767959),
+	float3(5.3726296, 5.3726296, 0.00373929413),
+	float3(5.3726296, 7.0, 0.000752808561),
+	float3(7.0, -6.3507667, 0.000432076965),
+	float3(7.0, -4.39502606, 0.00119559151),
+	float3(7.0, -2.44107596, 0.00228444786),
+	float3(7.0, -0.488162389, 0.0030149031),
+	float3(7.0, 1.46454016, 0.00274859512),
+	float3(7.0, 3.41787204, 0.00173091674),
+	float3(7.0, 5.3726296, 0.000752808561),
+	float3(7.0, 7.0, 0.000151558211)
+};
+float4 TOPT_B_Hybrid_s200_medium_PS3(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 64, BUFFER_HEIGHT / 64);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 64; i++)
+		c += TOPT_B_Hybrid_s200_medium_k3[i].z * tex2Dlod(TOPT_B_Hybrid_s200_medium_s2, float4(uv + TOPT_B_Hybrid_s200_medium_k3[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_medium_k4[4] = {
+	float3(-0.5, -0.5, 0.25),
+	float3(-0.5, 0.5, 0.25),
+	float3(0.5, -0.5, 0.25),
+	float3(0.5, 0.5, 0.25)
+};
+float4 TOPT_B_Hybrid_s200_medium_PS4(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 64, BUFFER_HEIGHT / 64);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s200_medium_k4[i].z * tex2Dlod(TOPT_B_Hybrid_s200_medium_s3, float4(uv + TOPT_B_Hybrid_s200_medium_k4[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_Hybrid_s200_medium < ui_tooltip = "sigma 200 medium hybrid: down 4x4x4 e1 | direct 2s | up 64 e2 (model 81 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_medium_PS0; RenderTarget = TOPT_B_Hybrid_s200_medium_t0; }
+	pass p0_1 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_medium_PS1; RenderTarget = TOPT_B_Hybrid_s200_medium_t1; }
+	pass p0_2 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_medium_PS2; RenderTarget = TOPT_B_Hybrid_s200_medium_t2; }
+	pass p0_3 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_medium_PS3; RenderTarget = TOPT_B_Hybrid_s200_medium_t3; }
+	pass p0_4 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_medium_PS4; }
+}
+
+// ---- TOPT_B_Hybrid_s200_strict: sigma 200 strict hybrid: down 4x4x4 e3 | direct 2.5s | up 64 e2 (model 81 us marginal @1080p)
+texture TOPT_B_Hybrid_s200_strict_t0 { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_strict_s0 { Texture = TOPT_B_Hybrid_s200_strict_t0; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s200_strict_t1 { Width = BUFFER_WIDTH / 16; Height = BUFFER_HEIGHT / 16; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_strict_s1 { Texture = TOPT_B_Hybrid_s200_strict_t1; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s200_strict_t2 { Width = BUFFER_WIDTH / 64; Height = BUFFER_HEIGHT / 64; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_strict_s2 { Texture = TOPT_B_Hybrid_s200_strict_t2; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s200_strict_t3 { Width = BUFFER_WIDTH / 64; Height = BUFFER_HEIGHT / 64; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s200_strict_s3 { Texture = TOPT_B_Hybrid_s200_strict_t3; AddressU = MIRROR; AddressV = MIRROR; };
+static const float3 TOPT_B_Hybrid_s200_strict_k0[9] = {
+	float3(-1.75, -1.75, 0.0625),
+	float3(-1.75, 0.0, 0.125),
+	float3(-1.75, 1.75, 0.0625),
+	float3(0.0, -1.75, 0.125),
+	float3(0.0, 0.0, 0.25),
+	float3(0.0, 1.75, 0.125),
+	float3(1.75, -1.75, 0.0625),
+	float3(1.75, 0.0, 0.125),
+	float3(1.75, 1.75, 0.0625)
+};
+float4 TOPT_B_Hybrid_s200_strict_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_Hybrid_s200_strict_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_Hybrid_s200_strict_k0[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_strict_k1[9] = {
+	float3(-1.75, -1.75, 0.0625),
+	float3(-1.75, 0.0, 0.125),
+	float3(-1.75, 1.75, 0.0625),
+	float3(0.0, -1.75, 0.125),
+	float3(0.0, 0.0, 0.25),
+	float3(0.0, 1.75, 0.125),
+	float3(1.75, -1.75, 0.0625),
+	float3(1.75, 0.0, 0.125),
+	float3(1.75, 1.75, 0.0625)
+};
+float4 TOPT_B_Hybrid_s200_strict_PS1(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 4, BUFFER_HEIGHT / 4);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_Hybrid_s200_strict_k1[i].z * tex2Dlod(TOPT_B_Hybrid_s200_strict_s0, float4(uv + TOPT_B_Hybrid_s200_strict_k1[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_strict_k2[9] = {
+	float3(-1.75, -1.75, 0.0625),
+	float3(-1.75, 0.0, 0.125),
+	float3(-1.75, 1.75, 0.0625),
+	float3(0.0, -1.75, 0.125),
+	float3(0.0, 0.0, 0.25),
+	float3(0.0, 1.75, 0.125),
+	float3(1.75, -1.75, 0.0625),
+	float3(1.75, 0.0, 0.125),
+	float3(1.75, 1.75, 0.0625)
+};
+float4 TOPT_B_Hybrid_s200_strict_PS2(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 16, BUFFER_HEIGHT / 16);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_Hybrid_s200_strict_k2[i].z * tex2Dlod(TOPT_B_Hybrid_s200_strict_s1, float4(uv + TOPT_B_Hybrid_s200_strict_k2[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_strict_k3[81] = {
+	float3(-7.31547547, -7.31547547, 0.000225118963),
+	float3(-7.31547547, -5.36168183, 0.000833760597),
+	float3(-7.31547547, -3.41059643, 0.0020630866),
+	float3(-7.31547547, -1.46134511, 0.00341228613),
+	float3(-7.31547547, 0.487092143, 0.00377350494),
+	float3(-7.31547547, 2.43580267, 0.00279023213),
+	float3(-7.31547547, 4.38585104, 0.00137930052),
+	float3(-7.31547547, 6.33819288, 0.000455655514),
+	float3(-7.31547547, 8.0, 7.10195104e-05),
+	float3(-5.36168183, -7.31547547, 0.000833760597),
+	float3(-5.36168183, -5.36168183, 0.0030879528),
+	float3(-5.36168183, -3.41059643, 0.00764093923),
+	float3(-5.36168183, -1.46134511, 0.0126378946),
+	float3(-5.36168183, 0.487092143, 0.0139757206),
+	float3(-5.36168183, 2.43580267, 0.0103340277),
+	float3(-5.36168183, 4.38585104, 0.00510843872),
+	float3(-5.36168183, 6.33819288, 0.00168758601),
+	float3(-5.36168183, 8.0, 0.000263031015),
+	float3(-3.41059643, -7.31547547, 0.0020630866),
+	float3(-3.41059643, -5.36168183, 0.00764093923),
+	float3(-3.41059643, -3.41059643, 0.0189070093),
+	float3(-3.41059643, -1.46134511, 0.0312716516),
+	float3(-3.41059643, 0.487092143, 0.0345820156),
+	float3(-3.41059643, 2.43580267, 0.0255708824),
+	float3(-3.41059643, 4.38585104, 0.0126405008),
+	float3(-3.41059643, 6.33819288, 0.00417582229),
+	float3(-3.41059643, 8.0, 0.000650853212),
+	float3(-1.46134511, -7.31547547, 0.00341228613),
+	float3(-1.46134511, -5.36168183, 0.0126378946),
+	float3(-1.46134511, -3.41059643, 0.0312716516),
+	float3(-1.46134511, -1.46134511, 0.0517224158),
+	float3(-1.46134511, 0.487092143, 0.0571976629),
+	float3(-1.46134511, 2.43580267, 0.0422935068),
+	float3(-1.46134511, 4.38585104, 0.0209070261),
+	float3(-1.46134511, 6.33819288, 0.00690669044),
+	float3(-1.46134511, 8.0, 0.00107649257),
+	float3(0.487092143, -7.31547547, 0.00377350494),
+	float3(0.487092143, -5.36168183, 0.0139757206),
+	float3(0.487092143, -3.41059643, 0.0345820156),
+	float3(0.487092143, -1.46134511, 0.0571976629),
+	float3(0.487092143, 0.487092143, 0.0632525104),
+	float3(0.487092143, 2.43580267, 0.0467706256),
+	float3(0.487092143, 4.38585104, 0.0231202084),
+	float3(0.487092143, 6.33819288, 0.00763782095),
+	float3(0.487092143, 8.0, 0.00119044824),
+	float3(2.43580267, -7.31547547, 0.00279023213),
+	float3(2.43580267, -5.36168183, 0.0103340277),
+	float3(2.43580267, -3.41059643, 0.0255708824),
+	float3(2.43580267, -1.46134511, 0.0422935068),
+	float3(2.43580267, 0.487092143, 0.0467706256),
+	float3(2.43580267, 2.43580267, 0.034583472),
+	float3(2.43580267, 4.38585104, 0.0170957106),
+	float3(2.43580267, 6.33819288, 0.00564761244),
+	float3(2.43580267, 8.0, 0.00088024979),
+	float3(4.38585104, -7.31547547, 0.00137930052),
+	float3(4.38585104, -5.36168183, 0.00510843872),
+	float3(4.38585104, -3.41059643, 0.0126405008),
+	float3(4.38585104, -1.46134511, 0.0209070261),
+	float3(4.38585104, 0.487092143, 0.0231202084),
+	float3(4.38585104, 2.43580267, 0.0170957106),
+	float3(4.38585104, 4.38585104, 0.00845095371),
+	float3(4.38585104, 6.33819288, 0.00279179453),
+	float3(4.38585104, 8.0, 0.000435135479),
+	float3(6.33819288, -7.31547547, 0.000455655514),
+	float3(6.33819288, -5.36168183, 0.00168758601),
+	float3(6.33819288, -3.41059643, 0.00417582229),
+	float3(6.33819288, -1.46134511, 0.00690669044),
+	float3(6.33819288, 0.487092143, 0.00763782095),
+	float3(6.33819288, 2.43580267, 0.00564761244),
+	float3(6.33819288, 4.38585104, 0.00279179453),
+	float3(6.33819288, 6.33819288, 0.00092227658),
+	float3(6.33819288, 8.0, 0.000143748137),
+	float3(8.0, -7.31547547, 7.10195104e-05),
+	float3(8.0, -5.36168183, 0.000263031015),
+	float3(8.0, -3.41059643, 0.000650853212),
+	float3(8.0, -1.46134511, 0.00107649257),
+	float3(8.0, 0.487092143, 0.00119044824),
+	float3(8.0, 2.43580267, 0.00088024979),
+	float3(8.0, 4.38585104, 0.000435135479),
+	float3(8.0, 6.33819288, 0.000143748137),
+	float3(8.0, 8.0, 2.24049133e-05)
+};
+float4 TOPT_B_Hybrid_s200_strict_PS3(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 64, BUFFER_HEIGHT / 64);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 81; i++)
+		c += TOPT_B_Hybrid_s200_strict_k3[i].z * tex2Dlod(TOPT_B_Hybrid_s200_strict_s2, float4(uv + TOPT_B_Hybrid_s200_strict_k3[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s200_strict_k4[4] = {
+	float3(-0.5, -0.5, 0.25),
+	float3(-0.5, 0.5, 0.25),
+	float3(0.5, -0.5, 0.25),
+	float3(0.5, 0.5, 0.25)
+};
+float4 TOPT_B_Hybrid_s200_strict_PS4(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 64, BUFFER_HEIGHT / 64);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s200_strict_k4[i].z * tex2Dlod(TOPT_B_Hybrid_s200_strict_s3, float4(uv + TOPT_B_Hybrid_s200_strict_k4[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_Hybrid_s200_strict < ui_tooltip = "sigma 200 strict hybrid: down 4x4x4 e3 | direct 2.5s | up 64 e2 (model 81 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS0; RenderTarget = TOPT_B_Hybrid_s200_strict_t0; }
+	pass p0_1 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS1; RenderTarget = TOPT_B_Hybrid_s200_strict_t1; }
+	pass p0_2 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS2; RenderTarget = TOPT_B_Hybrid_s200_strict_t2; }
+	pass p0_3 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS3; RenderTarget = TOPT_B_Hybrid_s200_strict_t3; }
+	pass p0_4 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS4; }
+}
+
 // ---- TOPT_B_sep_linear_s2: sigma 2 sep_linear {'r': 5, 's': 2.0611839851068074}
 texture TOPT_B_sep_linear_s2_t0 { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
 sampler TOPT_B_sep_linear_s2_s0 { Texture = TOPT_B_sep_linear_s2_t0; AddressU = MIRROR; AddressV = MIRROR; };
