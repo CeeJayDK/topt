@@ -12,6 +12,95 @@ uniform float TOPT_Strength <
 
 sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
 
+// ---- TOPT_B_Hybrid_s4_medium: sigma 4 medium hybrid: down 4 e5 | direct 2s | up 2x2 e2 (model 110 us marginal @1080p)
+texture TOPT_B_Hybrid_s4_medium_t0 { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s4_medium_s0 { Texture = TOPT_B_Hybrid_s4_medium_t0; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s4_medium_t1 { Width = BUFFER_WIDTH / 4; Height = BUFFER_HEIGHT / 4; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s4_medium_s1 { Texture = TOPT_B_Hybrid_s4_medium_t1; AddressU = MIRROR; AddressV = MIRROR; };
+texture TOPT_B_Hybrid_s4_medium_t2 { Width = BUFFER_WIDTH / 2; Height = BUFFER_HEIGHT / 2; Format = TOPT_FORMAT; };
+sampler TOPT_B_Hybrid_s4_medium_s2 { Texture = TOPT_B_Hybrid_s4_medium_t2; AddressU = MIRROR; AddressV = MIRROR; };
+static const float3 TOPT_B_Hybrid_s4_medium_k0[16] = {
+	float3(-2.66666667, -2.66666667, 0.0087890625),
+	float3(-2.66666667, -0.923076923, 0.0380859375),
+	float3(-2.66666667, 0.923076923, 0.0380859375),
+	float3(-2.66666667, 2.66666667, 0.0087890625),
+	float3(-0.923076923, -2.66666667, 0.0380859375),
+	float3(-0.923076923, -0.923076923, 0.165039062),
+	float3(-0.923076923, 0.923076923, 0.165039062),
+	float3(-0.923076923, 2.66666667, 0.0380859375),
+	float3(0.923076923, -2.66666667, 0.0380859375),
+	float3(0.923076923, -0.923076923, 0.165039062),
+	float3(0.923076923, 0.923076923, 0.165039062),
+	float3(0.923076923, 2.66666667, 0.0380859375),
+	float3(2.66666667, -2.66666667, 0.0087890625),
+	float3(2.66666667, -0.923076923, 0.0380859375),
+	float3(2.66666667, 0.923076923, 0.0380859375),
+	float3(2.66666667, 2.66666667, 0.0087890625)
+};
+float4 TOPT_B_Hybrid_s4_medium_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 16; i++)
+		c += TOPT_B_Hybrid_s4_medium_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_Hybrid_s4_medium_k0[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s4_medium_k1[9] = {
+	float3(-1.00722732, -1.00722732, 0.0197127189),
+	float3(-1.00722732, 0.16234565, 0.120546801),
+	float3(-1.00722732, 2.0, 0.000142470114),
+	float3(0.16234565, -1.00722732, 0.120546801),
+	float3(0.16234565, 0.16234565, 0.737165248),
+	float3(0.16234565, 2.0, 0.000871230223),
+	float3(2.0, -1.00722732, 0.000142470114),
+	float3(2.0, 0.16234565, 0.000871230223),
+	float3(2.0, 2.0, 1.029677e-06)
+};
+float4 TOPT_B_Hybrid_s4_medium_PS1(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 4, BUFFER_HEIGHT / 4);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_Hybrid_s4_medium_k1[i].z * tex2Dlod(TOPT_B_Hybrid_s4_medium_s0, float4(uv + TOPT_B_Hybrid_s4_medium_k1[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s4_medium_k2[4] = {
+	float3(-0.5, -0.5, 0.25),
+	float3(-0.5, 0.5, 0.25),
+	float3(0.5, -0.5, 0.25),
+	float3(0.5, 0.5, 0.25)
+};
+float4 TOPT_B_Hybrid_s4_medium_PS2(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 4, BUFFER_HEIGHT / 4);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s4_medium_k2[i].z * tex2Dlod(TOPT_B_Hybrid_s4_medium_s1, float4(uv + TOPT_B_Hybrid_s4_medium_k2[i].xy * px, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}
+static const float3 TOPT_B_Hybrid_s4_medium_k3[4] = {
+	float3(-0.5, -0.5, 0.25),
+	float3(-0.5, 0.5, 0.25),
+	float3(0.5, -0.5, 0.25),
+	float3(0.5, 0.5, 0.25)
+};
+float4 TOPT_B_Hybrid_s4_medium_PS3(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / 2, BUFFER_HEIGHT / 2);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_Hybrid_s4_medium_k3[i].z * tex2Dlod(TOPT_B_Hybrid_s4_medium_s2, float4(uv + TOPT_B_Hybrid_s4_medium_k3[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_Hybrid_s4_medium < ui_tooltip = "sigma 4 medium hybrid: down 4 e5 | direct 2s | up 2x2 e2 (model 110 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s4_medium_PS0; RenderTarget = TOPT_B_Hybrid_s4_medium_t0; }
+	pass p0_1 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s4_medium_PS1; RenderTarget = TOPT_B_Hybrid_s4_medium_t1; }
+	pass p0_2 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s4_medium_PS2; RenderTarget = TOPT_B_Hybrid_s4_medium_t2; }
+	pass p0_3 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s4_medium_PS3; }
+}
+
 // ---- TOPT_B_sep_linear_s2: sigma 2 sep_linear {'r': 5, 's': 2.0611839851068074}
 texture TOPT_B_sep_linear_s2_t0 { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
 sampler TOPT_B_sep_linear_s2_s0 { Texture = TOPT_B_sep_linear_s2_t0; AddressU = MIRROR; AddressV = MIRROR; };

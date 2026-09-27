@@ -61,6 +61,53 @@ technique TOPT_C_Tile_s1 < ui_tooltip = "Compute tile blur sigma 1 (r=3) + compo
 	pass { VertexShader = PostProcessVS; PixelShader = TOPT_C_Tile_s1_PS; }
 }
 
+// ---- TOPT_C_SplitHV_s1: sigma 1, radius 3. Compute: horizontal pass in groupshared
+// memory (16x16 tile + 3 px row halo). Pixel shader: vertical pass (4 linear
+// taps, accumulated in fp32) fused with the composite.
+texture TOPT_C_SplitHV_s1_tH { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
+storage2D TOPT_C_SplitHV_s1_stH { Texture = TOPT_C_SplitHV_s1_tH; };
+sampler TOPT_C_SplitHV_s1_sH { Texture = TOPT_C_SplitHV_s1_tH; AddressU = MIRROR; AddressV = MIRROR; };
+static const float TOPT_C_SplitHV_s1_w[4] = { 0.398214588, 0.24203727, 0.0543472392, 0.00450819703 };
+static const float2 TOPT_C_SplitHV_s1_v[4] = { float2(-2.0765978, 0.0588554362), float2(-0.378034467, 0.640251858), float2(1.18336734, 0.296384509), float2(3, 0.00450819703) };
+groupshared float3 TOPT_C_SplitHV_s1_tile[16 * 22];
+
+void TOPT_C_SplitHV_s1_CS(uint3 gid : SV_GroupID, uint3 tid : SV_GroupThreadID)
+{
+	const int2 size = int2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	const int2 origin = int2(gid.xy) * 16 - int2(3, 0);
+	const uint lin = tid.y * 16 + tid.x;
+	for (uint i = lin; i < 22 * 16; i += 16 * 16)
+	{
+		int2 p = origin + int2(i % 22, i / 22);
+		p = max(p, -1 - p);            // mirror addressing
+		p = min(p, 2 * size - 1 - p);
+		TOPT_C_SplitHV_s1_tile[i] = tex2Dfetch(ReShade::BackBuffer, p).rgb;
+	}
+	barrier();
+	const uint b = tid.y * 22 + tid.x + 3;
+	float3 c = TOPT_C_SplitHV_s1_w[0] * TOPT_C_SplitHV_s1_tile[b];
+	[unroll] for (int k = 1; k <= 3; k++)
+		c += TOPT_C_SplitHV_s1_w[k] * (TOPT_C_SplitHV_s1_tile[b - k] + TOPT_C_SplitHV_s1_tile[b + k]);
+	const int2 o = int2(gid.xy) * 16 + int2(tid.xy);
+	if (all(o < size))
+		tex2Dstore(TOPT_C_SplitHV_s1_stH, o, float4(c, 1.0));
+}
+
+float4 TOPT_C_SplitHV_s1_PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_C_SplitHV_s1_v[i].y * tex2Dlod(TOPT_C_SplitHV_s1_sH, float4(uv.x, uv.y + TOPT_C_SplitHV_s1_v[i].x * BUFFER_RCP_HEIGHT, 0.0, 0.0)).rgb;
+	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+
+technique TOPT_C_SplitHV_s1 < ui_tooltip = "Compute horizontal pass + pixel-shader vertical pass fused with the composite, sigma 1 (r=3)"; >
+{
+	pass { ComputeShader = TOPT_C_SplitHV_s1_CS<16, 16>; DispatchSizeX = (BUFFER_WIDTH + 16 - 1) / 16; DispatchSizeY = (BUFFER_HEIGHT + 16 - 1) / 16; }
+	pass { VertexShader = PostProcessVS; PixelShader = TOPT_C_SplitHV_s1_PS; }
+}
+
 // ---- TOPT_C_Tile_s2: sigma 2, radius 5, 16x16 tile
 texture TOPT_C_Tile_s2_tOut { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
 storage2D TOPT_C_Tile_s2_stOut { Texture = TOPT_C_Tile_s2_tOut; };
@@ -112,6 +159,53 @@ technique TOPT_C_Tile_s2 < ui_tooltip = "Compute tile blur sigma 2 (r=5) + compo
 	pass { VertexShader = PostProcessVS; PixelShader = TOPT_C_Tile_s2_PS; }
 }
 
+// ---- TOPT_C_SplitHV_s2: sigma 2, radius 5. Compute: horizontal pass in groupshared
+// memory (16x16 tile + 5 px row halo). Pixel shader: vertical pass (6 linear
+// taps, accumulated in fp32) fused with the composite.
+texture TOPT_C_SplitHV_s2_tH { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
+storage2D TOPT_C_SplitHV_s2_stH { Texture = TOPT_C_SplitHV_s2_tH; };
+sampler TOPT_C_SplitHV_s2_sH { Texture = TOPT_C_SplitHV_s2_tH; AddressU = MIRROR; AddressV = MIRROR; };
+static const float TOPT_C_SplitHV_s2_w[6] = { 0.194923334, 0.173281451, 0.121735378, 0.0675862004, 0.0296534852, 0.0102818188 };
+static const float2 TOPT_C_SplitHV_s2_v[6] = { float2(-4.25746189, 0.039935304), float2(-2.35699153, 0.189321578), float2(-0.470611622, 0.368204784), float2(1.41263876, 0.295016829), float2(3.3049525, 0.0972396856), float2(5, 0.0102818188) };
+groupshared float3 TOPT_C_SplitHV_s2_tile[16 * 26];
+
+void TOPT_C_SplitHV_s2_CS(uint3 gid : SV_GroupID, uint3 tid : SV_GroupThreadID)
+{
+	const int2 size = int2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	const int2 origin = int2(gid.xy) * 16 - int2(5, 0);
+	const uint lin = tid.y * 16 + tid.x;
+	for (uint i = lin; i < 26 * 16; i += 16 * 16)
+	{
+		int2 p = origin + int2(i % 26, i / 26);
+		p = max(p, -1 - p);            // mirror addressing
+		p = min(p, 2 * size - 1 - p);
+		TOPT_C_SplitHV_s2_tile[i] = tex2Dfetch(ReShade::BackBuffer, p).rgb;
+	}
+	barrier();
+	const uint b = tid.y * 26 + tid.x + 5;
+	float3 c = TOPT_C_SplitHV_s2_w[0] * TOPT_C_SplitHV_s2_tile[b];
+	[unroll] for (int k = 1; k <= 5; k++)
+		c += TOPT_C_SplitHV_s2_w[k] * (TOPT_C_SplitHV_s2_tile[b - k] + TOPT_C_SplitHV_s2_tile[b + k]);
+	const int2 o = int2(gid.xy) * 16 + int2(tid.xy);
+	if (all(o < size))
+		tex2Dstore(TOPT_C_SplitHV_s2_stH, o, float4(c, 1.0));
+}
+
+float4 TOPT_C_SplitHV_s2_PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 6; i++)
+		c += TOPT_C_SplitHV_s2_v[i].y * tex2Dlod(TOPT_C_SplitHV_s2_sH, float4(uv.x, uv.y + TOPT_C_SplitHV_s2_v[i].x * BUFFER_RCP_HEIGHT, 0.0, 0.0)).rgb;
+	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+
+technique TOPT_C_SplitHV_s2 < ui_tooltip = "Compute horizontal pass + pixel-shader vertical pass fused with the composite, sigma 2 (r=5)"; >
+{
+	pass { ComputeShader = TOPT_C_SplitHV_s2_CS<16, 16>; DispatchSizeX = (BUFFER_WIDTH + 16 - 1) / 16; DispatchSizeY = (BUFFER_HEIGHT + 16 - 1) / 16; }
+	pass { VertexShader = PostProcessVS; PixelShader = TOPT_C_SplitHV_s2_PS; }
+}
+
 // ---- TOPT_C_Tile_s4: sigma 4, radius 10, 16x16 tile
 texture TOPT_C_Tile_s4_tOut { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
 storage2D TOPT_C_Tile_s4_stOut { Texture = TOPT_C_Tile_s4_tOut; };
@@ -161,6 +255,53 @@ technique TOPT_C_Tile_s4 < ui_tooltip = "Compute tile blur sigma 4 (r=10) + comp
 {
 	pass { ComputeShader = TOPT_C_Tile_s4_CS<16, 16>; DispatchSizeX = (BUFFER_WIDTH + 16 - 1) / 16; DispatchSizeY = (BUFFER_HEIGHT + 16 - 1) / 16; }
 	pass { VertexShader = PostProcessVS; PixelShader = TOPT_C_Tile_s4_PS; }
+}
+
+// ---- TOPT_C_SplitHV_s4: sigma 4, radius 10. Compute: horizontal pass in groupshared
+// memory (16x16 tile + 10 px row halo). Pixel shader: vertical pass (11 linear
+// taps, accumulated in fp32) fused with the composite.
+texture TOPT_C_SplitHV_s4_tH { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
+storage2D TOPT_C_SplitHV_s4_stH { Texture = TOPT_C_SplitHV_s4_tH; };
+sampler TOPT_C_SplitHV_s4_sH { Texture = TOPT_C_SplitHV_s4_tH; AddressU = MIRROR; AddressV = MIRROR; };
+static const float TOPT_C_SplitHV_s4_w[11] = { 0.096481888, 0.0937660445, 0.0860686523, 0.0746180704, 0.0611001998, 0.0472542474, 0.0345174477, 0.023814206, 0.0155179068, 0.00955058072, 0.00555170043 };
+static const float2 TOPT_C_SplitHV_s4_v[11] = { float2(-9.36760675, 0.0151022811), float2(-7.3945353, 0.0393321128), float2(-5.42211975, 0.0817716952), float2(-3.45019878, 0.13571827), float2(-1.4785987, 0.179834697), float2(0.492862357, 0.190247932), float2(2.46436986, 0.160686723), float2(4.43610806, 0.108354447), float2(6.40825529, 0.0583316537), float2(8.38097953, 0.0250684876), float2(10, 0.00555170043) };
+groupshared float3 TOPT_C_SplitHV_s4_tile[16 * 36];
+
+void TOPT_C_SplitHV_s4_CS(uint3 gid : SV_GroupID, uint3 tid : SV_GroupThreadID)
+{
+	const int2 size = int2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	const int2 origin = int2(gid.xy) * 16 - int2(10, 0);
+	const uint lin = tid.y * 16 + tid.x;
+	for (uint i = lin; i < 36 * 16; i += 16 * 16)
+	{
+		int2 p = origin + int2(i % 36, i / 36);
+		p = max(p, -1 - p);            // mirror addressing
+		p = min(p, 2 * size - 1 - p);
+		TOPT_C_SplitHV_s4_tile[i] = tex2Dfetch(ReShade::BackBuffer, p).rgb;
+	}
+	barrier();
+	const uint b = tid.y * 36 + tid.x + 10;
+	float3 c = TOPT_C_SplitHV_s4_w[0] * TOPT_C_SplitHV_s4_tile[b];
+	[unroll] for (int k = 1; k <= 10; k++)
+		c += TOPT_C_SplitHV_s4_w[k] * (TOPT_C_SplitHV_s4_tile[b - k] + TOPT_C_SplitHV_s4_tile[b + k]);
+	const int2 o = int2(gid.xy) * 16 + int2(tid.xy);
+	if (all(o < size))
+		tex2Dstore(TOPT_C_SplitHV_s4_stH, o, float4(c, 1.0));
+}
+
+float4 TOPT_C_SplitHV_s4_PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 11; i++)
+		c += TOPT_C_SplitHV_s4_v[i].y * tex2Dlod(TOPT_C_SplitHV_s4_sH, float4(uv.x, uv.y + TOPT_C_SplitHV_s4_v[i].x * BUFFER_RCP_HEIGHT, 0.0, 0.0)).rgb;
+	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+
+technique TOPT_C_SplitHV_s4 < ui_tooltip = "Compute horizontal pass + pixel-shader vertical pass fused with the composite, sigma 4 (r=10)"; >
+{
+	pass { ComputeShader = TOPT_C_SplitHV_s4_CS<16, 16>; DispatchSizeX = (BUFFER_WIDTH + 16 - 1) / 16; DispatchSizeY = (BUFFER_HEIGHT + 16 - 1) / 16; }
+	pass { VertexShader = PostProcessVS; PixelShader = TOPT_C_SplitHV_s4_PS; }
 }
 
 #endif

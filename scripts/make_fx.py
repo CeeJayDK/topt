@@ -164,6 +164,55 @@ technique {NAME} < ui_tooltip = "Compute tile blur sigma {SIGMA} (r={R}) + compo
 """
 
 
+CS_SPLIT_BLOCK = """// ---- {NAME}: sigma {SIGMA}, radius {R}. Compute: horizontal pass in groupshared
+// memory ({T}x{T} tile + {R} px row halo). Pixel shader: vertical pass ({NV} linear
+// taps, accumulated in fp32) fused with the composite.
+texture {NAME}_tH {{ Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; }};
+storage2D {NAME}_stH {{ Texture = {NAME}_tH; }};
+sampler {NAME}_sH {{ Texture = {NAME}_tH; AddressU = MIRROR; AddressV = MIRROR; }};
+static const float {NAME}_w[{R1}] = {{ {W} }};
+static const float2 {NAME}_v[{NV}] = {{ {V} }};
+groupshared float3 {NAME}_tile[{T} * {S}];
+
+void {NAME}_CS(uint3 gid : SV_GroupID, uint3 tid : SV_GroupThreadID)
+{{
+	const int2 size = int2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	const int2 origin = int2(gid.xy) * {T} - int2({R}, 0);
+	const uint lin = tid.y * {T} + tid.x;
+	for (uint i = lin; i < {S} * {T}; i += {T} * {T})
+	{{
+		int2 p = origin + int2(i % {S}, i / {S});
+		p = max(p, -1 - p);            // mirror addressing
+		p = min(p, 2 * size - 1 - p);
+		{NAME}_tile[i] = tex2Dfetch(ReShade::BackBuffer, p).rgb;
+	}}
+	barrier();
+	const uint b = tid.y * {S} + tid.x + {R};
+	float3 c = {NAME}_w[0] * {NAME}_tile[b];
+	[unroll] for (int k = 1; k <= {R}; k++)
+		c += {NAME}_w[k] * ({NAME}_tile[b - k] + {NAME}_tile[b + k]);
+	const int2 o = int2(gid.xy) * {T} + int2(tid.xy);
+	if (all(o < size))
+		tex2Dstore({NAME}_stH, o, float4(c, 1.0));
+}}
+
+float4 {NAME}_PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{{
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < {NV}; i++)
+		c += {NAME}_v[i].y * tex2Dlod({NAME}_sH, float4(uv.x, uv.y + {NAME}_v[i].x * BUFFER_RCP_HEIGHT, 0.0, 0.0)).rgb;
+	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}}
+
+technique {NAME} < ui_tooltip = "Compute horizontal pass + pixel-shader vertical pass fused with the composite, sigma {SIGMA} (r={R})"; >
+{{
+	pass {{ ComputeShader = {NAME}_CS<{T}, {T}>; DispatchSizeX = (BUFFER_WIDTH + {T} - 1) / {T}; DispatchSizeY = (BUFFER_HEIGHT + {T} - 1) / {T}; }}
+	pass {{ VertexShader = PostProcessVS; PixelShader = {NAME}_PS; }}
+}}
+"""
+
+
 def cs_effect() -> str:
     blocks = []
     for sigma in (1, 2, 4):
@@ -172,8 +221,13 @@ def cs_effect() -> str:
         r, s = pl.params["r"], pl.params["s"]
         w = M.gauss(np.arange(-r, r + 1, dtype=float), s)[r:]
         T = 16
-        blocks.append(CS_BLOCK.format(NAME=f"TOPT_C_Tile_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T, S=T + 2 * r,
-                                      W=", ".join(f"{v:.9g}" for v in w)))
+        W = ", ".join(f"{v:.9g}" for v in w)
+        blocks.append(CS_BLOCK.format(NAME=f"TOPT_C_Tile_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T, S=T + 2 * r, W=W))
+        pos = np.arange(-r, r + 1, dtype=float)
+        v = M.pair_taps(pos, M.gauss(pos, s))
+        blocks.append(CS_SPLIT_BLOCK.format(NAME=f"TOPT_C_SplitHV_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T,
+                                            S=T + 2 * r, W=W, NV=len(v),
+                                            V=", ".join(f"float2({o:.9g}, {w_:.9g})" for o, w_ in v)))
     return CS_TEMPLATE.replace("{BLOCKS}", "\n".join(blocks))
 
 
