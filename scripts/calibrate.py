@@ -43,11 +43,15 @@ def to_img(a: np.ndarray, gain: float = 1.0) -> Image.Image:
     return Image.fromarray((a * 255 + 0.5).astype(np.uint8))
 
 
-def panel(img: np.ndarray, label: str) -> Image.Image:
+def panel(img: np.ndarray, label: str, ref: np.ndarray | None = None) -> Image.Image:
     h, w = img.shape
-    p = Image.new("L", (w, 2 * h + 34), 40)
+    rows = 2 if ref is None else 3
+    p = Image.new("L", (w, rows * h + 34), 40)
     p.paste(to_img(img), (0, 34))
     p.paste(to_img(img, 8.0), (0, 34 + h))
+    if ref is not None:  # error vs reference, x16, shown linearly
+        e = np.clip(np.abs(img - ref) * 16, 0, 1)
+        p.paste(Image.fromarray((e * 255 + 0.5).astype(np.uint8)), (0, 34 + 2 * h))
     d = ImageDraw.Draw(p)
     f = ImageFont.truetype(FONT, 12)
     for i, line in enumerate(label.split("\n")):
@@ -124,7 +128,30 @@ def shift(sigma: float = 16.0):
     frames[0].save(OUT / "shift.gif", save_all=True, append_images=frames[1:], duration=120, loop=0)
 
 
+def upsample(sigma: float = 16.0):
+    """Mach bands / kinks from the upsampling path of down/blur/up designs."""
+    from topt import search as S
+    W, H = 768, 256
+    img = scene(W, H, sigma / 2)
+    ref_img = run(reference(sigma), img)
+    designs = [
+        ("dual filter", next(iter(M.cand_dual_filter(sigma)))),
+        *[(None, S.fit(S.Design((4, 2), 5, "direct", 2.0, up, e, w), sigma)[0])
+          for up, e, w in [((8,), 1, None), ((8,), 2, None), ((8,), 1, "iq"),
+                           ((2, 2, 2), 1, None), ((2, 2, 2), 2, None), ((2, 4), 2, None)]],
+    ]
+    panels = [panel(ref_img, f"reference Gaussian sigma={sigma:g}\n(rows: normal, x8 exposure, |error| x16)",
+                    ref_img)]
+    for name, pl in designs:
+        q = metrics(pl, sigma)
+        name = name or pl.params["label"]
+        panels.append(panel(run(pl, img), f"{name}\ncurv {q['curv']:.2f}  phase {q['phase']:.3f}  "
+                                          f"leak {q['leak']:.3f}", ref_img))
+    grid(panels, 2).save(OUT / "upsample.png")
+
+
 if __name__ == "__main__":
+    import sys
     OUT.mkdir(parents=True, exist_ok=True)
-    truncation()
-    shift()
+    for name in sys.argv[1:] or ["truncation", "shift", "upsample"]:
+        globals()[name]()

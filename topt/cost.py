@@ -12,6 +12,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import numpy as np
+
 from .sim import Pipeline
 
 
@@ -22,10 +24,14 @@ class GPU:
     bandwidth: float       # effective DRAM bytes / s
     rop_rate: float        # pixels written / s
     pass_overhead: float   # s per pass (to calibrate on hardware)
+    lds_rate: float = 0.0  # groupshared texel reads / s (compute shaders)
+    lds_bytes: int = 32768 # groupshared memory per thread group (D3D11 limit)
 
 
-# GTX 1660: 88 TMUs, 48 ROPs, ~1.785 GHz boost, 192-bit GDDR5 @ 8 Gbps = 192 GB/s.
-GTX1660 = GPU("GTX 1660", 88 * 1.785e9, 0.8 * 192e9, 48 * 1.785e9, 5e-6)
+# GTX 1660: 22 SMs, 88 TMUs, 48 ROPs, ~1.785 GHz boost, 192-bit GDDR5 @ 8 Gbps
+# = 192 GB/s (80 % assumed achievable). LDS: 128 B/clk/SM, texel stored as
+# fp16x4 (8 B) -> 16 texel reads/clk/SM.
+GTX1660 = GPU("GTX 1660", 88 * 1.785e9, 0.8 * 192e9, 48 * 1.785e9, 5e-6, 22 * 16 * 1.785e9)
 
 BYTES_PER_PIXEL = 4  # RGB10A2
 
@@ -54,3 +60,32 @@ def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660
         "dram_mb": dram / 1e6,
         "bounds": bounds,
     }
+
+
+def cs_tile_sep_cost(r: int, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660) -> dict:
+    """Single compute dispatch for a separable (2r+1)-tap kernel on a TxT tile.
+
+    'lds'  : load tile + halo into groupshared (1 point fetch per texel), then
+             run H and V in groupshared memory.
+    'texH' : H pass straight from the texture with linear-pair taps ((r+1) per
+             output, over the halo rows), store to groupshared, V pass there.
+    T is the best power of two whose groupshared tile fits (8 B per texel).
+    """
+    n = W * H
+    t_mem = 2 * n * BYTES_PER_PIXEL / gpu.bandwidth
+    best = None
+    for T in (8, 16, 32, 64, 128):
+        side = T + 2 * r
+        opts = []
+        if side * side * 8 <= gpu.lds_bytes:
+            opts.append(("lds", n * (side / T) ** 2 / gpu.tex_rate,
+                         n * (2 * r + 1) * (2 + 2 * r / T) / gpu.lds_rate))
+        if side * T * 8 <= gpu.lds_bytes:
+            opts.append(("texH", n * (r + 1) * (side / T) / gpu.tex_rate,
+                         n * (2 * r + 1) / gpu.lds_rate))
+        for kind, t_tex, t_lds in opts:
+            t = gpu.pass_overhead + max(t_tex, t_mem, t_lds)
+            if best is None or t * 1e6 < best["us"]:
+                best = {"us": t * 1e6, "passes": 1, "tile": T, "kind": kind,
+                        "bound": ("tex", "mem", "lds")[int(np.argmax([t_tex, t_mem, t_lds]))]}
+    return best
