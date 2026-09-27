@@ -14,6 +14,9 @@ curv    mean over phases of |lap(K_i) - lap(G_i)|_1 / |lap(G_i)|_1, G_i the
         Gaussian matched to that phase's response. Catches kinks: Mach bands
         from linear upsampling and the edge of truncated kernels. Responses are
         first box-binned to sigma ~4 so the value does not grow with sigma.
+block   like curv, but of each phase's deviation from the phase average:
+        kinks locked to the low-res grid (visible blockiness), zero for
+        shift-invariant filters.
 """
 from __future__ import annotations
 
@@ -95,11 +98,29 @@ def _lap(a: np.ndarray) -> np.ndarray:
     return a[1:-1, 2:] + a[1:-1, :-2] + a[2:, 1:-1] + a[:-2, 1:-1] - 4 * a[1:-1, 1:-1]
 
 
-def _curv_err(k: np.ndarray, sig: float) -> float:
+def _bin(k: np.ndarray, sig: float) -> np.ndarray:
     b = max(1, int(sig // 4))
     if b > 1:
         n = (k.shape[0] // b) * b
         k = k[:n, :n].reshape(n // b, b, n // b, b).sum((1, 3))
+    return k
+
+
+def _gauss_like(k: np.ndarray) -> np.ndarray:
+    y, x = np.mgrid[0:k.shape[0], 0:k.shape[1]].astype(float)
+    mx, my = (k * x).sum(), (k * y).sum()
+    sig = math.sqrt(((k * (x - mx) ** 2).sum() + (k * (y - my) ** 2).sum()) / 2)
+    g = np.exp(-((x - mx) ** 2 + (y - my) ** 2) / (2 * sig * sig))
+    return g / g.sum()
+
+
+def _block_err(k: np.ndarray, kbar: np.ndarray, sig: float) -> float:
+    k, kbar = _bin(k, sig), _bin(kbar, sig)
+    return float(np.abs(_lap(k - kbar)).sum() / np.abs(_lap(_gauss_like(kbar))).sum())
+
+
+def _curv_err(k: np.ndarray, sig: float) -> float:
+    k = _bin(k, sig)
     y, x = np.mgrid[0:k.shape[0], 0:k.shape[1]].astype(float)
     mx, my = (k * x).sum(), (k * y).sum()
     sig = math.sqrt(((k * (x - mx) ** 2).sum() + (k * (y - my) ** 2).sum()) / 2)
@@ -129,6 +150,7 @@ def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
     stop = fr > GAUSS_STOP / sig
     phase = float(np.mean([0.5 * np.abs(ki / ki.sum() - k).sum() for ki in ks]))
     curv = float(np.mean([_curv_err(ki / ki.sum(), sig) for ki in ks]))
+    block = float(np.mean([_block_err(ki / ki.sum(), k, sig) for ki in ks]))
     out = {
         "sigma": sig,
         "aniso": math.sqrt(max(vs) / min(vs)) - 1.0,
@@ -136,6 +158,7 @@ def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
         "leak": float(H[stop].max()) if stop.any() else 0.0,
         "phase": phase,
         "curv": curv,
+        "block": block,
         "shift": math.hypot(mx, my),
     }
     if target_sigma:

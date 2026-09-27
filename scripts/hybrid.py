@@ -75,7 +75,7 @@ def write_md(allrecs: dict):
     lines += ["", "## Cost vs shift-variance Pareto front (candidates also meeting the other 'medium' limits)", ""]
     med = PROFILES["medium"]
     for s in sorted(allrecs, key=float):
-        recs = [r for r in allrecs[s] if all(abs(r[k]) <= med[k] for k in ("leak", "tv", "aniso", "curv", "sigma_err"))]
+        recs = [r for r in allrecs[s] if all(abs(r[k]) <= med[k] for k in ("leak", "tv", "aniso", "curv", "block", "sigma_err"))]
         lines.append(f"**sigma {s}**: " + ", ".join(
             f"{r['us']:.0f} us / phase {r['phase']:.3f} ({r['design']})" for r in pareto(recs)[:6]))
         lines.append("")
