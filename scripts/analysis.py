@@ -31,7 +31,7 @@ def candidates(s: str, hyb: dict, base: dict, W: int, H: int) -> list:
     out = []
     for r in hyb.get(s, []):
         p = r["params"]
-        d = S.Design(tuple(p["down"]), p["down_e"], p["bottom"], p["trunc"], tuple(p["up"]), p["up_e"], p["warp"])
+        d = S.Design.from_params(p)
         out.append(("hybrid: " + r["design"], r["us"], r["passes"], r, (d, p["sl"])))
     for fam, r in base.get(s, {}).items():
         if "curv" in r:

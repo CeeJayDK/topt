@@ -7,7 +7,9 @@ Writes results/hybrid.json (every evaluated candidate) and results/hybrid.md.
 from __future__ import annotations
 
 import json
+import os
 import sys
+from multiprocessing import Pool
 import time
 from pathlib import Path
 
@@ -42,15 +44,21 @@ def load_baseline(suffix: str = "") -> dict:
     return best
 
 
+def _run(args):
+    s, W, H = args
+    return s, search(s, W, H)
+
+
 def main():
     sigmas, res, W, H, suffix = parse_args(SIGMAS)
     path = OUT / f"hybrid{suffix}.json"
     allrecs = json.loads(path.read_text()) if path.exists() else {}
-    for s in sigmas:
-        t0 = time.time()
-        allrecs[f"{s:g}"] = search(s, W, H, log=log)
-        log(f"sigma {s:g}: {len(allrecs[f'{s:g}'])} evaluated in {time.time() - t0:.0f}s")
-        path.write_text(json.dumps(allrecs, default=str))
+    t0 = time.time()
+    with Pool(min(len(sigmas), os.cpu_count() or 1)) as pool:  # one sigma per core
+        for s, recs in pool.imap_unordered(_run, [(s, W, H) for s in sigmas]):
+            allrecs[f"{s:g}"] = recs
+            log(f"sigma {s:g}: {len(recs)} evaluated ({time.time() - t0:.0f}s elapsed)")
+            path.write_text(json.dumps(allrecs, default=str))
     write_md(allrecs, W, H, suffix)
 
 

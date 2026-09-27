@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import itertools
 import math
+from functools import lru_cache
 from dataclasses import asdict, dataclass
 
 import numpy as np
@@ -22,6 +23,9 @@ from .cost import pipeline_cost
 from .methods import bisect, gauss, pair_taps, var1d
 from .quality import default_phases, eval_radius, responses, score
 from .sim import Pass, Pipeline
+from .uptaps import load as _load_up
+
+UP_PIN = _load_up()
 
 # Quality profiles, strictest first. The search prunes against the first one.
 PROFILES = {
@@ -75,8 +79,14 @@ class Design:
     bottom: str        # 'direct' (1 pass) or 'sep' (2xN / Nx2 bilinear)
     trunc: float       # bottom kernel radius in bottom-level sigmas
     up: tuple          # factors, e.g. (2, 2, 2) or (8,)
-    up_e: int          # binomial length after bilinear interpolation
+    up_e: int          # binomial length after bilinear interpolation (or tap count if up_pin)
     warp: str | None
+    up_pin: bool = False  # up_e = taps of a free-position "pinwheel" upsampler (topt.uptaps)
+
+    @classmethod
+    def from_params(cls, p: dict) -> "Design":
+        return cls(tuple(p["down"]), p["down_e"], p["bottom"], p["trunc"], tuple(p["up"]), p["up_e"],
+                   p["warp"], p.get("up_pin", False))
 
     @property
     def D(self) -> int:
@@ -86,9 +96,11 @@ class Design:
         d = "x".join(map(str, self.down))
         u = "x".join(map(str, self.up))
         w = "+iq" if self.warp else ""
-        return f"down {d} e{self.down_e} | {self.bottom} {self.trunc:g}s | up {u} e{self.up_e}{w}"
+        ue = f"p{self.up_e}" if self.up_pin else f"e{self.up_e}"
+        return f"down {d} e{self.down_e} | {self.bottom} {self.trunc:g}s | up {u} {ue}{w}"
 
 
+@lru_cache(maxsize=65536)
 def bottom_passes(kind: str, sl: float, trunc: float, div: int) -> list | None:
     """Bottom blur with variance exactly sl^2 (in bottom-level texels)."""
     if kind == "direct":
@@ -118,9 +130,10 @@ def build(d: Design, sl: float) -> Pipeline | None:
     if b is None:
         return None
     passes += b
+    up = tuple(UP_PIN[d.up_e]) if d.up_pin else outer(up_taps_1d(d.up_e))
     for u in d.up:
         div //= u
-        passes.append(Pass(div, outer(up_taps_1d(d.up_e)), warp=d.warp))
+        passes.append(Pass(div, up, warp=d.warp))
     return Pipeline("hybrid", {**asdict(d), "sl": sl, "label": d.label()}, passes)
 
 
@@ -161,12 +174,39 @@ def fit(d: Design, sigma: float, tol: float = 0.003, iters: int = 5):
     return None
 
 
-def _plans(k: int, fixed_first: int | None = None) -> set:
+def _down_plans(k: int) -> set:
+    """Factor sequences (largest step first) with product 2^k: the classic all-x2 /
+    x4 chains plus up to three steps from {2, 4, 8, 16}."""
     plans = {tuple([2] * k)}
     if k >= 2:
         plans.add(tuple([4] + [2] * (k - 2)))
         plans.add(tuple([4] * (k // 2) + [2] * (k % 2)))
+
+    def rec(rem, maxf, seq):
+        if rem == 0:
+            plans.add(tuple(seq))
+            return
+        if len(seq) == 3:
+            return
+        for f in (16, 8, 4, 2):
+            if f <= maxf and rem >= int(math.log2(f)):
+                rec(rem - int(math.log2(f)), f, seq + [f])
+
+    rec(k, 16, [])
     return plans
+
+
+def _up_plans(k: int) -> set:
+    D = 2 ** k
+    plans = {tuple([2] * k), (D,)}
+    if k >= 2:
+        plans.add(tuple([4] * (k // 2) + [2] * (k % 2)))
+        for j in range(1, k):  # two steps: coarse step first, then the rest into the composite
+            plans.add((2 ** j, 2 ** (k - j)))
+    return plans
+
+
+UP_FILTERS = [(1, False), (2, False), (3, False), (4, True), (5, True), (8, True), (9, True)]
 
 
 def designs(sigma: float):
@@ -174,12 +214,10 @@ def designs(sigma: float):
         D = 2 ** k
         if not 0.25 <= sigma / D <= 12:
             continue
-        downs = _plans(k)
-        ups = _plans(k) | {(D,)}
-        for down, up in itertools.product(sorted(downs), sorted(ups)):
-            for down_e, bottom, trunc, up_e, warp in itertools.product(
-                    (1, 3, 5), ("direct", "sep"), (2.0, 2.5, 3.0), (1, 2, 3), (None, "iq")):
-                yield Design(down, down_e, bottom, trunc, up, up_e, warp)
+        for down, up in itertools.product(sorted(_down_plans(k)), sorted(_up_plans(k))):
+            for down_e, bottom, trunc, (up_e, pin) in itertools.product(
+                    (1, 3, 5, 9), ("direct", "sep"), (2.0, 2.5, 3.0), UP_FILTERS):
+                yield Design(down, down_e, bottom, trunc, up, up_e, None, pin)
 
 
 def search(sigma: float, W: int = 1920, H: int = 1080, log=None) -> list:

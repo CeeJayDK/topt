@@ -67,7 +67,7 @@ def load_winners(path: Path) -> list:
                 continue
             r = min(ok, key=lambda r: r["us"])
             p = r["params"]
-            d = S.Design(tuple(p["down"]), p["down_e"], p["bottom"], p["trunc"], tuple(p["up"]), p["up_e"], p["warp"])
+            d = S.Design.from_params(p)
             out.append((S.build(d, p["sl"]), f"TOPT_B_Hybrid_s{s}_{prof}",
                         f"sigma {s} {prof} hybrid: {r['design']} (model {r['us']:.0f} us marginal @1080p)"))
     return out
