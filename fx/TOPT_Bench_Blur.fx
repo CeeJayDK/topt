@@ -866,6 +866,87 @@ technique TOPT_B_Hybrid_s200_strict < ui_tooltip = "sigma 200 strict hybrid: dow
 	pass p0_4 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS4; }
 }
 
+// ---- TOPT_B_luma_fast: LumaSharpen Fast: 2 taps at +-(1/3,1/3), sigma 0.58 (diagonal only)
+static const float3 TOPT_B_luma_fast_k0[2] = {
+	float3(0.333333333, 0.333333333, 0.5),
+	float3(-0.333333333, -0.333333333, 0.5)
+};
+float4 TOPT_B_luma_fast_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 2; i++)
+		c += TOPT_B_luma_fast_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_luma_fast_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_luma_fast < ui_tooltip = "LumaSharpen Fast: 2 taps at +-(1/3,1/3), sigma 0.58 (diagonal only)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_luma_fast_PS0; }
+}
+
+// ---- TOPT_B_luma_fast_c: LumaSharpen Fast + centre 0.2, 3 fetches, sigma 0.52
+static const float3 TOPT_B_luma_fast_c_k0[3] = {
+	float3(0.333333333, 0.333333333, 0.4),
+	float3(-0.333333333, -0.333333333, 0.4),
+	float3(0.0, 0.0, 0.2)
+};
+float4 TOPT_B_luma_fast_c_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 3; i++)
+		c += TOPT_B_luma_fast_c_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_luma_fast_c_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_luma_fast_c < ui_tooltip = "LumaSharpen Fast + centre 0.2, 3 fetches, sigma 0.52"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_luma_fast_c_PS0; }
+}
+
+// ---- TOPT_B_luma_normal: LumaSharpen Normal: 4 taps at (+-0.5,+-0.5) = 3x3 binomial, sigma 0.71
+static const float3 TOPT_B_luma_normal_k0[4] = {
+	float3(-0.5, -0.5, 0.25),
+	float3(-0.5, 0.5, 0.25),
+	float3(0.5, -0.5, 0.25),
+	float3(0.5, 0.5, 0.25)
+};
+float4 TOPT_B_luma_normal_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_luma_normal_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_luma_normal_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_luma_normal < ui_tooltip = "LumaSharpen Normal: 4 taps at (+-0.5,+-0.5) = 3x3 binomial, sigma 0.71"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_luma_normal_PS0; }
+}
+
+// ---- TOPT_B_luma_normal_034: LumaSharpen Normal with offset 0.34, sigma 0.60 (best 4-fetch Gaussian fit)
+static const float3 TOPT_B_luma_normal_034_k0[4] = {
+	float3(-0.34, -0.34, 0.25),
+	float3(-0.34, 0.34, 0.25),
+	float3(0.34, -0.34, 0.25),
+	float3(0.34, 0.34, 0.25)
+};
+float4 TOPT_B_luma_normal_034_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 4; i++)
+		c += TOPT_B_luma_normal_034_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_luma_normal_034_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_luma_normal_034 < ui_tooltip = "LumaSharpen Normal with offset 0.34, sigma 0.60 (best 4-fetch Gaussian fit)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_luma_normal_034_PS0; }
+}
+
 // ---- TOPT_B_pinwheel5: sigma 0.7883903818629782 single-pass pinwheel, 5 fetches (model 0 us marginal @1080p)
 static const float3 TOPT_B_pinwheel5_k0[5] = {
 	float3(1.11330123, 0.302132704, 0.189264803),

@@ -88,6 +88,19 @@ def pinwheels(path: Path) -> list:
     return out
 
 
+def luma_patterns() -> list:
+    """LumaSharpen's Fast and Normal sample patterns used as single-pass blurs."""
+    t = 1.0 / 3.0
+    quad = lambda o, w: tuple((sx * o, sy * o, w) for sx in (-1, 1) for sy in (-1, 1))
+    pats = [
+        ("TOPT_B_luma_fast", ((t, t, 0.5), (-t, -t, 0.5)), "LumaSharpen Fast: 2 taps at +-(1/3,1/3), sigma 0.58 (diagonal only)"),
+        ("TOPT_B_luma_fast_c", ((t, t, 0.4), (-t, -t, 0.4), (0.0, 0.0, 0.2)), "LumaSharpen Fast + centre 0.2, 3 fetches, sigma 0.52"),
+        ("TOPT_B_luma_normal", quad(0.5, 0.25), "LumaSharpen Normal: 4 taps at (+-0.5,+-0.5) = 3x3 binomial, sigma 0.71"),
+        ("TOPT_B_luma_normal_034", quad(0.34, 0.25), "LumaSharpen Normal with offset 0.34, sigma 0.60 (best 4-fetch Gaussian fit)"),
+    ]
+    return [(Pipeline("luma", {}, [Pass(1, taps)]), name, label) for name, taps, label in pats]
+
+
 def classic() -> list:
     out = []
     for sigma in (2, 4):
@@ -266,6 +279,7 @@ def main():
     FX.mkdir(exist_ok=True)
     (FX / "TOPT_Bench_Micro.fx").write_text(effect(micro(), repeat))
     (FX / "TOPT_Bench_Blur.fx").write_text(effect(load_winners(ROOT / "results" / "hybrid.json")
+                                                  + luma_patterns()
                                                   + pinwheels(ROOT / "results" / "small_kernels.json")
                                                   + classic(), repeat))
     (FX / "TOPT_Bench_CS.fx").write_text(cs_effect())
