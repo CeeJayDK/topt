@@ -866,6 +866,84 @@ technique TOPT_B_Hybrid_s200_strict < ui_tooltip = "sigma 200 strict hybrid: dow
 	pass p0_4 { VertexShader = PostProcessVS; PixelShader = TOPT_B_Hybrid_s200_strict_PS4; }
 }
 
+// ---- TOPT_B_pinwheel5: sigma 0.7883903818629782 single-pass pinwheel, 5 fetches (model 0 us marginal @1080p)
+static const float3 TOPT_B_pinwheel5_k0[5] = {
+	float3(1.11330123, 0.302132704, 0.189264803),
+	float3(-0.302132704, 1.11330123, 0.189264803),
+	float3(-1.11330123, -0.302132704, 0.189264803),
+	float3(0.302132704, -1.11330123, 0.189264803),
+	float3(0.0, 0.0, 0.242940787)
+};
+float4 TOPT_B_pinwheel5_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 5; i++)
+		c += TOPT_B_pinwheel5_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_pinwheel5_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_pinwheel5 < ui_tooltip = "sigma 0.7883903818629782 single-pass pinwheel, 5 fetches (model 0 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_pinwheel5_PS0; }
+}
+
+// ---- TOPT_B_pinwheel9: sigma 0.9868611484665926 single-pass pinwheel, 9 fetches (model 24 us marginal @1080p)
+static const float3 TOPT_B_pinwheel9_k0[9] = {
+	float3(0.357604164, 1.17880508, 0.182077895),
+	float3(-1.17880508, 0.357604164, 0.182077895),
+	float3(-0.357604164, -1.17880508, 0.182077895),
+	float3(1.17880508, -0.357604164, 0.182077895),
+	float3(1.65771113, 1.26662442, 0.0297691601),
+	float3(-1.26662442, 1.65771113, 0.0297691601),
+	float3(-1.65771113, -1.26662442, 0.0297691601),
+	float3(1.26662442, -1.65771113, 0.0297691601),
+	float3(0.0, 0.0, 0.15261178)
+};
+float4 TOPT_B_pinwheel9_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 9; i++)
+		c += TOPT_B_pinwheel9_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_pinwheel9_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_pinwheel9 < ui_tooltip = "sigma 0.9868611484665926 single-pass pinwheel, 9 fetches (model 24 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_pinwheel9_PS0; }
+}
+
+// ---- TOPT_B_pinwheel13: sigma 1.27824910451669 single-pass pinwheel, 13 fetches (model 77 us marginal @1080p)
+static const float3 TOPT_B_pinwheel13_k0[13] = {
+	float3(2.21187977, 1.28663444, 0.0420180456),
+	float3(-1.28663444, 2.21187977, 0.0420180456),
+	float3(-2.21187977, -1.28663444, 0.0420180456),
+	float3(1.28663444, -2.21187977, 0.0420180456),
+	float3(0.420689039, 2.19130324, 0.0658074635),
+	float3(-2.19130324, 0.420689039, 0.0658074635),
+	float3(-0.420689039, -2.19130324, 0.0658074635),
+	float3(2.19130324, -0.420689039, 0.0658074635),
+	float3(0.831183642, -0.476235085, 0.1318358),
+	float3(0.476235085, 0.831183642, 0.1318358),
+	float3(-0.831183642, 0.476235085, 0.1318358),
+	float3(-0.476235085, -0.831183642, 0.1318358),
+	float3(0.0, 0.0, 0.0413547621)
+};
+float4 TOPT_B_pinwheel13_PS0(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH, BUFFER_HEIGHT);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < 13; i++)
+		c += TOPT_B_pinwheel13_k0[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_B_pinwheel13_k0[i].xy * px, 0.0, 0.0)).rgb;
+	float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(lerp(o, c, TOPT_Strength), 1.0);
+}
+technique TOPT_B_pinwheel13 < ui_tooltip = "sigma 1.27824910451669 single-pass pinwheel, 13 fetches (model 77 us marginal @1080p)"; >
+{
+	pass p0_0 { VertexShader = PostProcessVS; PixelShader = TOPT_B_pinwheel13_PS0; }
+}
+
 // ---- TOPT_B_sep_linear_s2: sigma 2 sep_linear {'r': 5, 's': 2.0611839851068074}
 texture TOPT_B_sep_linear_s2_t0 { Width = BUFFER_WIDTH; Height = BUFFER_HEIGHT; Format = TOPT_FORMAT; };
 sampler TOPT_B_sep_linear_s2_s0 { Texture = TOPT_B_sep_linear_s2_t0; AddressU = MIRROR; AddressV = MIRROR; };

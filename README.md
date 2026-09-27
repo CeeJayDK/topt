@@ -56,6 +56,11 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   only copying in the pixel shader is modelled at ~113 us; compute H + pixel V
   fused with the composite wins at sigma ~4 (167 vs 204 us). To be timed.
 * Strict quality costs little extra (sigma 16: 96 vs 83 us; sigma >= 64 the same).
+* Tiny blurs: a single pass inside the composite with <= ~8 fetches is free
+  (the composite is memory-bound). Optimised 4-fold "pinwheel" tap patterns
+  (generalising LumaSharpen's "Wider") reach medium quality at sigma 0.8 with 5
+  fetches (0 us), 1.0 with 9 (24 us), 1.3 with 13 (77 us); see
+  `results/small_kernels.md`.
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
 * RGB10A2 intermediates add <= 0.17 8-bit levels of error on smooth ramps.
   R11G11B10F gives up to 1.1 (R, G) / 2.0 (B) levels on mid/bright ramps:

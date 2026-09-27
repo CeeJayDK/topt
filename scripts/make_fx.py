@@ -73,6 +73,21 @@ def load_winners(path: Path) -> list:
     return out
 
 
+def pinwheels(path: Path) -> list:
+    """Single-pass pinwheel blurs from scripts.small_kernels (medium profile)."""
+    if not path.exists():
+        return []
+    rep = json.loads(path.read_text())
+    out = []
+    for n in (5, 9, 13):
+        r = rep.get(f"{n}_medium")
+        if r:
+            taps = tuple(tuple(t) for t in r["taps"])
+            out.append((Pipeline("pinwheel", {}, [Pass(1, taps)]), f"TOPT_B_pinwheel{n}",
+                        f"sigma {r['sigma']} single-pass pinwheel, {n} fetches (model {r['us']:.0f} us marginal @1080p)"))
+    return out
+
+
 def classic() -> list:
     out = []
     for sigma in (2, 4):
@@ -250,7 +265,9 @@ def main():
     repeat = int(sys.argv[sys.argv.index("--repeat") + 1]) if "--repeat" in sys.argv else 1
     FX.mkdir(exist_ok=True)
     (FX / "TOPT_Bench_Micro.fx").write_text(effect(micro(), repeat))
-    (FX / "TOPT_Bench_Blur.fx").write_text(effect(load_winners(ROOT / "results" / "hybrid.json") + classic(), repeat))
+    (FX / "TOPT_Bench_Blur.fx").write_text(effect(load_winners(ROOT / "results" / "hybrid.json")
+                                                  + pinwheels(ROOT / "results" / "small_kernels.json")
+                                                  + classic(), repeat))
     (FX / "TOPT_Bench_CS.fx").write_text(cs_effect())
     rows = ["technique,resolution,gpu_us,notes"]
     for f in sorted(FX.glob("*.fx")):
