@@ -181,9 +181,15 @@ def cand_kawase(sigma, max_passes: int = 64):
 
 def _fit_measured(make, sigma, lo, hi, iters=14):
     """Fit a scalar parameter by simulation (for shift-variant pipelines)."""
-    probe = make(lo)
-    ph = [(0, 0), (probe.max_div // 2, probe.max_div // 2)]
-    x = bisect(lambda v: measured_sigma(make(v), ph), sigma, lo, hi, iters)
+    ph = default_phases(make(lo).max_div, 2)
+
+    def fn(v):
+        try:
+            return measured_sigma(make(v), ph)
+        except ValueError:  # too large to simulate: certainly above target
+            return math.inf
+
+    x = bisect(fn, sigma, lo, hi, iters)
     return None if x is None else make(x)
 
 
