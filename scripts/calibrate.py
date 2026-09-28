@@ -175,7 +175,7 @@ def isotropy(sigma: float = 16.0):
     grid(panels, 2).save(OUT / "isotropy.png")
 
 
-def noise(sigmas=(2.0, 8.0), per_sigma: int = 5):
+def noise(sigmas=(2.0, 4.0, 8.0), per_sigma: int = 5):
     """Static pattern noise of stochastic / interleaved designs (results/stochastic.json):
     candidates that pass the medium profile except for the noise metrics, spread
     from the least to the most noisy. Scenes: soft shapes (top) and fine detail."""
@@ -183,7 +183,8 @@ def noise(sigmas=(2.0, 8.0), per_sigma: int = 5):
     from topt import search as S
     from scripts import stochastic as T
     recs = json.loads((OUT.parent / "stochastic.json").read_text())
-    blind = {k: v for k, v in S.PROFILES["medium"].items() if k not in ("phase", "block")}
+    # shape of the phase-averaged kernel only: curv/phase/block also see the pattern noise
+    blind = {k: v for k, v in S.PROFILES["medium"].items() if k not in ("phase", "block", "curv")}
     for sigma in sigmas:
         rows = [r for r in recs.get(f"{sigma:g}", []) if S.passes_profile(r, blind)]
         rows.sort(key=lambda r: r["block"])
