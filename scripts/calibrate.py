@@ -84,7 +84,7 @@ def reference(sigma: float):
 def truncation(sigma: float = 6.0):
     img = scene(512, 256, sigma)
     panels = [panel(run(reference(sigma), img), f"reference Gaussian\nsigma={sigma:g}")]
-    for k in (1.75, 2.0, 2.25, 2.5, 3.0):
+    for k in (2.0, 2.25, 2.5, 2.75, 3.0):
         pl = sep_bilinear_trunc(sigma, k)
         if pl is None:
             continue
