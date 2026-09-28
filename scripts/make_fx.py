@@ -70,6 +70,16 @@ def load_winners(path: Path) -> list:
             d = S.Design.from_params(p)
             out.append((S.build(d, p["sl"]), f"TOPT_B_Hybrid_s{s}_{prof}",
                         f"sigma {s} {prof} hybrid: {r['design']} (model {r['us']:.0f} us marginal @1080p)"))
+    # pinwheel-chain variants at sigma 16 (more passes; hardware decides whether they pay off)
+    rows = [r for r in recs.get("16", []) if S.passes_profile(r, S.PROFILES["medium"])]
+    for tag, cond in (("pwchain", lambda r: r["params"]["bottom"].startswith("pw")),
+                      ("pindown", lambda r: r["params"].get("down_pin", 0) > 0),
+                      ("rot45", lambda r: r["params"].get("rot", False))):
+        c = [r for r in rows if cond(r)]
+        if c:
+            r = min(c, key=lambda r: r["us"])
+            out.append((S.build(S.Design.from_params(r["params"]), r["params"]["sl"]), f"TOPT_B_Hybrid_s16_{tag}",
+                        f"sigma 16 medium, {tag}: {r['design']} (model {r['us']:.0f} us marginal @1080p)"))
     return out
 
 

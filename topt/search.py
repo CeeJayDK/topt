@@ -92,7 +92,7 @@ PROFILES = {
 
 
 def passes_profile(q: dict, prof: dict) -> bool:
-    return all(abs(q[k]) <= v for k, v in prof.items())
+    return all(k in q and abs(q[k]) <= v for k, v in prof.items())  # a missing metric fails
 
 
 def binom(n: int) -> np.ndarray:
