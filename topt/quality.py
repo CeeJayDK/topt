@@ -19,6 +19,10 @@ curv    mean over phases of |lap(K_i) - lap(G_i)|_1 / |lap(G_i)|_1, G_i the
 block   like curv, but of each phase's deviation from the phase average:
         kinks locked to the low-res grid (visible blockiness), zero for
         shift-invariant filters.
+iso     angular non-uniformity of the spectrum inside the passband: mean over
+        rings where the response is 0.2..0.9 of (max-min)/mean around the ring.
+        Second moments cannot see 4-fold (pinwheel/square) shapes; this can.
+        A sampled Gaussian scores ~0.001.
 """
 from __future__ import annotations
 
@@ -131,6 +135,36 @@ def _curv_err(k: np.ndarray, sig: float) -> float:
     return float(np.abs(_lap(k) - lg).sum() / np.abs(lg).sum())
 
 
+def _iso(k: np.ndarray, sig: float) -> float:
+    # Shrink large kernels to sigma ~4 by plain decimation (a box prefilter would
+    # itself be square; at sigma 4b nothing is left above the new Nyquist), then
+    # sample the spectrum finely.
+    b = max(1, int(sig // 4))
+    k = k / k.sum()
+    if b > 1:
+        c0 = k.shape[0] // 2
+        k = k[c0 % b::b, c0 % b::b]
+        k = k / k.sum()
+        sig = sig / b
+    M = 1024
+    H = np.abs(np.fft.fftshift(np.fft.fft2(k, s=(M, M))))
+    c = M // 2
+    th = np.linspace(0.0, np.pi / 2, 91)
+    vals = []
+    # rings where the response is 0.2..0.9 lie at ~0.07/sig .. 0.29/sig cycles/px
+    r_hi = min(c - 2.0, 0.35 * M / sig)
+    for r in np.linspace(0.05 * M / sig, r_hi, 40):
+        x, y = c + r * np.cos(th), c + r * np.sin(th)
+        x0, y0 = np.floor(x).astype(int), np.floor(y).astype(int)
+        fx, fy = x - x0, y - y0
+        x1, y1 = np.minimum(x0 + 1, M - 1), np.minimum(y0 + 1, M - 1)
+        v = (H[y0, x0] * (1 - fx) * (1 - fy) + H[y0, x1] * fx * (1 - fy)
+             + H[y1, x0] * (1 - fx) * fy + H[y1, x1] * fx * fy)
+        if 0.2 < v.mean() < 0.9:
+            vals.append((v.max() - v.min()) / v.mean())
+    return float(np.mean(vals)) if vals else 0.0
+
+
 def metrics(pl: Pipeline, target_sigma: float | None = None, phases=None) -> dict:
     radius = eval_radius(target_sigma, pl.max_div) if target_sigma else None
     ks, R = responses(pl, phases, radius)
@@ -139,6 +173,11 @@ def metrics(pl: Pipeline, target_sigma: float | None = None, phases=None) -> dic
 
 def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
     """Metrics from per-phase impulse responses cropped to +-R."""
+    sums = ks.reshape(len(ks), -1).sum(1)
+    if sums.min() < 0.5 * sums.mean():  # some phase is (partly) skipped: gross aliasing
+        return {"sigma": 0.0, "aniso": math.inf, "tv": 1.0, "leak": math.inf, "phase": math.inf,
+                "curv": math.inf, "block": math.inf, "iso": math.inf, "shift": 0.0,
+                **({"sigma_err": -1.0} if target_sigma else {})}
     k = ks.mean(0)
     k = k / k.sum()
     sig, (mx, my), (vx, vy, cxy), (x, y) = _moments(k, R)
@@ -164,6 +203,7 @@ def score(ks: np.ndarray, R: int, target_sigma: float | None = None) -> dict:
         "phase": phase,
         "curv": curv,
         "block": block,
+        "iso": _iso(k, sig),
         "shift": math.hypot(mx, my),
     }
     if target_sigma:

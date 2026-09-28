@@ -26,6 +26,46 @@ from .sim import Pass, Pipeline
 from .uptaps import load as _load_up
 
 UP_PIN = _load_up()
+try:
+    from .downtaps import load as _load_down
+    DOWN_PIN = _load_down()
+except FileNotFoundError:  # run `python -m topt.downtaps` to create it
+    DOWN_PIN = {}
+
+# Single-pass pinwheel shapes (scripts.small_kernels, medium profile) used as the
+# building block of multi-pass pinwheel chains at the bottom level.
+PIN_BASE = {
+    5: [(1.113, 0.302, 0.1893), (0.0, 0.0, 0.2429)],
+    9: [(0.358, 1.179, 0.1821), (1.658, 1.267, 0.0298), (0.0, 0.0, 0.1526)],
+}
+
+
+def rotate(taps, deg: float) -> tuple:
+    if deg == 0:
+        return tuple(taps)
+    c, s = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+    return tuple((dx * c - dy * s, dx * s + dy * c, w) for dx, dy, w in taps)
+
+
+def _c4(groups: list) -> list:
+    """Expand [(a, b, w_per_tap), ..., (0, 0, w_centre)] into all 90-degree rotations."""
+    out = []
+    for a, b, w in groups:
+        if a == 0 and b == 0:
+            out.append((0.0, 0.0, w))
+        else:
+            out += [(a, b, w), (-b, a, w), (-a, -b, w), (b, -a, w)]
+    return out
+
+
+def _pin_var(taps: list, scale: float) -> float:
+    """Per-axis variance of a same-resolution pass of bilinear taps at scale x offsets."""
+    v = 0.0
+    for dx, _, w in taps:
+        x = scale * dx
+        fr = x - math.floor(x)
+        v += w * (x * x + fr * (1 - fr))
+    return v
 
 # Quality profiles, strictest first. The search prunes against the first one.
 PROFILES = {
@@ -36,12 +76,14 @@ PROFILES = {
     # k=3 chain (0.31) not.
     # phase: k=3 chain (0.097) looked fine and no method flickered visibly in
     # the fine-detail motion test, so shift variance is limited mainly by block.
+    # iso (provisional): the same truncation panels score 0.008 (3 sigma),
+    # ~0.03 (2.5 sigma) and ~0.045 (2.25 sigma).
     "strict": {"leak": 0.01, "tv": 0.02, "curv": 0.2, "block": 0.1, "aniso": 0.03, "phase": 0.01,
-               "sigma_err": 0.02},
+               "iso": 0.01, "sigma_err": 0.02},
     "medium": {"leak": 0.015, "tv": 0.055, "curv": 0.7, "block": 0.35, "aniso": 0.03, "phase": 0.10,
-               "sigma_err": 0.02},
+               "iso": 0.032, "sigma_err": 0.02},
     "loose": {"leak": 0.02, "tv": 0.10, "curv": 1.7, "block": 0.45, "aniso": 0.05, "phase": 0.15,
-              "sigma_err": 0.03},
+              "iso": 0.046, "sigma_err": 0.03},
 }
 
 
@@ -82,11 +124,13 @@ class Design:
     up_e: int          # binomial length after bilinear interpolation (or tap count if up_pin)
     warp: str | None
     up_pin: bool = False  # up_e = taps of a free-position "pinwheel" upsampler (topt.uptaps)
+    down_pin: int = 0     # >0: taps of a pinwheel downsample filter (topt.downtaps) instead of box*binomial
+    rot: bool = False     # rotate every other pinwheel down/up step by 45 degrees
 
     @classmethod
     def from_params(cls, p: dict) -> "Design":
         return cls(tuple(p["down"]), p["down_e"], p["bottom"], p["trunc"], tuple(p["up"]), p["up_e"],
-                   p["warp"], p.get("up_pin", False))
+                   p["warp"], p.get("up_pin", False), p.get("down_pin", 0), p.get("rot", False))
 
     @property
     def D(self) -> int:
@@ -97,12 +141,23 @@ class Design:
         u = "x".join(map(str, self.up))
         w = "+iq" if self.warp else ""
         ue = f"p{self.up_e}" if self.up_pin else f"e{self.up_e}"
-        return f"down {d} e{self.down_e} | {self.bottom} {self.trunc:g}s | up {u} {ue}{w}"
+        de = f"p{self.down_pin}" if self.down_pin else f"e{self.down_e}"
+        r = " rot45" if self.rot else ""
+        b = self.bottom if self.bottom.startswith("pw") else f"{self.bottom} {self.trunc:g}s"
+        return f"down {d} {de} | {b} | up {u} {ue}{w}{r}"
 
 
 @lru_cache(maxsize=65536)
 def bottom_passes(kind: str, sl: float, trunc: float, div: int) -> list | None:
     """Bottom blur with variance exactly sl^2 (in bottom-level texels)."""
+    if kind.startswith("pw"):  # 'pw5x2': K passes of a scaled 5-tap pinwheel, rotated 90/K deg each
+        n, K = map(int, kind[2:].split("x"))
+        base = _c4(PIN_BASE[n])
+        c = bisect(lambda c: _pin_var(base, c), sl * sl / K, 1e-3, 50.0)
+        if c is None:
+            return None
+        scaled = [(dx * c, dy * c, w) for dx, dy, w in base]
+        return [Pass(div, rotate(scaled, j * 90.0 / K)) for j in range(K)]
     if kind == "direct":
         r = max(1, math.ceil(trunc * sl))
         pos = np.arange(-r, r + 1, dtype=float)
@@ -123,21 +178,27 @@ def bottom_passes(kind: str, sl: float, trunc: float, div: int) -> list | None:
 
 def build(d: Design, sl: float) -> Pipeline | None:
     passes, div = [], 1
-    for f in d.down:
+    for i, f in enumerate(d.down):
         div *= f
-        passes.append(Pass(div, outer(down_taps_1d(f, d.down_e))))
+        if d.down_pin:
+            taps = rotate(DOWN_PIN[(f, d.down_pin)], 45.0 if d.rot and i % 2 else 0.0)
+        else:
+            taps = outer(down_taps_1d(f, d.down_e))
+        passes.append(Pass(div, taps))
     b = bottom_passes(d.bottom, sl, d.trunc, div)
     if b is None:
         return None
     passes += b
     up = tuple(UP_PIN[d.up_e]) if d.up_pin else outer(up_taps_1d(d.up_e))
-    for u in d.up:
+    for i, u in enumerate(d.up):
         div //= u
-        passes.append(Pass(div, up, warp=d.warp))
+        passes.append(Pass(div, rotate(up, 45.0 if d.rot and d.up_pin and i % 2 else 0.0), warp=d.warp))
     return Pipeline("hybrid", {**asdict(d), "sl": sl, "label": d.label()}, passes)
 
 
 def min_sl(d: Design) -> float:
+    if d.bottom.startswith("pw"):
+        return 0.2 * math.sqrt(int(d.bottom.split("x")[1]))
     return 0.51 if d.bottom == "sep" else 0.2
 
 
@@ -207,6 +268,8 @@ def _up_plans(k: int) -> set:
 
 
 UP_FILTERS = [(1, False), (2, False), (3, False), (4, True), (5, True), (8, True), (9, True)]
+BOTTOMS = [("direct", t) for t in (2.0, 2.5, 3.0)] + [("sep", t) for t in (2.0, 2.5, 3.0)] + \
+          [(k, 0.0) for k in ("pw5x3", "pw9x2", "pw9x3")]
 
 
 def designs(sigma: float):
@@ -215,9 +278,14 @@ def designs(sigma: float):
         if not 0.25 <= sigma / D <= 12:
             continue
         for down, up in itertools.product(sorted(_down_plans(k)), sorted(_up_plans(k))):
-            for down_e, bottom, trunc, (up_e, pin) in itertools.product(
-                    (1, 3, 5, 9), ("direct", "sep"), (2.0, 2.5, 3.0), UP_FILTERS):
-                yield Design(down, down_e, bottom, trunc, up, up_e, None, pin)
+            downs = [(e, 0) for e in (1, 3, 5, 9)]
+            # pinwheel downsamples only for x2/x4 steps: 8-16 taps cannot cover an 8x8+ block
+            downs += [(1, n) for n in (8, 16) if all(f <= 4 and (f, n) in DOWN_PIN for f in down)]
+            for (down_e, dpin), (bottom, trunc), (up_e, pin) in itertools.product(downs, BOTTOMS, UP_FILTERS):
+                # rotation alternation only matters for multi-step pinwheel chains
+                can_rot = (dpin and len(down) > 1) or (pin and len(up) > 1)
+                for rot in ((False, True) if can_rot else (False,)):
+                    yield Design(down, down_e, bottom, trunc, up, up_e, None, pin, dpin, rot)
 
 
 def search(sigma: float, W: int = 1920, H: int = 1080, log=None) -> list:
