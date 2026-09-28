@@ -42,7 +42,7 @@ def interleaved(gen, n, mapping, k, tile, sel, s, div) -> Pass:
     base = P.to_gaussian(base_points(gen, n), s, k, mapping)
     vmap, nv = P.selector(sel, tile)
     var = P.variants(base, nv)
-    return Pass(div, var[0], variants=var, tile=tile, vmap=vmap)
+    return Pass(div, var[0], variants=var, tile=tile, vmap=vmap, sel=sel)
 
 
 def build(cfg: dict, s: float) -> Pipeline:

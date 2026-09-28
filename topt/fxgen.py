@@ -34,6 +34,23 @@ def _f(v: float) -> str:
     return s if any(c in s for c in ".e") else s + ".0"
 
 
+def _selector(p) -> str:
+    """Per-pixel variant fraction t in [0, 1) from the integer pixel position `p`
+    (float math only, so it also runs on D3D9)."""
+    if p.tile == 1:
+        return "0.0"
+    if p.sel == "dot":  # (x + k*y) mod P, as a single dot/frac
+        k = p.vmap[p.tile]  # the entry at (x=0, y=1) is k mod P
+        return f"frac(dot(p, float2(1.0, {k}.0) / {p.tile}.0))"
+    # 2x2 Bayer index / 4 == frac((2 * (x mod 2) + 3 * (y mod 2)) / 4); frac(p * 0.5) = (p mod 2) / 2
+    if p.sel == "bayer" and p.tile == 2:
+        return "frac(dot(frac(p * 0.5), float2(1.0, 1.5)))"
+    if p.sel == "bayer" and p.tile == 4:  # 4x4 Bayer: 4 * bayer2(low bits) + bayer2(high bits), / 16
+        return ("frac(dot(frac(p * 0.5), float2(1.0, 1.5))) + "
+                "0.25 * frac(dot(frac(floor(p * 0.5) * 0.5), float2(1.0, 1.5)))")
+    raise ValueError(f"no shader selector for {p.sel} tile {p.tile}")
+
+
 def technique(pl: Pipeline, name: str, label: str = "", repeat: int = 1) -> str:
     """One technique (with its own textures) for pipeline `pl`."""
     assert all(p.warp is None for p in pl.passes), "warped taps are not supported"
@@ -54,12 +71,29 @@ def technique(pl: Pipeline, name: str, label: str = "", repeat: int = 1) -> str:
         out.append(f"static const float3 {name}_k{i}[{n}] = {{\n\t{taps}\n}};")
         ret = ("float3 o = tex2D(ReShade::BackBuffer, uv).rgb;\n"
                "\treturn float4(lerp(o, c, TOPT_Strength), 1.0);") if i == last else "return float4(c, 1.0);"
-        out.append(f"""float4 {name}_PS{i}(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+        if p.variants is None:
+            out.append(f"""float4 {name}_PS{i}(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {{
 	const float2 px = 1.0 / float2({_size(sdiv)});
 	float3 c = 0.0;
 	[unroll] for (int i = 0; i < {n}; i++)
 		c += {name}_k{i}[i].z * tex2Dlod({src}, float4(uv + {name}_k{i}[i].xy * px, 0.0, 0.0)).rgb;
+	{ret}
+}}""")
+        else:  # interleaved: rotate the base pattern per pixel by 2*pi*t, t = variant / n_variants
+            out.append(f"""float4 {name}_PS{i}(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{{
+	const float2 px = 1.0 / float2({_size(sdiv)});
+	const float2 p = floor(pos.xy);
+	const float t = {_selector(p)};
+	float2 cs; sincos(6.2831853 * t, cs.y, cs.x);
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < {n}; i++)
+	{{
+		const float2 o = {name}_k{i}[i].xy;
+		const float2 r = float2(o.x * cs.x - o.y * cs.y, o.x * cs.y + o.y * cs.x);
+		c += {name}_k{i}[i].z * tex2Dlod({src}, float4(uv + r * px, 0.0, 0.0)).rgb;
+	}}
 	{ret}
 }}""")
     passes = []
