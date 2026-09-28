@@ -40,10 +40,10 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
 
 | sigma | 1080p winner (medium quality) | 1080p us | 4K us |
 |---:|---|---:|---:|
-| 1 | single-pass 9-fetch pinwheel in the composite | 24 | 96 |
+| 1 | single-pass 16-fetch 2D kernel in the composite | 116 | 466 |
 | 2-3 | x2 down, small blur, x2 up in the composite | 121-144 | 453-545 |
 | 4-8 | one x4 / x8 down pass (wide filter), blur, pinwheel up | 84-110 | 283-393 |
-| 12-16 | one x8 down pass, one-pass blur, x8 4-tap pinwheel up | 69-71 | 246-248 |
+| 12-16 | one x8 down pass, one-pass blur, x8 4-tap pinwheel up | 69-73 | 246-248 |
 | 24-200 | one x16 down pass (+ x2/x4), one-pass blur, direct up | 65-70 | 231-234 |
 
 * **Every pass has a free fetch budget** in the model: the first downsample is
@@ -53,6 +53,13 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   and on free-position "pinwheel" upsamplers in the composite
   (`topt/uptaps.py`: the 4-tap version is ~3x smoother than bilinear), which
   keep the direct x8-x64 upsample from looking blocky.
+* **Pinwheel chains and rotation** (`iso` metric, `results/calib/isotropy.png`):
+  a 2-pass pinwheel chain whose 2nd pass is rotated 45 degrees is ~23x rounder
+  than repeating the same pinwheel; a 3-pass 9-tap chain at the bottom level
+  reaches iso 0.002 (exact Gaussian ~0.0002). In the model they cost 8-12 us
+  more than the winners at sigma 16 because of the extra passes; they are in
+  the benchmark so hardware can decide. A single C4 pinwheel is not round
+  (9-fetch sigma-1 pinwheel: iso 0.046, fails the calibrated profiles).
 * **Full-res traffic sets the floor.** A 1080p RGB10A2 read is ~55 us on a 1660
   at 80 % of peak bandwidth; passes with fewer than ~6 taps are memory-bound,
   so extra taps there are free. Above sigma ~8 the cost is ~1 full-res read
