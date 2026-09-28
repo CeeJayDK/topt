@@ -175,6 +175,42 @@ def isotropy(sigma: float = 16.0):
     grid(panels, 2).save(OUT / "isotropy.png")
 
 
+def noise(sigmas=(2.0, 8.0), per_sigma: int = 5):
+    """Static pattern noise of stochastic / interleaved designs (results/stochastic.json):
+    candidates that pass the medium profile except for the noise metrics, spread
+    from the least to the most noisy. Scenes: soft shapes (top) and fine detail."""
+    import json
+    from topt import search as S
+    from scripts import stochastic as T
+    recs = json.loads((OUT.parent / "stochastic.json").read_text())
+    blind = {k: v for k, v in S.PROFILES["medium"].items() if k not in ("phase", "block")}
+    for sigma in sigmas:
+        rows = [r for r in recs.get(f"{sigma:g}", []) if S.passes_profile(r, blind)]
+        rows.sort(key=lambda r: r["block"])
+        if not rows:
+            continue
+        pick = [rows[int(i)] for i in np.linspace(0, len(rows) - 1, min(per_sigma, len(rows)))]
+        W, H = 512, 256
+        soft = scene(W, H, sigma / 2)
+        fine = detail_scene(W, H, 0)
+        ref = reference(sigma)
+        panels = []
+        items = [("reference Gaussian", ref, None)] + [
+            (r["design"], T.build(r["params"], r["params"]["s"]), r) for r in pick]
+        rs, rf = run(ref, soft), run(ref, fine)
+        for name, pl, r in items:
+            a, b = run(pl, soft), run(pl, fine)
+            rms = float(np.sqrt(((b - rf)[16:-16, 16:-16] ** 2).mean())) * 255
+            lab = name if r is None else (f"{name}\nphase {r['phase']:.3f} block {r['block']:.2f} "
+                                          f"{r['us']:.0f} us | detail rms err {rms:.2f} lvl")
+            p1, p2 = panel(a, lab, rs), panel(b, "", rf)
+            both = Image.new("L", (p1.width, p1.height + p2.height - 34), 0)
+            both.paste(p1, (0, 0))
+            both.paste(p2.crop((0, 34, p2.width, p2.height)), (0, p1.height))
+            panels.append(both)
+        grid(panels, 2).save(OUT / f"noise_s{sigma:g}.png")
+
+
 def detail_scene(w: int, h: int, dx: int = 0, seed: int = 3) -> np.ndarray:
     """Fine-detail test content, panned right by dx pixels."""
     W = w + 64
