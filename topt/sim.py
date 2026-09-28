@@ -24,6 +24,15 @@ class Pass:
     taps: tuple              # ((dx, dy, weight), ...) in source texels
     src: int | None = None   # index of source pass; None = previous pass, -1 = input
     warp: str | None = None  # 'iq' = smoothstep on the bilinear fraction (magnification only)
+    # Per-pixel ("interleaved") sampling: output pixel (x, y) uses the tap set
+    # variants[vmap[(y % tile) * tile + x % tile]]. All variants have len(taps) taps.
+    variants: tuple | None = None
+    tile: int = 1
+    vmap: tuple | None = None
+
+    def variant_of(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        idx = (y % self.tile) * self.tile + (x % self.tile)
+        return np.asarray(self.vmap)[idx]
 
 
 @dataclass
@@ -42,7 +51,12 @@ class Pipeline:
 
     @property
     def max_div(self) -> int:
-        return max(p.div for p in self.passes)
+        """Period (full-res pixels) of the pipeline's shift variance."""
+        return max(p.div * p.tile for p in self.passes)
+
+    @property
+    def interleaved(self) -> bool:
+        return any(p.variants is not None for p in self.passes)
 
 
 def _mirror(idx: np.ndarray, n: int) -> np.ndarray:
@@ -86,11 +100,42 @@ def interp_matrix(n_dst: int, n_src: int, offset: float, warp: str | None = None
     return sp.csr_matrix((vals, (rows, cols)), shape=(n_dst, n_src))
 
 
+def _variant_matrix(p: Pass, hd: int, wd: int, hs: int, ws: int, address: str) -> sp.csr_matrix:
+    """Sparse (hd*wd x hs*ws) matrix of a pass whose taps depend on the output pixel."""
+    yy, xx = np.mgrid[0:hd, 0:wd]
+    var = p.variant_of(xx.ravel(), yy.ravel())
+    rows, cols, vals = [], [], []
+    for v, taps in enumerate(p.variants):
+        sel = np.nonzero(var == v)[0]
+        if not len(sel):
+            continue
+        ox = (xx.ravel()[sel] + 0.5) * (ws / wd) - 0.5
+        oy = (yy.ravel()[sel] + 0.5) * (hs / hd) - 0.5
+        for dx, dy, w in taps:
+            cx, cy = ox + dx, oy + dy
+            x0, y0 = np.floor(cx).astype(np.int64), np.floor(cy).astype(np.int64)
+            fx, fy = cx - x0, cy - y0
+            for ax, ay, wt in ((0, 0, (1 - fx) * (1 - fy)), (1, 0, fx * (1 - fy)),
+                               (0, 1, (1 - fx) * fy), (1, 1, fx * fy)):
+                c_x, c_y = x0 + ax, y0 + ay
+                if address == "mirror":
+                    c_x, c_y = _mirror(c_x, ws), _mirror(c_y, hs)
+                else:
+                    c_x, c_y = np.clip(c_x, 0, ws - 1), np.clip(c_y, 0, hs - 1)
+                rows.append(sel)
+                cols.append(c_y * ws + c_x)
+                vals.append(w * wt)
+    return sp.csr_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))),
+                         shape=(hd * wd, hs * ws))
+
+
 def run_pass(p: Pass, src: np.ndarray, full_shape: tuple, address: str = "mirror",
              subtexel_bits: int | None = None) -> np.ndarray:
     H, W = full_shape
     hd, wd = max(1, H // p.div), max(1, W // p.div)
     hs, ws = src.shape
+    if p.variants is not None:
+        return (_variant_matrix(p, hd, wd, hs, ws, address) @ src.ravel()).reshape(hd, wd)
     out = np.zeros((hd, wd))
     # Group taps by dy so each row-resample of the source is done once.
     by_dy: dict = {}
@@ -146,7 +191,7 @@ def factor_taps(taps) -> tuple | None:
 
 
 def is_separable(pl: Pipeline) -> bool:
-    return all(factor_taps(p.taps) is not None for p in pl.passes)
+    return all(p.variants is None and factor_taps(p.taps) is not None for p in pl.passes)
 
 
 def run_1d(pl: Pipeline, vec: np.ndarray, axis: int, address: str = "mirror") -> np.ndarray:

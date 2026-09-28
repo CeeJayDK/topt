@@ -38,7 +38,8 @@ GAUSS_STOP = math.sqrt(math.log(100.0) / (2 * math.pi ** 2))  # |G(f)| = 1% at f
 def support_radius(pl: Pipeline) -> int:
     r = 0.0
     for i, p in enumerate(pl.passes):
-        ext = max(max(abs(dx), abs(dy)) for dx, dy, _ in p.taps)
+        sets = p.variants if p.variants is not None else (p.taps,)
+        ext = max(max(abs(dx), abs(dy)) for taps in sets for dx, dy, _ in taps)
         r += (ext + 1.0) * pl.src_div(i) + p.div
     return int(math.ceil(r))
 
@@ -59,8 +60,8 @@ def responses(pl: Pipeline, phases=None, radius: int | None = None) -> tuple:
     R = support_radius(pl) if radius is None else min(radius, support_radius(pl))
     N = int(math.ceil((2 * R + 2 * F + 16) / F)) * F
     c0 = (N // 2) // F * F
-    if phases is None:
-        phases = default_phases(F)
+    if phases is None:  # interleaved patterns: sample every position of the tile (up to 8)
+        phases = default_phases(F, min(F, 8) if pl.interleaved else 3)
     ks = []
     if is_separable(pl):  # two 1D runs per phase instead of one 2D run
         cache = {}
