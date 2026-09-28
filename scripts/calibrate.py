@@ -150,6 +150,31 @@ def upsample(sigma: float = 16.0):
     grid(panels, 2).save(OUT / "upsample.png")
 
 
+def isotropy(sigma: float = 16.0):
+    """Kernels with a range of 'iso' scores (4-fold / square shapes)."""
+    from topt import search as S
+    W, H = 768, 256
+    img = scene(W, H, sigma / 2)
+    ref_img = run(reference(sigma), img)
+    items = [("dual filter L=4", next(iter(M.cand_dual_filter(sigma))))]
+    for k in (3.0, 2.5, 2.25):
+        items.append((f"truncated Gaussian, radius {k:g} sigma", sep_bilinear_trunc(sigma, k)))
+    for d in (S.Design((8,), 3, "direct", 2.0, (8,), 4, None, True),
+              S.Design((8,), 1, "pw9x3", 0.0, (8,), 4, None, True),
+              S.Design((8,), 1, "pw9x2", 0.0, (8,), 4, None, True)):
+        r = S.fit(d, sigma)
+        if r:
+            items.append((d.label(), r[0]))
+    rows = [(n, pl, metrics(pl, sigma)) for n, pl in items]
+    rows.sort(key=lambda t: t[2]["iso"])
+    panels = [panel(ref_img, f"reference Gaussian sigma={sigma:g}  iso 0.000\n(rows: normal, x8 exposure, |error| x16)",
+                    ref_img)]
+    for name, pl, q in rows:
+        panels.append(panel(run(pl, img), f"{name}\niso {q['iso']:.3f}  block {q['block']:.2f}  leak {q['leak']:.3f}",
+                            ref_img))
+    grid(panels, 2).save(OUT / "isotropy.png")
+
+
 def detail_scene(w: int, h: int, dx: int = 0, seed: int = 3) -> np.ndarray:
     """Fine-detail test content, panned right by dx pixels."""
     W = w + 64
@@ -221,5 +246,5 @@ def motion(sigma: float = 16.0, frames: int = 16):
 if __name__ == "__main__":
     import sys
     OUT.mkdir(parents=True, exist_ok=True)
-    for name in sys.argv[1:] or ["truncation", "shift", "upsample"]:
+    for name in sys.argv[1:] or ["truncation", "shift", "upsample", "motion", "isotropy"]:
         globals()[name]()
