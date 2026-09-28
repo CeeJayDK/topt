@@ -78,7 +78,7 @@ PROFILES = {
     # the fine-detail motion test, so shift variance is limited mainly by block.
     # Second look (isotropy.png, sigma 16): 3 sigma "barely see it", 2.5 sigma
     # "visible if you look, acceptable for some things", 2.25 "would not use",
-    # 2.75 expected fine -> medium moved to the 2.75 sigma truncation (leak
+    # 2.75 confirmed "very close, still very smooth" -> medium moved to the 2.75 sigma truncation (leak
     # 0.008-0.012, tv 0.026-0.031, curv 0.25-0.39, iso 0.015-0.018), loose to
     # 2.5 sigma. Pinwheel chain pw9x3 (block 0.35) and down 8 | up 8 p4 (iso
     # 0.029, block 0.26) look fine; pw9x2 (block 1.55) does not.
