@@ -7,18 +7,18 @@ Cost columns re-price every candidate with a different per-pass overhead (model 
 
 | sigma | winner @5us | us @2 | us @5 | us @10 | us @20 | winner @20us if different | 10-bit err max/rms (LSB) |
 |---:|---|---:|---:|---:|---:|---|---|
-| 1 | direct2d | 466 | 466 | 466 | 466 |  |  |
-| 2 | hybrid: down 2 e3 | direct 2s | up 2 e3 | 478 | 484 | 494 | 514 |  | 0.57 / 0.13 |
+| 1 | pinwheel 9 fetches, single pass | 96 | 96 | 96 | 96 |  |  |
+| 2 | hybrid: down 2 e3 | direct 2s | up 2 p4 | 447 | 453 | 463 | 483 |  | 0.71 / 0.20 |
 | 3 | hybrid: down 2 e1 | direct 2s | up 2 e1 | 539 | 545 | 555 | 575 |  | 0.65 / 0.19 |
-| 4 | hybrid: down 4 e5 | direct 2s | up 2x2 e2 | 387 | 396 | 411 | 441 |  | 0.78 / 0.18 |
-| 6 | hybrid: down 4 e3 | direct 2s | up 2x2 e1 | 410 | 419 | 434 | 464 |  | 0.90 / 0.25 |
-| 8 | hybrid: down 4 e3 | sep 2s | up 4 e2 | 303 | 312 | 327 | 357 |  | 0.59 / 0.14 |
-| 12 | hybrid: down 4 e1 | sep 2.5s | up 4 e1 | 303 | 312 | 327 | 357 |  | 0.65 / 0.20 |
-| 16 | hybrid: down 4x2 e3 | sep 2s | up 8 e2 | 271 | 283 | 300 | 330 | hybrid: down 4x2 e3 | direct 2s | up 8 e1 | 0.57 / 0.14 |
-| 24 | hybrid: down 4x2 e1 | sep 2.5s | up 8 e1 | 271 | 283 | 303 | 343 |  | 0.71 / 0.20 |
-| 32 | hybrid: down 4x4 e5 | direct 2s | up 16 e1 | 256 | 265 | 280 | 310 |  | 0.59 / 0.20 |
-| 48 | hybrid: down 4x4 e1 | sep 2.5s | up 16 e1 | 256 | 268 | 288 | 328 |  | 0.61 / 0.19 |
-| 64 | hybrid: down 4x4x2 e3 | direct 2s | up 32 e1 | 254 | 266 | 286 | 326 |  | 0.59 / 0.20 |
-| 100 | hybrid: down 4x4x2 e1 | direct 2s | up 32 e2 | 256 | 268 | 288 | 328 |  | 0.39 / 0.12 |
-| 150 | hybrid: down 4x4x4 e3 | direct 2s | up 64 e1 | 253 | 265 | 285 | 325 |  | 0.53 / 0.21 |
-| 200 | hybrid: down 4x4x4 e1 | direct 2s | up 64 e2 | 254 | 266 | 286 | 326 |  | 0.35 / 0.12 |
+| 4 | hybrid: down 4 e9 | direct 2s | up 2x2 e2 | 384 | 393 | 408 | 438 |  | 0.79 / 0.18 |
+| 6 | hybrid: down 4 e5 | direct 2s | up 4 p5 | 300 | 306 | 316 | 336 |  | 0.60 / 0.18 |
+| 8 | hybrid: down 8 e9 | sep 3s | up 2x4 p5 | 271 | 283 | 303 | 343 |  | 1.12 / 0.27 |
+| 12 | hybrid: down 8 e3 | direct 2s | up 8 p4 | 240 | 246 | 256 | 276 |  | 0.58 / 0.18 |
+| 16 | hybrid: down 16 e9 | sep 2s | up 2x8 p5 | 236 | 248 | 263 | 283 | hybrid: down 8 e3 | direct 2s | up 8 p4 | 1.06 / 0.28 |
+| 24 | hybrid: down 16 e3 | direct 2s | up 16 p4 | 225 | 231 | 241 | 261 |  | 0.57 / 0.18 |
+| 32 | hybrid: down 16 e3 | direct 2s | up 16 p4 | 227 | 233 | 243 | 263 |  | 0.50 / 0.18 |
+| 48 | hybrid: down 16x2 e3 | direct 2s | up 32 p4 | 225 | 234 | 249 | 274 | hybrid: down 16 e1 | direct 2.5s | up 16 e1 | 0.57 / 0.19 |
+| 64 | hybrid: down 16x2 e3 | direct 2s | up 32 p4 | 225 | 234 | 249 | 279 |  | 0.49 / 0.19 |
+| 100 | hybrid: down 16x4 e3 | direct 2s | up 64 p4 | 224 | 233 | 248 | 278 |  | 0.49 / 0.19 |
+| 150 | hybrid: down 16x4 e1 | direct 2s | up 64 e2 | 224 | 233 | 248 | 278 |  | 0.41 / 0.14 |
+| 200 | hybrid: down 16x8 e3 | direct 2s | up 128 p4 | 224 | 233 | 248 | 278 |  | 0.48 / 0.21 |

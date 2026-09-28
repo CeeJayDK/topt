@@ -38,14 +38,21 @@ Target: the blur feeds the final composite pass (reads the backbuffer, writes
 the screen); costs are the marginal cost over a plain composite pass.
 See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*.md`.
 
-| sigma | 1080p winner | 1080p us | 4K us |
+| sigma | 1080p winner (medium quality) | 1080p us | 4K us |
 |---:|---|---:|---:|
-| 1 | single-pass 2D fused into the composite | 116 | 466 |
-| 2-3 | x2 down, small blur, x2 up in the composite | 129-144 | 484-545 |
-| 4-6 | x4 down (wide filter), blur, 2x2 up | 110-116 | 396-419 |
-| 8-12 | x4 down, blur, x4 up in the composite | 89 | 312 |
-| 16-200 | x4 x2..x4 down, one-pass blur, one direct up in the composite | 77-86 | 265-283 |
+| 1 | single-pass 9-fetch pinwheel in the composite | 24 | 96 |
+| 2-3 | x2 down, small blur, x2 up in the composite | 121-144 | 453-545 |
+| 4-8 | one x4 / x8 down pass (wide filter), blur, pinwheel up | 84-110 | 283-393 |
+| 12-16 | one x8 down pass, one-pass blur, x8 4-tap pinwheel up | 69-71 | 246-248 |
+| 24-200 | one x16 down pass (+ x2/x4), one-pass blur, direct up | 65-70 | 231-234 |
 
+* **Every pass has a free fetch budget** in the model: the first downsample is
+  memory-bound (reads the full frame, writes 1/64-1/256 of it), tiny passes are
+  overhead-bound and the composite is memory-bound (~7 free taps). So the
+  optimizer spends taps on wide single-step x8/x16 downsamples (fewer passes)
+  and on free-position "pinwheel" upsamplers in the composite
+  (`topt/uptaps.py`: the 4-tap version is ~3x smoother than bilinear), which
+  keep the direct x8-x64 upsample from looking blocky.
 * **Full-res traffic sets the floor.** A 1080p RGB10A2 read is ~55 us on a 1660
   at 80 % of peak bandwidth; passes with fewer than ~6 taps are memory-bound,
   so extra taps there are free. Above sigma ~8 the cost is ~1 full-res read

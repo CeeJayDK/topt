@@ -42,7 +42,7 @@ def candidates(s: str, hyb: dict, base: dict, W: int, H: int) -> list:
         from topt.cost import pipeline_cost
         from topt.sim import Pass, Pipeline
         for key, r in json.loads(sk.read_text()).items():
-            if abs(r["sigma"] - sigma) < 1e-6:
+            if abs(r["sigma"] / sigma - 1.0) < 0.03:
                 pl = Pipeline("pinwheel", {}, [Pass(1, tuple(tuple(t) for t in r["taps"]))])
                 c = pipeline_cost(pl, W, H)
                 out.append((f"pinwheel {key.split('_')[0]} fetches, single pass", c["us"], 1, metrics(pl, sigma), None))

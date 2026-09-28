@@ -9,75 +9,75 @@ Profiles: **strict** leak<=0.01, tv<=0.02, curv<=0.2, block<=0.1, aniso<=0.03, p
 | sigma | profile | us | passes | leak | tv | phase | curv | design | best baseline |
 |---:|---|---:|---:|---:|---:|---:|---:|---|---|
 | 2 | strict | | | | | | | none found | none |
-| 2 | medium | 484 | 3 | 0.005 | 0.024 | 0.022 | 0.38 | down 2 e3 | direct 2s | up 2 e3 | sep_linear 653 us |
+| 2 | medium | 453 | 3 | 0.012 | 0.008 | 0.023 | 0.35 | down 2 e3 | direct 2s | up 2 p4 | sep_linear 653 us |
 | 2 | loose | 453 | 3 | 0.012 | 0.008 | 0.023 | 0.38 | down 2 e3 | direct 2s | up 2 e1 | sep_linear 653 us |
 | 3 | strict | | | | | | | none found | none |
 | 3 | medium | 545 | 3 | 0.009 | 0.037 | 0.092 | 0.38 | down 2 e1 | direct 2s | up 2 e1 | pyramid 555 us |
 | 3 | loose | 545 | 3 | 0.009 | 0.037 | 0.092 | 0.38 | down 2 e1 | direct 2s | up 2 e1 | pyramid 555 us |
 | 4 | strict | | | | | | | none found | none |
-| 4 | medium | 396 | 4 | 0.005 | 0.012 | 0.047 | 0.30 | down 4 e5 | direct 2s | up 2x2 e2 | dual_filter 512 us |
-| 4 | loose | 396 | 4 | 0.005 | 0.011 | 0.075 | 0.30 | down 4 e3 | direct 2s | up 2x2 e2 | dual_filter 512 us |
-| 6 | strict | | | | | | | none found | none |
-| 6 | medium | 419 | 4 | 0.008 | 0.027 | 0.045 | 0.31 | down 4 e3 | direct 2s | up 2x2 e1 | pyramid 577 us |
-| 6 | loose | 419 | 4 | 0.008 | 0.030 | 0.111 | 0.34 | down 4 e1 | direct 2s | up 2x2 e1 | pyramid 577 us |
-| 8 | strict | 538 | 6 | 0.007 | 0.010 | 0.001 | 0.07 | down 2x2 e3 | sep 2.5s | up 2x2 e2 | none |
-| 8 | medium | 312 | 4 | 0.005 | 0.050 | 0.033 | 0.48 | down 4 e3 | sep 2s | up 4 e2 | pyramid 538 us |
-| 8 | loose | 312 | 4 | 0.006 | 0.053 | 0.081 | 0.52 | down 4 e1 | sep 2s | up 4 e2 | pyramid 538 us |
-| 12 | strict | 425 | 5 | 0.009 | 0.020 | 0.002 | 0.14 | down 2x2 e3 | sep 2.5s | up 4 e1 | none |
-| 12 | medium | 312 | 4 | 0.010 | 0.022 | 0.055 | 0.17 | down 4 e1 | sep 2.5s | up 4 e1 | pyramid 430 us |
-| 12 | loose | 312 | 4 | 0.010 | 0.022 | 0.055 | 0.17 | down 4 e1 | sep 2.5s | up 4 e1 | pyramid 430 us |
-| 16 | strict | 337 | 4 | 0.008 | 0.010 | 0.008 | 0.07 | down 4 e5 | sep 3s | up 4 e1 | none |
-| 16 | medium | 283 | 5 | 0.003 | 0.044 | 0.017 | 0.40 | down 4x2 e3 | sep 2s | up 8 e2 | pyramid 450 us |
-| 16 | loose | 283 | 5 | 0.008 | 0.015 | 0.096 | 0.26 | down 4x2 e1 | sep 2.5s | up 8 e2 | pyramid 450 us |
-| 24 | strict | 283 | 5 | 0.007 | 0.018 | 0.006 | 0.13 | down 4x2 e5 | sep 2.5s | up 8 e1 | none |
-| 24 | medium | 283 | 5 | 0.008 | 0.021 | 0.063 | 0.23 | down 4x2 e1 | sep 2.5s | up 8 e1 | pyramid 398 us |
-| 24 | loose | 283 | 5 | 0.008 | 0.021 | 0.063 | 0.23 | down 4x2 e1 | sep 2.5s | up 8 e1 | pyramid 398 us |
-| 32 | strict | 290 | 5 | 0.006 | 0.010 | 0.008 | 0.06 | down 4x2 e3 | sep 3s | up 8 e1 | none |
-| 32 | medium | 265 | 4 | 0.010 | 0.053 | 0.013 | 0.50 | down 4x4 e5 | direct 2s | up 16 e1 | pyramid 403 us |
-| 32 | loose | 265 | 4 | 0.007 | 0.039 | 0.100 | 0.39 | down 4x4 e1 | direct 2s | up 16 e2 | pyramid 403 us |
-| 48 | strict | 268 | 5 | 0.006 | 0.017 | 0.007 | 0.14 | down 4x4 e5 | sep 2.5s | up 16 e2 | none |
-| 48 | medium | 268 | 5 | 0.007 | 0.021 | 0.067 | 0.19 | down 4x4 e1 | sep 2.5s | up 16 e1 | pyramid 393 us |
-| 48 | loose | 268 | 5 | 0.007 | 0.021 | 0.067 | 0.19 | down 4x4 e1 | sep 2.5s | up 16 e1 | pyramid 393 us |
-| 64 | strict | 270 | 5 | 0.010 | 0.010 | 0.005 | 0.07 | down 4x4 e5 | sep 3s | up 16 e1 | none |
-| 64 | medium | 266 | 5 | 0.009 | 0.048 | 0.013 | 0.43 | down 4x4x2 e3 | direct 2s | up 32 e1 | pyramid 394 us |
-| 64 | loose | 266 | 5 | 0.006 | 0.039 | 0.103 | 0.37 | down 4x4x2 e1 | direct 2s | up 32 e2 | pyramid 394 us |
-| 100 | strict | 269 | 5 | 0.005 | 0.018 | 0.008 | 0.13 | down 4x4x2 e3 | direct 2.5s | up 32 e2 | none |
-| 100 | medium | 268 | 5 | 0.007 | 0.043 | 0.065 | 0.39 | down 4x4x2 e1 | direct 2s | up 32 e2 | pyramid 396 us |
-| 100 | loose | 268 | 5 | 0.019 | 0.081 | 0.004 | 0.74 | down 4x4x2 e5 | direct 2s | up 32 e2 | pyramid 396 us |
-| 150 | strict | 272 | 6 | 0.008 | 0.011 | 0.005 | 0.08 | down 4x4x2 e3 | sep 3s | up 32 e1 | none |
-| 150 | medium | 265 | 5 | 0.012 | 0.049 | 0.013 | 0.48 | down 4x4x4 e3 | direct 2s | up 64 e1 | pyramid 396 us |
-| 150 | loose | 265 | 5 | 0.008 | 0.038 | 0.089 | 0.37 | down 4x4x4 e1 | direct 2s | up 64 e2 | pyramid 396 us |
-| 200 | strict | 266 | 5 | 0.006 | 0.019 | 0.009 | 0.14 | down 4x4x4 e3 | direct 2.5s | up 64 e2 | none |
-| 200 | medium | 266 | 5 | 0.010 | 0.043 | 0.066 | 0.39 | down 4x4x4 e1 | direct 2s | up 64 e2 | pyramid 397 us |
-| 200 | loose | 266 | 5 | 0.012 | 0.050 | 0.066 | 0.57 | down 4x4x4 e1 | direct 2s | up 64 e1 | pyramid 397 us |
+| 4 | medium | 393 | 4 | 0.004 | 0.013 | 0.023 | 0.29 | down 4 e9 | direct 2s | up 2x2 e2 | dual_filter 512 us |
+| 4 | loose | 312 | 4 | 0.005 | 0.027 | 0.026 | 0.49 | down 4 e9 | sep 2s | up 4 p5 | dual_filter 512 us |
+| 6 | strict | 555 | 4 | 0.008 | 0.020 | 0.001 | 0.17 | down 2 e3 | sep 2.5s | up 2 p5 | none |
+| 6 | medium | 306 | 3 | 0.006 | 0.026 | 0.025 | 0.40 | down 4 e5 | direct 2s | up 4 p5 | pyramid 577 us |
+| 6 | loose | 306 | 3 | 0.006 | 0.029 | 0.045 | 0.47 | down 4 e3 | direct 2s | up 4 p4 | pyramid 577 us |
+| 8 | strict | 425 | 5 | 0.007 | 0.011 | 0.005 | 0.11 | down 4 e9 | sep 2.5s | up 2x2 e2 | none |
+| 8 | medium | 283 | 5 | 0.002 | 0.027 | 0.055 | 0.36 | down 8 e9 | sep 3s | up 2x4 p5 | pyramid 538 us |
+| 8 | loose | 272 | 4 | 0.007 | 0.009 | 0.040 | 0.45 | down 4x2 e3 | direct 2s | up 8 p5 | pyramid 538 us |
+| 12 | strict | 312 | 4 | 0.009 | 0.017 | 0.004 | 0.12 | down 4 e9 | sep 2.5s | up 4 e2 | none |
+| 12 | medium | 246 | 3 | 0.005 | 0.028 | 0.059 | 0.34 | down 8 e3 | direct 2s | up 8 p4 | pyramid 430 us |
+| 12 | loose | 246 | 3 | 0.005 | 0.029 | 0.128 | 0.32 | down 8 e1 | direct 2s | up 8 p5 | pyramid 430 us |
+| 16 | strict | 315 | 6 | 0.008 | 0.008 | 0.008 | 0.07 | down 4x2 e5 | sep 2.5s | up 2x4 e2 | none |
+| 16 | medium | 248 | 5 | 0.005 | 0.027 | 0.064 | 0.35 | down 16 e9 | sep 2s | up 2x8 p5 | pyramid 450 us |
+| 16 | loose | 241 | 4 | 0.010 | 0.009 | 0.054 | 0.45 | down 8x2 e3 | direct 2s | up 16 p5 | pyramid 450 us |
+| 24 | strict | 275 | 5 | 0.007 | 0.011 | 0.007 | 0.18 | down 4x4 e9 | direct 2s | up 2x8 e2 | none |
+| 24 | medium | 231 | 3 | 0.005 | 0.028 | 0.067 | 0.34 | down 16 e3 | direct 2s | up 16 p4 | pyramid 398 us |
+| 24 | loose | 231 | 3 | 0.005 | 0.028 | 0.067 | 0.34 | down 16 e3 | direct 2s | up 16 p4 | pyramid 398 us |
+| 32 | strict | 257 | 5 | 0.007 | 0.016 | 0.010 | 0.10 | down 8x2 e9 | direct 2s | up 2x8 e2 | none |
+| 32 | medium | 233 | 3 | 0.012 | 0.052 | 0.048 | 0.48 | down 16 e3 | direct 2s | up 16 p4 | pyramid 403 us |
+| 32 | loose | 233 | 3 | 0.007 | 0.039 | 0.100 | 0.42 | down 16 e1 | direct 2s | up 16 e2 | pyramid 403 us |
+| 48 | strict | 246 | 5 | 0.006 | 0.011 | 0.010 | 0.10 | down 8x4 e9 | direct 2s | up 2x16 e2 | none |
+| 48 | medium | 234 | 4 | 0.006 | 0.022 | 0.038 | 0.34 | down 16x2 e3 | direct 2s | up 32 p4 | pyramid 393 us |
+| 48 | loose | 234 | 4 | 0.006 | 0.022 | 0.038 | 0.34 | down 16x2 e3 | direct 2s | up 32 p4 | pyramid 393 us |
+| 64 | strict | 247 | 5 | 0.008 | 0.012 | 0.007 | 0.12 | down 8x4 e9 | direct 2.5s | up 2x16 e1 | none |
+| 64 | medium | 234 | 4 | 0.008 | 0.046 | 0.028 | 0.39 | down 16x2 e3 | direct 2s | up 32 p4 | pyramid 394 us |
+| 64 | loose | 233 | 4 | 0.010 | 0.008 | 0.048 | 0.45 | down 16x4 e5 | direct 2s | up 64 p5 | pyramid 394 us |
+| 100 | strict | 237 | 4 | 0.007 | 0.016 | 0.009 | 0.12 | down 16x2 e9 | direct 2.5s | up 32 e1 | none |
+| 100 | medium | 233 | 4 | 0.007 | 0.037 | 0.037 | 0.38 | down 16x4 e3 | direct 2s | up 64 p4 | pyramid 396 us |
+| 100 | loose | 233 | 4 | 0.007 | 0.037 | 0.037 | 0.38 | down 16x4 e3 | direct 2s | up 64 p4 | pyramid 396 us |
+| 150 | strict | 233 | 4 | 0.009 | 0.014 | 0.007 | 0.11 | down 16x4 e9 | direct 2.5s | up 64 p4 | none |
+| 150 | medium | 233 | 4 | 0.008 | 0.038 | 0.089 | 0.37 | down 16x4 e1 | direct 2s | up 64 e2 | pyramid 396 us |
+| 150 | loose | 233 | 4 | 0.005 | 0.023 | 0.056 | 0.39 | down 16x8 e3 | direct 2s | up 128 p5 | pyramid 396 us |
+| 200 | strict | 234 | 4 | 0.006 | 0.018 | 0.010 | 0.13 | down 16x4 e5 | direct 2.5s | up 64 e2 | none |
+| 200 | medium | 233 | 4 | 0.006 | 0.037 | 0.038 | 0.38 | down 16x8 e3 | direct 2s | up 128 p4 | pyramid 397 us |
+| 200 | loose | 233 | 4 | 0.006 | 0.037 | 0.038 | 0.38 | down 16x8 e3 | direct 2s | up 128 p4 | pyramid 397 us |
 
 ## Cost vs shift-variance Pareto front (candidates also meeting the other 'medium' limits)
 
-**sigma 2**: 484 us / phase 0.022 (down 2 e3 | direct 2s | up 2 e3), 555 us / phase 0.017 (down 2 e5 | sep 3s | up 2 e1)
+**sigma 2**: 453 us / phase 0.017 (down 2 e5 | direct 2s | up 2 p5), 502 us / phase 0.017 (down 2 e9 | direct 2s | up 2 p5)
 
-**sigma 3**: 545 us / phase 0.005 (down 2 e5 | direct 2s | up 2 e1), 555 us / phase 0.005 (down 2 e5 | sep 2s | up 2 e1)
+**sigma 3**: 545 us / phase 0.004 (down 2 e5 | direct 2s | up 2 p5), 555 us / phase 0.004 (down 2 e5 | sep 2s | up 2 p5)
 
-**sigma 4**: 396 us / phase 0.047 (down 4 e5 | direct 2s | up 2x2 e2), 506 us / phase 0.008 (down 2x2 e5 | direct 2s | up 2x2 e2), 555 us / phase 0.002 (down 2 e5 | sep 2s | up 2 e2), 664 us / phase 0.002 (down 2 e5 | direct 2s | up 2 e2)
+**sigma 4**: 393 us / phase 0.023 (down 4 e9 | direct 2s | up 2x2 e2), 506 us / phase 0.008 (down 2x2 e5 | direct 2s | up 2x2 e2), 555 us / phase 0.002 (down 2 e5 | sep 2.5s | up 2 p5), 615 us / phase 0.001 (down 2 e9 | sep 2s | up 2 p5), 724 us / phase 0.001 (down 2 e9 | direct 2s | up 2 p5)
 
-**sigma 6**: 419 us / phase 0.025 (down 4 e5 | direct 2s | up 2x2 e2), 425 us / phase 0.025 (down 4 e5 | sep 2s | up 2x2 e1), 532 us / phase 0.001 (down 2x2 e5 | direct 2s | up 2x2 e2), 538 us / phase 0.001 (down 2x2 e5 | sep 2s | up 2x2 e2), 555 us / phase 0.001 (down 2 e5 | sep 2.5s | up 2 e2)
+**sigma 6**: 306 us / phase 0.010 (down 4 e9 | direct 2s | up 4 p5), 312 us / phase 0.010 (down 4 e9 | sep 2s | up 4 p5), 419 us / phase 0.004 (down 2x2 e5 | direct 2s | up 4 p5), 425 us / phase 0.004 (down 2x2 e5 | sep 2s | up 4 p5), 532 us / phase 0.001 (down 2x2 e5 | direct 2s | up 2x2 e2), 538 us / phase 0.001 (down 2x2 e5 | sep 2s | up 2x2 e2)
 
-**sigma 8**: 312 us / phase 0.018 (down 4 e5 | sep 2.5s | up 4 e2), 416 us / phase 0.018 (down 4x2 e5 | direct 2s | up 2x2x2 e2), 425 us / phase 0.017 (down 4 e5 | sep 2s | up 2x2 e2), 425 us / phase 0.005 (down 2x2 e5 | sep 2s | up 4 e1), 538 us / phase 0.000 (down 2x2 e5 | sep 2s | up 2x2 e2)
+**sigma 8**: 283 us / phase 0.055 (down 8 e9 | sep 3s | up 2x4 p5), 303 us / phase 0.019 (down 4x2 e5 | direct 2s | up 2x4 e2), 307 us / phase 0.011 (down 4x2 e9 | direct 3s | up 2x4 p5), 312 us / phase 0.006 (down 4 e9 | sep 2.5s | up 4 p5), 425 us / phase 0.005 (down 4 e9 | sep 2s | up 2x2 e2), 425 us / phase 0.002 (down 2x2 e5 | sep 2s | up 4 p5)
 
-**sigma 12**: 312 us / phase 0.011 (down 4 e5 | sep 2.5s | up 4 e2), 395 us / phase 0.011 (down 4 e5 | sep 2.5s | up 4 e3), 423 us / phase 0.011 (down 4x2 e5 | direct 2s | up 2x2x2 e2), 425 us / phase 0.002 (down 2x2 e5 | sep 2.5s | up 4 e1)
+**sigma 12**: 246 us / phase 0.030 (down 8 e9 | direct 2s | up 8 p5), 251 us / phase 0.029 (down 8 e9 | sep 2s | up 8 p5), 278 us / phase 0.012 (down 4x2 e5 | direct 2s | up 8 p5), 282 us / phase 0.005 (down 4x2 e9 | direct 2s | up 8 p5), 287 us / phase 0.005 (down 4x2 e9 | sep 2s | up 8 p5), 312 us / phase 0.003 (down 4 e9 | sep 2.5s | up 4 p5)
 
-**sigma 16**: 283 us / phase 0.010 (down 4x2 e5 | sep 2s | up 8 e2), 324 us / phase 0.008 (down 4 e5 | sep 2.5s | up 4 e2)
+**sigma 16**: 248 us / phase 0.064 (down 16 e9 | sep 2s | up 2x8 p5), 251 us / phase 0.020 (down 8 e9 | sep 2.5s | up 8 p5), 273 us / phase 0.020 (down 4x4 e9 | direct 2s | up 2x8 e2), 283 us / phase 0.008 (down 4x2 e5 | sep 2s | up 8 p5), 287 us / phase 0.003 (down 4x2 e9 | sep 2s | up 8 p5), 319 us / phase 0.002 (down 4x2 e9 | sep 2s | up 2x4 e2)
 
-**sigma 24**: 283 us / phase 0.006 (down 4x2 e5 | sep 2.5s | up 8 e1)
+**sigma 24**: 231 us / phase 0.037 (down 16 e9 | direct 2s | up 16 p5), 236 us / phase 0.036 (down 16 e9 | sep 2s | up 16 p5), 243 us / phase 0.022 (down 8x2 e5 | direct 2s | up 16 p5), 244 us / phase 0.014 (down 8x2 e9 | direct 2s | up 16 p5), 249 us / phase 0.013 (down 8x2 e9 | sep 2s | up 16 p5), 251 us / phase 0.013 (down 8 e9 | sep 2.5s | up 8 p5)
 
-**sigma 32**: 265 us / phase 0.012 (down 4x4 e5 | direct 2s | up 16 e2), 277 us / phase 0.007 (down 4x2x2 e5 | direct 2s | up 16 e1), 286 us / phase 0.004 (down 4x2 e5 | sep 2.5s | up 8 e2)
+**sigma 32**: 233 us / phase 0.026 (down 16 e9 | direct 2s | up 16 p5), 245 us / phase 0.016 (down 8x2 e5 | direct 2s | up 16 p5), 246 us / phase 0.010 (down 8x2 e9 | direct 2s | up 16 p5), 249 us / phase 0.010 (down 8x2 e9 | sep 2s | up 16 p5), 254 us / phase 0.009 (down 8 e9 | sep 2.5s | up 8 p5)
 
-**sigma 48**: 268 us / phase 0.007 (down 4x4 e5 | sep 2.5s | up 16 e2)
+**sigma 48**: 234 us / phase 0.027 (down 16x2 e5 | direct 2s | up 32 p5), 234 us / phase 0.019 (down 16x2 e9 | direct 2s | up 32 p5), 236 us / phase 0.016 (down 16 e9 | sep 2.5s | up 16 p5), 239 us / phase 0.011 (down 8x4 e9 | direct 2s | up 32 p5), 244 us / phase 0.010 (down 8x4 e9 | sep 2s | up 32 p5), 246 us / phase 0.010 (down 8x4 e9 | direct 2s | up 2x16 e2)
 
-**sigma 64**: 266 us / phase 0.007 (down 4x4x2 e5 | direct 2s | up 32 e2), 269 us / phase 0.005 (down 4x4 e5 | sep 2.5s | up 16 e2)
+**sigma 64**: 234 us / phase 0.020 (down 16x2 e5 | direct 2s | up 32 p5), 235 us / phase 0.014 (down 16x2 e9 | direct 2s | up 32 p5), 237 us / phase 0.012 (down 16 e9 | sep 2.5s | up 16 p5), 239 us / phase 0.007 (down 8x4 e9 | direct 2s | up 32 p5), 240 us / phase 0.007 (down 8x4 e9 | direct 2.5s | up 32 p5), 244 us / phase 0.007 (down 8x4 e9 | sep 2.5s | up 32 p5)
 
-**sigma 100**: 268 us / phase 0.065 (down 4x4x2 e1 | direct 2s | up 32 e2), 268 us / phase 0.004 (down 4x4x2 e5 | direct 2s | up 32 e1), 269 us / phase 0.004 (down 4x4x2 e5 | direct 2.5s | up 32 e2), 271 us / phase 0.004 (down 4x4x2 e5 | sep 2.5s | up 32 e2), 271 us / phase 0.003 (down 4x4 e5 | sep 2.5s | up 16 e2)
+**sigma 100**: 233 us / phase 0.012 (down 16x4 e9 | direct 2s | up 64 p5), 237 us / phase 0.009 (down 16x2 e9 | direct 2.5s | up 32 p5), 239 us / phase 0.009 (down 16x2 e9 | sep 2.5s | up 32 p5), 239 us / phase 0.008 (down 16 e9 | sep 2.5s | up 16 e2), 241 us / phase 0.004 (down 8x4 e9 | direct 2s | up 32 p5)
 
-**sigma 150**: 265 us / phase 0.007 (down 4x4x4 e5 | direct 2s | up 64 e2), 270 us / phase 0.007 (down 4x4x4 e5 | sep 2s | up 64 e2), 271 us / phase 0.002 (down 4x4x2 e5 | sep 2.5s | up 32 e2), 275 us / phase 0.002 (down 4x4 e5 | sep 2.5s | up 16 e2), 277 us / phase 0.002 (down 4x4 e5 | sep 3s | up 16 e2)
+**sigma 150**: 233 us / phase 0.089 (down 16x4 e1 | direct 2s | up 64 e2), 233 us / phase 0.007 (down 16x4 e9 | direct 2s | up 64 p5), 233 us / phase 0.007 (down 16x4 e9 | direct 2.5s | up 64 p5), 238 us / phase 0.007 (down 16x4 e9 | sep 2.5s | up 64 p5)
 
-**sigma 200**: 266 us / phase 0.066 (down 4x4x4 e1 | direct 2s | up 64 e2), 266 us / phase 0.004 (down 4x4x4 e5 | direct 2s | up 64 e2), 270 us / phase 0.004 (down 4x4x4 e5 | sep 2s | up 64 e2)
+**sigma 200**: 233 us / phase 0.018 (down 16x8 e9 | direct 2s | up 128 p5), 234 us / phase 0.005 (down 16x4 e9 | direct 2s | up 64 p5), 234 us / phase 0.005 (down 16x4 e9 | direct 2.5s | up 64 p5), 234 us / phase 0.005 (down 16x4 e9 | direct 3s | up 64 p5), 238 us / phase 0.005 (down 16x4 e9 | sep 2.5s | up 64 p5)
 
