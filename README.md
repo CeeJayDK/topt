@@ -75,6 +75,11 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   (generalising LumaSharpen's "Wider") reach medium quality at sigma 0.8 with 5
   fetches (0 us), 1.0 with 9 (24 us), 1.3 with 13 (77 us); see
   `results/small_kernels.md`.
+* Stochastic / interleaved sampling (Vogel, R2, jittered and optimal-transport
+  point sets, per-pixel rotation by Bayer index) was a bust without temporal
+  accumulation: most variants fail on static pattern noise, and the one that
+  passed by eye (sigma 2) is slower than the hybrid (131 vs 121 us). Parked
+  for temporal use; see `results/stochastic.md`.
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
 * RGB10A2 intermediates add <= 0.17 8-bit levels of error on smooth ramps.
   R11G11B10F gives up to 1.1 (R, G) / 2.0 (B) levels on mid/bright ramps:
@@ -82,17 +87,21 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
 * FFT and full-res IIR/moving-average methods need >= 2 full-res read+write
   passes, so they cannot beat the hybrid in this sigma range.
 
-## The effect
+## The research effect
 
-`fx/TOPT_Blur.fx` is the finished blur built from these results (see
-`fx/README.md` for settings and modelled cost).
+`fx/TOPT_Blur.fx` combines the winners into one effect with a size class per
+downsample factor, so they can be timed and compared on hardware. It is a test
+bed, not a release shader: the plan is to split the best methods into small
+reference effects afterwards. See `fx/README.md` for settings and modelled cost.
 
 ## Status / next
 
 * Quality profiles in `topt/search.py` are calibrated by eye with
-  `scripts/calibrate.py` renders (truncation, blockiness, motion).
-* The per-pass overhead (5 us) and the memory-bound claim need hardware timing:
-  see `fx/README.md`.
-* Planned: generic search over pass sequences, compute-shader (groupshared)
-  cost model, stochastic methods, FFT for the largest radii, and `.fx`
-  generators for hardware timing.
+  `scripts/calibrate.py` renders (truncation, blockiness, motion, isotropy,
+  noise).
+* Next: hardware timing (`fx/README.md`), then refit the cost model (per-pass
+  overhead, memory-bound claim) and re-run the searches.
+* Open: sigma 2.5-3 and 9-12 cost more than their neighbours (the runtime
+  kernel grows in whole 2D pair steps at low resolution); a separable low-res
+  blur would make sigma 2.5-6 ~150 us at x2. Temporal stochastic sampling (Movie Night) and extra
+  downsample/upsample variants are parked.
