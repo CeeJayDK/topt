@@ -40,7 +40,7 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
 
 | sigma | 1080p winner (medium quality) | 1080p us | 4K us |
 |---:|---|---:|---:|
-| 1 | single-pass 16-fetch 2D kernel in the composite | 116 | 466 |
+| 1 | single-pass exact pinwheel (13 fetches) in the composite | 77 | 307 |
 | 2-3 | x2 down, small blur, x2 up in the composite | 121-144 | 453-545 |
 | 4-8 | one x4 / x8 down pass (wide filter), blur, pinwheel up | 84-110 | 283-393 |
 | 12-16 | one x8 down pass, one-pass blur, x8 4-tap pinwheel up | 69-73 | 246-248 |
@@ -80,6 +80,15 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   accumulation: most variants fail on static pattern noise, and the one that
   passed by eye (sigma 2) is slower than the hybrid (131 vs 121 us). Parked
   for temporal use; see `results/stochastic.md`.
+* Exact pinwheels: a Gaussian is separable, so one bilinear fetch reproduces
+  the Gaussian weights of any 2x2 texel block exactly. A centre texel plus a
+  4-fold pinwheel of such blocks is a runtime-sized single-pass blur: medium
+  quality for sigma 0.7-0.9 with 9 fetches, 1.1 with 13, 1.3 with 17. The
+  5-fetch 17-texel pinwheel with exact weights reaches only loose (sigma 0.7,
+  not quite round).
+* Low-res blur: one 2D pass is cheapest while it needs few fetches; a separable
+  H + V pair wins for wider low-res kernels (x2: sigma 3, 150 vs 174 us; x4:
+  sigma 7-12, 89-91 vs up to 138 us; x8: sigma 20-26).
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
 * RGB10A2 intermediates add <= 0.17 8-bit levels of error on smooth ramps.
   R11G11B10F gives up to 1.1 (R, G) / 2.0 (B) levels on mid/bright ramps:
@@ -101,7 +110,5 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   noise).
 * Next: hardware timing (`fx/README.md`), then refit the cost model (per-pass
   overhead, memory-bound claim) and re-run the searches.
-* Open: sigma 2.5-3 and 9-12 cost more than their neighbours (the runtime
-  kernel grows in whole 2D pair steps at low resolution); a separable low-res
-  blur would make sigma 2.5-6 ~150 us at x2. Temporal stochastic sampling (Movie Night) and extra
-  downsample/upsample variants are parked.
+* Parked: temporal stochastic sampling (Movie Night) and extra
+  downsample/upsample variants.

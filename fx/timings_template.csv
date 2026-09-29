@@ -51,13 +51,19 @@ TOPT_M_Down4e1,,,
 TOPT_M_Down4e3,,,
 TOPT_M_Down4e5,,,
 TOPT_M_Down8e1,,,
+TOPT_Blur size 1 tune 0.8,1920x1080,,single pass 9 fetches model 24 us
+TOPT_Blur size 1,1920x1080,,single pass 13 fetches model 77 us
+TOPT_Blur size 1 tune 1.25,1920x1080,,single pass 17 fetches model 130 us
 TOPT_Blur size 2,1920x1080,,class 2 model 121 us
-TOPT_Blur size 3,1920x1080,,class 2 model 174 us
+TOPT_Blur size 3,1920x1080,,class 2 separable model 150 us
+TOPT_Blur size 4,1920x1080,,class 4s model 110 us
 TOPT_Blur size 6,1920x1080,,class 4s model 123 us
-TOPT_Blur size 7,1920x1080,,class 4 model 111 us
-TOPT_Blur size 12,1920x1080,,class 4 model 138 us
+TOPT_Blur size 7,1920x1080,,class 4 separable model 89 us
+TOPT_Blur size 12,1920x1080,,class 4 separable model 91 us
 TOPT_Blur size 13,1920x1080,,class 8 model 71 us
-TOPT_Blur size 26,1920x1080,,class 8 model 91 us
+TOPT_Blur size 19,1920x1080,,class 8 model 76 us
+TOPT_Blur size 20,1920x1080,,class 8 separable model 74 us
+TOPT_Blur size 26,1920x1080,,class 8 separable model 75 us
 TOPT_Blur size 27,1920x1080,,class 16 model 67 us
 TOPT_Blur size 51,1920x1080,,class 16 model 69 us
 TOPT_Blur size 52,1920x1080,,class 32 model 70 us
@@ -66,3 +72,4 @@ TOPT_Blur size 108,1920x1080,,class 64 model 70 us
 TOPT_Blur size 200,1920x1080,,class 64 model 70 us
 TOPT_Blur size 3 (live uniforms),1920x1080,,performance mode off
 TOPT_Blur size 16 (live uniforms),1920x1080,,performance mode off
+TOPT_Blur size 1 (live uniforms),1920x1080,,performance mode off
