@@ -82,6 +82,11 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
 * FFT and full-res IIR/moving-average methods need >= 2 full-res read+write
   passes, so they cannot beat the hybrid in this sigma range.
 
+## The effect
+
+`fx/TOPT_Blur.fx` is the finished blur built from these results (see
+`fx/README.md` for settings and modelled cost).
+
 ## Status / next
 
 * Quality profiles in `topt/search.py` are calibrated by eye with
