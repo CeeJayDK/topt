@@ -59,12 +59,20 @@ def panel(img: np.ndarray, label: str, ref: np.ndarray | None = None) -> Image.I
     return p
 
 
-def grid(panels: list, cols: int) -> Image.Image:
+def grid(panels: list, cols: int, letters: bool = True) -> Image.Image:
+    """Panels in a grid, each stamped with a letter (A, B, C, ...) to refer to it by."""
     pw, ph = panels[0].size
     rows = math.ceil(len(panels) / cols)
     g = Image.new("L", (cols * (pw + 6), rows * (ph + 6)), 0)
+    d = ImageDraw.Draw(g)
+    f = ImageFont.truetype(FONT, 26)
     for i, p in enumerate(panels):
-        g.paste(p, ((i % cols) * (pw + 6), (i // cols) * (ph + 6)))
+        x, y = (i % cols) * (pw + 6), (i // cols) * (ph + 6)
+        g.paste(p, (x, y))
+        if letters:
+            tag = chr(ord("A") + i) if i < 26 else f"A{chr(ord('A') + i - 26)}"
+            d.rectangle([x + pw - 38, y + 36, x + pw - 4, y + 70], fill=0)
+            d.text((x + pw - 32, y + 38), tag, fill=255, font=f)
     return g
 
 

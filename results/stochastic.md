@@ -19,13 +19,13 @@ shift-variance metrics (phase, block) that measure the static pattern noise.
 | 1.5 | loose noise-blind | | none | | | | | | - |
 | 2 | strict | | none | | | | | | - |
 | 2 | medium | 131 | down 2 e3 | sot 12 wei k3 tile 2b | up 2 p4 | 0.022 | 0.32 | 0.004 | 0.022 | 0.009 | 121 us |
-| 2 | loose | 118 | down 2 e3 | vogel 4 imp k3 tile 2b | up 2 e2 | 0.046 | 0.43 | 0.007 | 0.017 | 0.014 | 121 us |
+| 2 | loose | 129 | down 2 e3 | sot 8 imp k3 tile 2b | up 2 p9 | 0.025 | 0.34 | 0.009 | 0.042 | 0.016 | 121 us |
 | 2 | strict noise-blind | | none | | | | | | - |
 | 2 | medium noise-blind | 118 | down 2 e3 | vogel 8 wei k3 tile 2b | up 2 e2 | 0.032 | 0.38 | 0.006 | 0.017 | 0.010 | 121 us |
 | 2 | loose noise-blind | 118 | down 2 e3 | vogel 4 imp k3 tile 2b | up 2 e2 | 0.046 | 0.43 | 0.007 | 0.017 | 0.014 | 121 us |
 | 3 | strict | | none | | | | | | - |
 | 3 | medium | | none | | | | | | 144 us |
-| 3 | loose | 144 | down 2 e3 | vogel 16 imp k3 tile 2b | up 2 e2 | 0.037 | 0.45 | 0.010 | 0.020 | 0.027 | 144 us |
+| 3 | loose | | none | | | | | | 144 us |
 | 3 | strict noise-blind | | none | | | | | | - |
 | 3 | medium noise-blind | | none | | | | | | 144 us |
 | 3 | loose noise-blind | 131 | down 2 e3 | vogel 12 imp k3 tile 2b | up 2 e2 | 0.051 | 0.55 | 0.009 | 0.021 | 0.029 | 144 us |

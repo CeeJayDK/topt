@@ -82,6 +82,8 @@ PROFILES = {
     # 0.008-0.012, tv 0.026-0.031, curv 0.25-0.39, iso 0.015-0.018), loose to
     # 2.5 sigma. Pinwheel chain pw9x3 (block 0.35) and down 8 | up 8 p4 (iso
     # 0.029, block 0.26) look fine; pw9x2 (block 1.55) does not.
+    # Interleaved (per-pixel pattern) noise, noise_s*.png: block 0.32 acceptable,
+    # 0.37-0.40 "not good enough" -> see NOISE_BLOCK_MAX.
     "strict": {"leak": 0.01, "tv": 0.02, "curv": 0.2, "block": 0.1, "aniso": 0.03, "phase": 0.01,
                "iso": 0.01, "sigma_err": 0.02},
     "medium": {"leak": 0.012, "tv": 0.032, "curv": 0.4, "block": 0.35, "aniso": 0.03, "phase": 0.10,
@@ -89,6 +91,9 @@ PROFILES = {
     "loose": {"leak": 0.015, "tv": 0.055, "curv": 0.7, "block": 0.45, "aniso": 0.05, "phase": 0.15,
               "iso": 0.04, "sigma_err": 0.03},
 }
+
+
+NOISE_BLOCK_MAX = 0.35  # static grain from interleaved patterns is judged harsher than grid blockiness
 
 
 def passes_profile(q: dict, prof: dict) -> bool:

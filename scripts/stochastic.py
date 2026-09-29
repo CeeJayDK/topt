@@ -116,7 +116,8 @@ def write_md(allrecs: dict):
     for s in sorted(allrecs, key=float):
         recs = allrecs[s]
         for name, prof in list(S.PROFILES.items()) + [(f"{n} noise-blind", p) for n, p in blind.items()]:
-            ok = [r for r in recs if S.passes_profile(r, prof)]
+            ok = [r for r in recs if S.passes_profile(r, prof)
+                  and ("blind" in name or r["block"] <= S.NOISE_BLOCK_MAX)]
             ref = [r for r in hyb.get(s, []) if S.passes_profile(r, S.PROFILES[name.split()[0]])]
             refs = f"{min(r['us'] for r in ref):.0f} us" if ref else "-"
             if ok:
