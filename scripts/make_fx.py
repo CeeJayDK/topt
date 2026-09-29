@@ -293,12 +293,15 @@ def main():
                                                   + pinwheels(ROOT / "results" / "small_kernels.json")
                                                   + classic(), repeat))
     (FX / "TOPT_Bench_CS.fx").write_text(cs_effect())
+    csv = FX / "timings_template.csv"
+    # TOPT_Blur.fx is timed per TOPT_BLUR_SIZE: keep its hand-written rows
+    blur_rows = [r for r in csv.read_text().splitlines() if r.startswith("TOPT_Blur ")] if csv.exists() else []
     rows = ["technique,resolution,gpu_us,notes"]
-    for f in sorted(FX.glob("*.fx")):
+    for f in sorted(FX.glob("TOPT_Bench_*.fx")):
         names = re.findall(r"^technique (\w+)", f.read_text(), re.M)
         rows += [f"{n},,," for n in names]
         print(f, len(names), "techniques")
-    (FX / "timings_template.csv").write_text("\n".join(rows) + "\n")
+    csv.write_text("\n".join(rows + blur_rows) + "\n")
 
 
 if __name__ == "__main__":
