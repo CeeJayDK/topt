@@ -235,6 +235,15 @@ TEMPLATE = r"""/*------------------.
 #ifndef TOPT_BLUR_FORMAT
 	#define TOPT_BLUR_FORMAT RGB10A2 // intermediate format; R11G11B10F keeps HDR (> 1) values
 #endif
+#ifndef TOPT_BLUR_LUMA
+	#define TOPT_BLUR_LUMA 0 // 1: blur brightness only (one-channel buffers); the composite keeps the colour detail
+#endif
+#ifndef TOPT_BLUR_LUMA_FORMAT
+	#define TOPT_BLUR_LUMA_FORMAT R16F // brightness-only buffers: R16F or R8
+#endif
+#ifndef TOPT_BLUR_BLEND
+	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
+#endif
 
 #define TOPT_SIGMA_SCREEN (TOPT_BLUR_SIZE * BUFFER_HEIGHT / 1080)
 
@@ -259,6 +268,21 @@ uniform bool TOPT_ShowBlur <
 {CLASSES}
 
 sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
+
+static const float3 TOPT_LUMA = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
+#if TOPT_BLUR_LUMA && !TOPT_SMALL
+	#define TOPT_FMT TOPT_BLUR_LUMA_FORMAT
+	#define TOPT_T float
+	#define TOPT_CH r
+	#define TOPT_TO_LOW(c) dot(c, TOPT_LUMA)
+	#define TOPT_OUT(c) float4(c, 0.0, 0.0, 1.0)
+#else
+	#define TOPT_FMT TOPT_BLUR_FORMAT
+	#define TOPT_T float3
+	#define TOPT_CH rgb
+	#define TOPT_TO_LOW(c) c
+	#define TOPT_OUT(c) float4(c, 1.0)
+#endif
 
 #if TOPT_SMALL
 // Single pass: centre texel + 4-fold pinwheel of 2x2 texel blocks, each block's
@@ -294,10 +318,10 @@ float3 TOPT_BlurResolve(float2 uv)
 #define TOPT_DIV1 TOPT_F1
 #define TOPT_DIV2 (TOPT_F1 * TOPT_F2)
 
-texture TOPT_tDown1 { Width = BUFFER_WIDTH / TOPT_DIV1; Height = BUFFER_HEIGHT / TOPT_DIV1; Format = TOPT_BLUR_FORMAT; };
+texture TOPT_tDown1 { Width = BUFFER_WIDTH / TOPT_DIV1; Height = BUFFER_HEIGHT / TOPT_DIV1; Format = TOPT_FMT; };
 sampler TOPT_sDown1 { Texture = TOPT_tDown1; AddressU = MIRROR; AddressV = MIRROR; };
 #if TOPT_STEPS > 1
-texture TOPT_tDown2 { Width = BUFFER_WIDTH / TOPT_DIV2; Height = BUFFER_HEIGHT / TOPT_DIV2; Format = TOPT_BLUR_FORMAT; };
+texture TOPT_tDown2 { Width = BUFFER_WIDTH / TOPT_DIV2; Height = BUFFER_HEIGHT / TOPT_DIV2; Format = TOPT_FMT; };
 sampler TOPT_sDown2 { Texture = TOPT_tDown2; AddressU = MIRROR; AddressV = MIRROR; };
 	#define TOPT_sLow TOPT_sDown2
 	#define TOPT_DIVL TOPT_DIV2
@@ -306,14 +330,14 @@ sampler TOPT_sDown2 { Texture = TOPT_tDown2; AddressU = MIRROR; AddressV = MIRRO
 	#define TOPT_DIVL TOPT_DIV1
 #endif
 #if TOPT_SEP
-texture TOPT_tBlurH { Width = BUFFER_WIDTH / TOPT_DIVL; Height = BUFFER_HEIGHT / TOPT_DIVL; Format = TOPT_BLUR_FORMAT; };
+texture TOPT_tBlurH { Width = BUFFER_WIDTH / TOPT_DIVL; Height = BUFFER_HEIGHT / TOPT_DIVL; Format = TOPT_FMT; };
 sampler TOPT_sBlurH { Texture = TOPT_tBlurH; AddressU = MIRROR; AddressV = MIRROR; };
 #endif
-texture TOPT_tBlur { Width = BUFFER_WIDTH / TOPT_DIVL; Height = BUFFER_HEIGHT / TOPT_DIVL; Format = TOPT_BLUR_FORMAT; };
+texture TOPT_tBlur { Width = BUFFER_WIDTH / TOPT_DIVL; Height = BUFFER_HEIGHT / TOPT_DIVL; Format = TOPT_FMT; };
 sampler TOPT_sBlur { Texture = TOPT_tBlur; AddressU = MIRROR; AddressV = MIRROR; };
 #if TOPT_UPSTEPS > 1 // intermediate x2 upsample to 1/(DIVL/2) resolution
 	#define TOPT_DIVU (TOPT_DIVL / 2)
-texture TOPT_tUp { Width = BUFFER_WIDTH / TOPT_DIVU; Height = BUFFER_HEIGHT / TOPT_DIVU; Format = TOPT_BLUR_FORMAT; };
+texture TOPT_tUp { Width = BUFFER_WIDTH / TOPT_DIVU; Height = BUFFER_HEIGHT / TOPT_DIVU; Format = TOPT_FMT; };
 sampler TOPT_sUp { Texture = TOPT_tUp; AddressU = MIRROR; AddressV = MIRROR; };
 	#define TOPT_sFinal TOPT_sUp
 	#define TOPT_DIVF TOPT_DIVU
@@ -325,20 +349,20 @@ sampler TOPT_sUp { Texture = TOPT_tUp; AddressU = MIRROR; AddressV = MIRROR; };
 float4 TOPT_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float2 px = BUFFER_PIXEL_SIZE;
-	float3 c = 0.0;
+	float3 c = 0.0; // backbuffer colour; converted to brightness once at the end (it is linear)
 	[unroll] for (int i = 0; i < TOPT_ND1; i++)
 		c += TOPT_DOWN1[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_DOWN1[i].xy * px, 0.0, 0.0)).rgb;
-	return float4(c, 1.0);
+	return TOPT_OUT(TOPT_TO_LOW(c));
 }
 
 #if TOPT_STEPS > 1
 float4 TOPT_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIV1, BUFFER_HEIGHT / TOPT_DIV1);
-	float3 c = 0.0;
+	TOPT_T c = 0.0;
 	[unroll] for (int i = 0; i < TOPT_ND2; i++)
-		c += TOPT_DOWN2[i].z * tex2Dlod(TOPT_sDown1, float4(uv + TOPT_DOWN2[i].xy * px, 0.0, 0.0)).rgb;
-	return float4(c, 1.0);
+		c += TOPT_DOWN2[i].z * tex2Dlod(TOPT_sDown1, float4(uv + TOPT_DOWN2[i].xy * px, 0.0, 0.0)).TOPT_CH;
+	return TOPT_OUT(c);
 }
 #endif
 
@@ -377,7 +401,7 @@ float4 TOPT_BlurPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 		wsum += m <= np ? 2.0 * t[m].y : 0.0;
 	}
 
-	float3 c = 0.0;
+	TOPT_T c = 0.0;
 	[unroll] for (int y = -TOPT_NP; y <= TOPT_NP; y++)
 	{
 		[branch] if (abs(y) <= np)
@@ -389,16 +413,16 @@ float4 TOPT_BlurPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 				{
 					const float2 tx = t[abs(x)];
 					const float2 o = float2(x < 0 ? -tx.x : tx.x, y < 0 ? -ty.x : ty.x);
-					c += tx.y * ty.y * tex2Dlod(TOPT_sLow, float4(uv + o * px, 0.0, 0.0)).rgb;
+					c += tx.y * ty.y * tex2Dlod(TOPT_sLow, float4(uv + o * px, 0.0, 0.0)).TOPT_CH;
 				}
 			}
 		}
 	}
-	return float4(c / (wsum * wsum), 1.0);
+	return TOPT_OUT(c / (wsum * wsum));
 }
 
 #if TOPT_SEP
-float3 TOPT_Blur1D(sampler s, float2 uv, float2 dir)
+TOPT_T TOPT_Blur1D(sampler s, float2 uv, float2 dir)
 {
 	const float2 d = dir / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
 	const float sl = TOPT_LowSigma();
@@ -406,14 +430,14 @@ float3 TOPT_Blur1D(sampler s, float2 uv, float2 dir)
 	const int np = (r + 1) / 2;
 	const float k = -0.5 / (sl * sl);
 
-	float3 c = tex2Dlod(s, float4(uv, 0.0, 0.0)).rgb;
+	TOPT_T c = tex2Dlod(s, float4(uv, 0.0, 0.0)).TOPT_CH;
 	float wsum = 1.0;
 	[unroll] for (int m = 1; m <= TOPT_NP; m++)
 	{
 		[branch] if (m <= np)
 		{
 			const float2 p = TOPT_Pair(m, k, r);
-			c += p.y * (tex2Dlod(s, float4(uv + p.x * d, 0.0, 0.0)).rgb + tex2Dlod(s, float4(uv - p.x * d, 0.0, 0.0)).rgb);
+			c += p.y * (tex2Dlod(s, float4(uv + p.x * d, 0.0, 0.0)).TOPT_CH + tex2Dlod(s, float4(uv - p.x * d, 0.0, 0.0)).TOPT_CH);
 			wsum += 2.0 * p.y;
 		}
 	}
@@ -422,12 +446,12 @@ float3 TOPT_Blur1D(sampler s, float2 uv, float2 dir)
 
 float4 TOPT_BlurHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(TOPT_Blur1D(TOPT_sLow, uv, float2(1.0, 0.0)), 1.0);
+	return TOPT_OUT(TOPT_Blur1D(TOPT_sLow, uv, float2(1.0, 0.0)));
 }
 
 float4 TOPT_BlurVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(TOPT_Blur1D(TOPT_sBlurH, uv, float2(0.0, 1.0)), 1.0);
+	return TOPT_OUT(TOPT_Blur1D(TOPT_sBlurH, uv, float2(0.0, 1.0)));
 }
 #endif
 
@@ -435,10 +459,10 @@ float4 TOPT_BlurVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 float4 TOPT_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
-	float3 c = 0.0;
+	TOPT_T c = 0.0;
 	[unroll] for (int i = 0; i < TOPT_NUP; i++)
-		c += TOPT_UP[i].z * tex2Dlod(TOPT_sBlur, float4(uv + TOPT_UP[i].xy * px, 0.0, 0.0)).rgb;
-	return float4(c, 1.0);
+		c += TOPT_UP[i].z * tex2Dlod(TOPT_sBlur, float4(uv + TOPT_UP[i].xy * px, 0.0, 0.0)).TOPT_CH;
+	return TOPT_OUT(c);
 }
 #endif
 
@@ -447,13 +471,32 @@ float4 TOPT_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 float3 TOPT_BlurResolve(float2 uv)
 {
 	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVF, BUFFER_HEIGHT / TOPT_DIVF);
-	float3 c = 0.0;
+	TOPT_T c = 0.0;
 	[unroll] for (int i = 0; i < TOPT_NUP; i++)
-		c += TOPT_UP[i].z * tex2Dlod(TOPT_sFinal, float4(uv + TOPT_UP[i].xy * px, 0.0, 0.0)).rgb;
-	return c;
+		c += TOPT_UP[i].z * tex2Dlod(TOPT_sFinal, float4(uv + TOPT_UP[i].xy * px, 0.0, 0.0)).TOPT_CH;
+	return c; // brightness-only: the blurred luma in all three channels
 }
 #endif // TOPT_SMALL
 
+#if TOPT_BLUR_LUMA
+// Brightness only: replace the pixel's luma with the blurred luma, keep its colour detail.
+float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float yb = dot(TOPT_BlurResolve(uv), TOPT_LUMA);
+	if (TOPT_ShowBlur)
+		return float4(yb.xxx, 1.0);
+	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
+	return float4(o + TOPT_Strength * (yb - dot(o, TOPT_LUMA)), 1.0);
+}
+#elif TOPT_BLUR_BLEND
+// The pass blends: screen = blur * a + screen * (1 - a). The shader neither reads
+// the screen nor lerps. Blending uses the stored (non-sRGB) values, as the
+// shader lerp below does, so the result is the same.
+float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	return float4(TOPT_BlurResolve(uv), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
+}
+#else
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float3 blur = TOPT_BlurResolve(uv);
@@ -462,6 +505,7 @@ float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
 	return float4(lerp(o, blur, TOPT_Strength), 1.0);
 }
+#endif
 
 technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the size with the TOPT_BLUR_SIZE preprocessor definition (sigma in pixels at 1080p)."; >
 {
@@ -480,7 +524,14 @@ technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the siz
 	pass Up { VertexShader = PostProcessVS; PixelShader = TOPT_UpPS; RenderTarget = TOPT_tUp; }
 #endif
 #endif
-	pass Composite { VertexShader = PostProcessVS; PixelShader = TOPT_CompositePS; }
+	pass Composite
+	{
+		VertexShader = PostProcessVS; PixelShader = TOPT_CompositePS;
+#if TOPT_BLUR_BLEND && !TOPT_BLUR_LUMA
+		BlendEnable = true; BlendOp = ADD; SrcBlend = SRCALPHA; DestBlend = INVSRCALPHA;
+		RenderTargetWriteMask = 7; // keep the screen's alpha
+#endif
+	}
 }
 """
 

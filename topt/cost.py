@@ -42,9 +42,12 @@ BYTES_PER_PIXEL = 4  # RGB10A2 / R11G11B10F / RGBA8 backbuffer
 RESOLUTIONS = {"1080p": (1920, 1080), "1440p": (2560, 1440), "4k": (3840, 2160)}
 
 
-def _pass_time(nd: int, ns_read: int, taps: int, gpu: GPU) -> tuple:
+def _pass_time(nd: int, ns_read: int, taps: int, gpu: GPU, wbytes: float = BYTES_PER_PIXEL,
+               rbytes: float | None = None) -> tuple:
+    """rbytes: bytes read in total (default ns_read texels of BYTES_PER_PIXEL)."""
     t_tex = nd * taps / gpu.tex_rate
-    t_mem = (nd + ns_read) * BYTES_PER_PIXEL / gpu.bandwidth
+    rb = ns_read * BYTES_PER_PIXEL if rbytes is None else rbytes
+    t_mem = (nd * wbytes + rb) / gpu.bandwidth
     t_rop = nd / gpu.rop_rate
     t = max(t_tex, t_mem, t_rop)
     return gpu.pass_overhead + t, ("tex" if t == t_tex else "mem" if t == t_mem else "rop")
@@ -66,15 +69,20 @@ def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660
         ns = (W // sd) * (H // sd)
         taps = len(p.taps)
         ns_read = min(ns, nd * taps * 4)
+        j = pl.src_index(i)
+        rbytes = ns_read * (pl.passes[j].bpp if j >= 0 else BYTES_PER_PIXEL)
+        wbytes = p.bpp
         if composite and i == last:
             taps += 1
-            if pl.src_index(i) >= 0:  # else the blur already reads the backbuffer
+            wbytes = BYTES_PER_PIXEL  # the screen
+            if j >= 0:  # else the blur already reads the backbuffer
                 ns_read += W * H
-        t, b = _pass_time(nd, ns_read, taps, gpu)
+                rbytes += W * H * BYTES_PER_PIXEL
+        t, b = _pass_time(nd, ns_read, taps, gpu, wbytes, rbytes)
         bounds.append(b)
         total += t
         fetches += nd * taps
-        dram += (nd + ns_read) * BYTES_PER_PIXEL
+        dram += nd * wbytes + rbytes
     base = composite_baseline(W, H, gpu) if composite else 0.0
     return {
         "us": (total - base) * 1e6,
