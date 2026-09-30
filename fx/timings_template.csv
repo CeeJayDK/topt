@@ -77,3 +77,8 @@ TOPT_Blur size 16 Strength 0.5,1920x1080,,TOPT_BLUR_BLEND 0
 TOPT_Blur size 16 Strength 0.5 blend,1920x1080,,TOPT_BLUR_BLEND 1 (blend state instead of shader lerp)
 TOPT_Blur size 1 tune 1.25 Strength 0.5,1920x1080,,TOPT_BLUR_BLEND 0
 TOPT_Blur size 1 tune 1.25 Strength 0.5 blend,1920x1080,,TOPT_BLUR_BLEND 1
+TOPT_Blur size 2 luma,1920x1080,,TOPT_BLUR_LUMA 1 (R16F) model 107 us
+TOPT_Blur size 3 luma,1920x1080,,TOPT_BLUR_LUMA 1 (R16F) model 116 us
+TOPT_Blur size 3 luma R8,1920x1080,,TOPT_BLUR_LUMA 1 + TOPT_BLUR_LUMA_FORMAT R8 model 109 us
+TOPT_Blur size 6 luma,1920x1080,,TOPT_BLUR_LUMA 1 (R16F) model 111 us
+TOPT_Blur size 16 luma,1920x1080,,TOPT_BLUR_LUMA 1 (R16F) model 75 us

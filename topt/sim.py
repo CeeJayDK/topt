@@ -30,6 +30,7 @@ class Pass:
     tile: int = 1
     vmap: tuple | None = None
     sel: str | None = None   # how the shader derives the variant ('bayer' / 'dot'); variants are rotations
+    bpp: int = 4             # bytes per output pixel (cost model only): 4 = RGB10A2, 2 = R16F, 1 = R8
 
     def variant_of(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         idx = (y % self.tile) * self.tile + (x % self.tile)

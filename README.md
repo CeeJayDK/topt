@@ -94,6 +94,14 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   (RDNA3 ISA) when Strength < 1. The model counts it as free unless the
   composite is texture-bound; it also frees one "free" tap for a larger
   upsampler. To be timed.
+* Brightness-only blurs (`TOPT_BLUR_LUMA`, one-channel R16F / R8 buffers):
+  12-34 us cheaper at sigma 2-6 (sigma 3: 150 -> 116 / 109 us), nothing from
+  sigma ~16 up, where the low-res buffers are already tiny and the cost is the
+  full-res read and the composite. Keeping colour at a lower resolution than
+  brightness (video-style chroma subsampling) does not pay for a blur: render
+  targets of one pass must share a size, so colour needs its own passes, and
+  the composite needs two upsamplers (model: break-even at sigma 3-6, 20-35 us
+  slower elsewhere).
 * Spare RGB10A2 alpha bits: as 2 shared low bits added to R, G and B (still
   linear, so bilinear filtering stays exact) they cut the rounding error 1.5x
   for colours and 4x for greys (0.072 -> 0.047 / 0.018 8-bit levels RMS), at
