@@ -51,6 +51,16 @@ TOPT_M_Down4e1,,,
 TOPT_M_Down4e3,,,
 TOPT_M_Down4e5,,,
 TOPT_M_Down8e1,,,
+TOPT_O_Grid25_row,,,
+TOPT_O_Grid25_snake,,,
+TOPT_O_Grid25_morton,,,
+TOPT_O_Grid25_spiral,,,
+TOPT_O_Grid25_col,,,
+TOPT_O_Grid25_random,,,
+TOPT_O_Down16_row,,,
+TOPT_O_Down16_snake,,,
+TOPT_O_Down16_morton,,,
+TOPT_O_Down16_random,,,
 TOPT_Blur size 1 tune 0.8,1920x1080,,single pass 9 fetches model 24 us
 TOPT_Blur size 1,1920x1080,,single pass 13 fetches model 77 us
 TOPT_Blur size 1 tune 1.25,1920x1080,,single pass 17 fetches model 130 us

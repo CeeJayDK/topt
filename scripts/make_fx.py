@@ -7,6 +7,8 @@ TOPT_Bench_Micro.fx  cost-model calibration (composite baseline, fetch sweep,
 TOPT_Bench_Blur.fx   optimizer winners and classic methods, blur fused into
                      the composite pass
 TOPT_Bench_CS.fx     compute tile blur + mandatory composite pixel shader
+TOPT_Bench_Order.fx  the same taps fetched in different orders (texture-cache
+                     locality; the model cannot see this, only hardware can)
 """
 from __future__ import annotations
 
@@ -51,6 +53,54 @@ def micro() -> list:
         p = Pass(f, S.outer(S.down_taps_1d(f, e)))
         items.append((composite_from([p]), f"TOPT_M_Down{f}e{e}",
                       f"First downsample {lab}, then composite (1-tap upsample)"))
+    return items
+
+
+def _morton(x: int, y: int) -> int:
+    z = 0
+    for b in range(8):
+        z |= ((x >> b) & 1) << (2 * b) | ((y >> b) & 1) << (2 * b + 1)
+    return z
+
+
+def ordered(taps: tuple, kind: str) -> tuple:
+    """The same taps in another fetch order (the weights move with their taps)."""
+    xs = [round(t[0]) for t in taps]
+    ys = [round(t[1]) for t in taps]
+    x0, y0 = min(xs), min(ys)
+    idx = list(range(len(taps)))
+    if kind == "row":
+        idx.sort(key=lambda i: (ys[i], xs[i]))
+    elif kind == "col":
+        idx.sort(key=lambda i: (xs[i], ys[i]))
+    elif kind == "snake":  # row by row, alternating direction
+        rows = sorted(set(ys))
+        idx.sort(key=lambda i: (ys[i], xs[i] if rows.index(ys[i]) % 2 == 0 else -xs[i]))
+    elif kind == "morton":  # Z-order: 2x2 blocks, then 4x4, ...
+        idx.sort(key=lambda i: _morton(xs[i] - x0, ys[i] - y0))
+    elif kind == "spiral":  # outward from the centre by radius, then angle
+        idx.sort(key=lambda i: (round(math.hypot(taps[i][0], taps[i][1]), 3), math.atan2(taps[i][1], taps[i][0])))
+    elif kind == "random":
+        np.random.default_rng(7).shuffle(idx)
+    return tuple(taps[i] for i in idx)
+
+
+ORDERS = ("row", "snake", "morton", "spiral", "col", "random")
+
+
+def order_bench() -> list:
+    """Cache-locality test: identical taps, different fetch order."""
+    items = []
+    # full-res pass: 5x5 bilinear taps 2 texels apart (a 10x10 texel footprint), into an intermediate
+    grid = tuple((2.0 * i + 0.5, 2.0 * j + 0.5, 1.0 / 25) for j in range(-2, 3) for i in range(-2, 3))
+    for k in ORDERS:
+        items.append((composite_from([Pass(1, ordered(grid, k))]), f"TOPT_O_Grid25_{k}",
+                      f"Full-res 25-tap 5x5 grid (10x10 texels), fetch order: {k}"))
+    # first downsample x16 (box * [1 2 1], 81 taps over 18x18 texels), memory-bound
+    down = S.outer(S.down_taps_1d(16, 3))
+    for k in ("row", "snake", "morton", "random"):
+        items.append((composite_from([Pass(16, ordered(down, k))]), f"TOPT_O_Down16_{k}",
+                      f"x16 downsample, {len(down)} taps, fetch order: {k}"))
     return items
 
 
@@ -293,6 +343,7 @@ def main():
                                                   + pinwheels(ROOT / "results" / "small_kernels.json")
                                                   + classic(), repeat))
     (FX / "TOPT_Bench_CS.fx").write_text(cs_effect())
+    (FX / "TOPT_Bench_Order.fx").write_text(effect(order_bench(), repeat))
     csv = FX / "timings_template.csv"
     # TOPT_Blur.fx is timed per TOPT_BLUR_SIZE: keep its hand-written rows
     blur_rows = [r for r in csv.read_text().splitlines() if r.startswith("TOPT_Blur ")] if csv.exists() else []
