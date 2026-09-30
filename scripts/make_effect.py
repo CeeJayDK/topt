@@ -235,6 +235,9 @@ TEMPLATE = r"""/*------------------.
 #ifndef TOPT_BLUR_FORMAT
 	#define TOPT_BLUR_FORMAT RGB10A2 // intermediate format; R11G11B10F keeps HDR (> 1) values
 #endif
+#ifndef TOPT_BLUR_BLEND
+	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
+#endif
 
 #define TOPT_SIGMA_SCREEN (TOPT_BLUR_SIZE * BUFFER_HEIGHT / 1080)
 
@@ -454,6 +457,15 @@ float3 TOPT_BlurResolve(float2 uv)
 }
 #endif // TOPT_SMALL
 
+#if TOPT_BLUR_BLEND
+// The pass blends: screen = blur * a + screen * (1 - a). The shader neither reads
+// the screen nor lerps. Blending uses the stored (non-sRGB) values, as the
+// shader lerp below does, so the result is the same.
+float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	return float4(TOPT_BlurResolve(uv), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
+}
+#else
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float3 blur = TOPT_BlurResolve(uv);
@@ -462,6 +474,7 @@ float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
 	return float4(lerp(o, blur, TOPT_Strength), 1.0);
 }
+#endif
 
 technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the size with the TOPT_BLUR_SIZE preprocessor definition (sigma in pixels at 1080p)."; >
 {
@@ -480,7 +493,14 @@ technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the siz
 	pass Up { VertexShader = PostProcessVS; PixelShader = TOPT_UpPS; RenderTarget = TOPT_tUp; }
 #endif
 #endif
-	pass Composite { VertexShader = PostProcessVS; PixelShader = TOPT_CompositePS; }
+	pass Composite
+	{
+		VertexShader = PostProcessVS; PixelShader = TOPT_CompositePS;
+#if TOPT_BLUR_BLEND
+		BlendEnable = true; BlendOp = ADD; SrcBlend = SRCALPHA; DestBlend = INVSRCALPHA;
+		RenderTargetWriteMask = 7; // keep the screen's alpha
+#endif
+	}
 }
 """
 

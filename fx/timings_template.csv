@@ -73,3 +73,7 @@ TOPT_Blur size 200,1920x1080,,class 64 model 70 us
 TOPT_Blur size 3 (live uniforms),1920x1080,,performance mode off
 TOPT_Blur size 16 (live uniforms),1920x1080,,performance mode off
 TOPT_Blur size 1 (live uniforms),1920x1080,,performance mode off
+TOPT_Blur size 16 Strength 0.5,1920x1080,,TOPT_BLUR_BLEND 0
+TOPT_Blur size 16 Strength 0.5 blend,1920x1080,,TOPT_BLUR_BLEND 1 (blend state instead of shader lerp)
+TOPT_Blur size 1 tune 1.25 Strength 0.5,1920x1080,,TOPT_BLUR_BLEND 0
+TOPT_Blur size 1 tune 1.25 Strength 0.5 blend,1920x1080,,TOPT_BLUR_BLEND 1

@@ -89,6 +89,18 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
 * Low-res blur: one 2D pass is cheapest while it needs few fetches; a separable
   H + V pair wins for wider low-res kernels (x2: sigma 3, 150 vs 174 us; x4:
   sigma 7-12, 89-91 vs up to 138 us; x8: sigma 20-26).
+* Blend state as the final lerp (`TOPT_BLUR_BLEND`): moves the mix with the
+  screen to the output merger; the composite loses one fetch and 3-7 VALU
+  (RDNA3 ISA) when Strength < 1. The model counts it as free unless the
+  composite is texture-bound; it also frees one "free" tap for a larger
+  upsampler. To be timed.
+* Spare RGB10A2 alpha bits: as 2 shared low bits added to R, G and B (still
+  linear, so bilinear filtering stays exact) they cut the rounding error 1.5x
+  for colours and 4x for greys (0.072 -> 0.047 / 0.018 8-bit levels RMS), at
+  the cost of a 4-way encode per written pixel. Used as a shared exponent
+  (more range / dark precision) they break bilinear filtering across pixels
+  with different exponents. RGB10A2 is already far below one 8-bit level, so
+  this only matters for 10-bit or HDR output.
 * iq's smoothstep trick hurts blur upsampling (terracing, blockiness).
 * RGB10A2 intermediates add <= 0.17 8-bit levels of error on smooth ramps.
   R11G11B10F gives up to 1.1 (R, G) / 2.0 (B) levels on mid/bright ramps:
