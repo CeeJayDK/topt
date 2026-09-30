@@ -1,0 +1,75 @@
+technique,resolution,gpu_us,notes
+TOPT_B_Hybrid_s4_medium,,,
+TOPT_B_Hybrid_s16_medium,,,
+TOPT_B_Hybrid_s16_strict,,,
+TOPT_B_Hybrid_s64_medium,,,
+TOPT_B_Hybrid_s64_strict,,,
+TOPT_B_Hybrid_s200_medium,,,
+TOPT_B_Hybrid_s200_strict,,,
+TOPT_B_Hybrid_s16_pwchain,,,
+TOPT_B_Hybrid_s16_pindown,,,
+TOPT_B_Hybrid_s16_rot45,,,
+TOPT_B_luma_fast,,,
+TOPT_B_luma_fast_c,,,
+TOPT_B_luma_normal,,,
+TOPT_B_luma_normal_034,,,
+TOPT_B_pinwheel5,,,
+TOPT_B_pinwheel9,,,
+TOPT_B_pinwheel13,,,
+TOPT_B_sep_linear_s2,,,
+TOPT_B_sep_bilinear_s2,,,
+TOPT_B_sep_linear_s4,,,
+TOPT_B_sep_bilinear_s4,,,
+TOPT_B_direct2d_s1,,,
+TOPT_B_dual_s16,,,
+TOPT_B_dual_s64,,,
+TOPT_B_pyramid_s16,,,
+TOPT_C_Tile_s1,,,
+TOPT_C_TileComp_s1,,,
+TOPT_C_SplitHV_s1,,,
+TOPT_C_Tile_s2,,,
+TOPT_C_TileComp_s2,,,
+TOPT_C_SplitHV_s2,,,
+TOPT_C_Tile_s4,,,
+TOPT_C_TileComp_s4,,,
+TOPT_C_SplitHV_s4,,,
+TOPT_M_Composite,,,
+TOPT_M_Taps01,,,
+TOPT_M_Taps02,,,
+TOPT_M_Taps04,,,
+TOPT_M_Taps06,,,
+TOPT_M_Taps08,,,
+TOPT_M_Taps12,,,
+TOPT_M_Taps16,,,
+TOPT_M_Taps24,,,
+TOPT_M_Taps32,,,
+TOPT_M_Chain01,,,
+TOPT_M_Chain08,,,
+TOPT_M_Chain32,,,
+TOPT_M_Down2e1,,,
+TOPT_M_Down4e1,,,
+TOPT_M_Down4e3,,,
+TOPT_M_Down4e5,,,
+TOPT_M_Down8e1,,,
+TOPT_Blur size 1 tune 0.8,1920x1080,,single pass 9 fetches model 24 us
+TOPT_Blur size 1,1920x1080,,single pass 13 fetches model 77 us
+TOPT_Blur size 1 tune 1.25,1920x1080,,single pass 17 fetches model 130 us
+TOPT_Blur size 2,1920x1080,,class 2 model 121 us
+TOPT_Blur size 3,1920x1080,,class 2 separable model 150 us
+TOPT_Blur size 4,1920x1080,,class 4s model 110 us
+TOPT_Blur size 6,1920x1080,,class 4s model 123 us
+TOPT_Blur size 7,1920x1080,,class 4 separable model 89 us
+TOPT_Blur size 12,1920x1080,,class 4 separable model 91 us
+TOPT_Blur size 13,1920x1080,,class 8 model 71 us
+TOPT_Blur size 19,1920x1080,,class 8 model 76 us
+TOPT_Blur size 20,1920x1080,,class 8 separable model 74 us
+TOPT_Blur size 26,1920x1080,,class 8 separable model 75 us
+TOPT_Blur size 27,1920x1080,,class 16 model 67 us
+TOPT_Blur size 51,1920x1080,,class 16 model 69 us
+TOPT_Blur size 52,1920x1080,,class 32 model 70 us
+TOPT_Blur size 107,1920x1080,,class 32 model 71 us
+TOPT_Blur size 108,1920x1080,,class 64 model 70 us
+TOPT_Blur size 200,1920x1080,,class 64 model 70 us
+TOPT_Blur size 3 (live uniforms),1920x1080,,performance mode off
+TOPT_Blur size 16 (live uniforms),1920x1080,,performance mode off
+TOPT_Blur size 1 (live uniforms),1920x1080,,performance mode off
