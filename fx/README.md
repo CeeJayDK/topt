@@ -53,6 +53,7 @@ Copy the `.fx` files into your ReShade `Shaders` folder.
 | `TOPT_Bench_Micro.fx` | calibrate the cost model |
 | `TOPT_Bench_Blur.fx` | optimizer winners and classic methods (blur fused into the composite pass) |
 | `TOPT_Bench_CS.fx` | compute tile blur + the mandatory composite pixel shader (D3D11+/GL/Vulkan) |
+| `TOPT_Bench_Order.fx` | identical taps in different fetch orders (texture-cache locality) |
 
 Every technique ends in a composite pass that reads the backbuffer and writes
 the screen (`TOPT_Strength` blends; 1 = full blur). The cost of a blur is its

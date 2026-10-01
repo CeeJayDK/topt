@@ -130,5 +130,22 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   noise).
 * Next: hardware timing (`fx/README.md`), then refit the cost model (per-pass
   overhead, memory-bound claim) and re-run the searches.
-* Parked: temporal stochastic sampling (Movie Night) and extra
-  downsample/upsample variants.
+* Parked: temporal stochastic sampling and extra downsample/upsample variants.
+* Later, Movie Night (blur in the black gutter of letterboxed video):
+  downsample only the picture strips the bars show (plus ~3 sigma), clamped to
+  the picture rectangle so the black bars do not darken the glow; blur those
+  low-res strips; draw only the bars (custom vertex-shader triangles) and
+  upsample there. Model at 4K: ~90-145 us on top of the bars pass vs ~180 us
+  when the whole picture is downsampled. Try: softer glow further from the
+  picture (blend two blur levels by distance), like real ambilight.
+* Out-of-screen (mirrored) samples: 0.2-4 % of the taps in the passes that
+  matter (up to 38 % only in the tiny low-res pass at sigma 200), and they land
+  on texels the same kernel already reads (cache hits). Splitting passes into
+  interior and border regions would cost more in per-pass overhead than the
+  <0.5 us the model gives them.
+* Fetch order (`fx/TOPT_Bench_Order.fx`): the same taps in row, snake, Z-order
+  (Morton), spiral, column and random order, for a full-res 25-tap grid and the
+  x16 downsample. The RDNA3 compiler keeps the source order. Hardware decides.
+* Compute-shader downsampling (AMD FidelityFX SPD style, one dispatch for a
+  whole mip chain): pays for pyramid effects (bloom), where it replaces many
+  small passes; our blur already jumps x8/x16 in one memory-bound pass.
