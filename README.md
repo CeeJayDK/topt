@@ -151,6 +151,20 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   upsample there. Model at 4K: ~90-145 us on top of the bars pass vs ~180 us
   when the whole picture is downsampled. Try: softer glow further from the
   picture (blend two blur levels by distance), like real ambilight.
+* Quad sharing (`scripts/quad_share.py`, `results/quad_share.md`): each pixel
+  of a 2 x 2 quad makes N reads and gets its neighbours' through
+  `ddx_fine` / `ddy_fine` (4N samples). Medium quality for sigma 0.7-1.2 with
+  3-5 reads (strict at 0.9) where the exact pinwheel needs 9-17; fails at 1.3.
+  The shader form (four weighted sums, three exchanges) matches the simulator
+  exactly. RDNA3 ISA at sigma 1.0: 5 reads + 131 VALU vs 13 reads + 56 VALU,
+  so it trades reads for ALU; `TOPT_Bench_Quad.fx` decides on hardware.
+* Noise sources for scatter passes (`TOPT_Bench_Noise.fx`, RDNA3 ISA, 8 random
+  2D values per pixel): blue-noise RG8 texture 99 VALU + 8 reads (any size,
+  4² to 512²), RGBA8 (two values per read) 91 VALU + 4 reads, R8 115, R8 with two
+  packed 4-bit values 147 (the unpacking costs more than it saves), IGN 148,
+  R2 145, hash 202, hard-coded 16-entry table indexed by position 211 VALU +
+  8 extra memory reads (the dynamic index goes through memory). Cache effects
+  of the texture size are for the hardware run.
 * Out-of-screen (mirrored) samples: 0.2-4 % of the taps in the passes that
   matter (up to 38 % only in the tiny low-res pass at sigma 200), and they land
   on texels the same kernel already reads (cache hits). Splitting passes into

@@ -9,6 +9,9 @@ TOPT_Bench_Blur.fx   optimizer winners and classic methods, blur fused into
 TOPT_Bench_CS.fx     compute tile blur + mandatory composite pixel shader
 TOPT_Bench_Order.fx  the same taps fetched in different orders (texture-cache
                      locality; the model cannot see this, only hardware can)
+TOPT_Bench_Noise.fx  noise sources for scatter / frosted-glass passes
+TOPT_Bench_Layout.fx separable blur layouts (pass order, transposed, two targets)
+TOPT_Bench_Quad.fx   reads shared over 2 x 2 quads (ddx_fine / ddy_fine) vs the pinwheel
 """
 from __future__ import annotations
 
@@ -20,6 +23,7 @@ from pathlib import Path
 
 import numpy as np
 
+from scripts.bench_extra import layout_effect, noise_effect, quad_effect
 from topt import methods as M
 from topt import search as S
 from topt.fxgen import HEADER, effect
@@ -344,6 +348,12 @@ def main():
                                                   + classic(), repeat))
     (FX / "TOPT_Bench_CS.fx").write_text(cs_effect())
     (FX / "TOPT_Bench_Order.fx").write_text(effect(order_bench(), repeat))
+    (FX / "TOPT_Bench_Noise.fx").write_text(noise_effect())
+    (FX / "TOPT_Bench_Layout.fx").write_text(layout_effect())
+    qpath = ROOT / "results" / "quad_share.json"
+    if qpath.exists():
+        from scripts.make_effect import small_taps
+        (FX / "TOPT_Bench_Quad.fx").write_text(quad_effect(json.loads(qpath.read_text()), small_taps))
     csv = FX / "timings_template.csv"
     # TOPT_Blur.fx is timed per TOPT_BLUR_SIZE: keep its hand-written rows
     blur_rows = [r for r in csv.read_text().splitlines() if r.startswith("TOPT_Blur ")] if csv.exists() else []
