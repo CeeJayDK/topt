@@ -33,15 +33,17 @@ plain composite pass:
 
 | sigma (1080p) | method | us |
 |---|---|---:|
-| 0.7–0.9 / –1.1 / –1.3 | single pass, 9 / 13 / 17 fetches | 24 / 77 / 130 |
-| 2 | x2, 2D | 121 |
-| 3 | x2, separable | 150 |
-| 4–6 | x4 (+x2 up pass), 2D | 110–123 |
-| 7–12 | x4, separable | 89–91 |
-| 13–19 | x8, 2D | 71–76 |
-| 20–26 | x8, separable | 74–75 |
-| 27–51 | x16, 2D | 66–69 |
-| 52–200 | x16 then x2/x4, 2D | 69–71 |
+| 0.7–0.9 / –1.1 / –1.3 | single pass, 9 / 13 / 17 fetches | 30 / 84 / 137 |
+| 2 | x2, 2D | 118 |
+| 3 | x2, separable | 145 |
+| 4–6 | x4 (+x2 up pass), 2D | 113–126 |
+| 7–12 | x4, separable | 86–88 |
+| 13–19 | x8, 2D | 69–74 |
+| 20–26 | x8, separable | 72 |
+| 27–51 | x16, 2D | 64–66 |
+| 52–200 | x16 then x2/x4, 2D | 67–68 |
+
+(Cost model calibrated against TexBench on a GTX 1660, see the README.)
 
 # Hardware timing effects
 

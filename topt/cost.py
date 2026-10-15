@@ -22,40 +22,68 @@ import numpy as np
 from .sim import Pipeline
 
 
+# Render-target formats: bytes per pixel.
+FORMAT_BYTES = {"R8": 1, "RG8": 2, "R16F": 2, "RGBA8": 4, "RGB10A2": 4, "RG11B10F": 4, "RG16F": 4,
+                "R32F": 4, "RGBA16F": 8, "RGBA32F": 16}
+BPP_FORMAT = {1: "R8", 2: "R16F", 4: "RGB10A2", 8: "RGBA16F", 16: "RGBA32F"}
+
+
 @dataclass(frozen=True)
 class GPU:
     name: str
-    tex_rate: float        # bilinear fetches / s
+    tex_rate: float        # bilinear fetches / s (32-bit formats)
     bandwidth: float       # effective DRAM bytes / s
-    rop_rate: float        # pixels written / s
+    rop_rate: float        # pixels written / s (formats missing from write_rate)
     pass_overhead: float   # s per pass (to calibrate on hardware)
     lds_rate: float = 0.0  # groupshared texel reads / s (compute shaders)
     lds_bytes: int = 32768 # groupshared memory per thread group (D3D11 limit)
+    write_rate: tuple = () # ((format, pixels written / s), ...): render-target write limit per format
+    wide_filter: float = 1.0  # bilinear cost factor for 64-bit formats (2 = half rate)
+
+    def writes(self, fmt: str) -> float:
+        return dict(self.write_rate).get(fmt, self.rop_rate)
 
 
-# GTX 1660: 22 SMs, 88 TMUs, 48 ROPs, ~1.785 GHz boost, 192-bit GDDR5 @ 8 Gbps
-# = 192 GB/s (80 % assumed achievable). LDS: 128 B/clk/SM, texel stored as
-# fp16x4 (8 B) -> 16 texel reads/clk/SM.
-GTX1660 = GPU("GTX 1660", 88 * 1.785e9, 0.8 * 192e9, 48 * 1.785e9, 5e-6, 22 * 16 * 1.785e9)
+# GTX 1660: 22 SMs, 88 TMUs, 48 ROPs, ~1.785 GHz boost, 192-bit GDDR5 @ 8 Gbps.
+# Calibrated against TexBench 0.6.0 (CeeJayDK/sopt, docs/texbench/nvidia-gtx-1660-v9.csv,
+# full-screen passes at 3840 x 2160): texture rate 155 GTexel/s; copy and half-size
+# downsample passes give ~160 GB/s of combined read + write traffic; render-target
+# writes are limited per format (noise, incompressible): RGBA8 28.7, R16F 29.7, R8 / RG8
+# 24.6, RGB10A2 / RG11B10F / RG16F / R32F 23.0, RGBA16F 18.9 Gpixel/s; 64-bit formats
+# filter at half rate. LDS: 128 B/clk/SM, texel stored as fp16x4 (8 B) -> 16 texel
+# reads/clk/SM. Per-pass overhead still a placeholder (not measured by TexBench).
+GTX1660 = GPU("GTX 1660", 155e9, 160e9, 63.5e9, 5e-6, 22 * 16 * 1.785e9,
+              write_rate=(("RGBA8", 28.7e9), ("R16F", 29.7e9), ("R8", 24.6e9), ("RG8", 24.6e9),
+                          ("RGB10A2", 23.0e9), ("RG11B10F", 23.0e9), ("RG16F", 23.0e9), ("R32F", 23.0e9),
+                          ("RGBA16F", 18.9e9)),
+              wide_filter=2.0)
+# The model before the TexBench calibration (kept to compare old results).
+GTX1660_V1 = GPU("GTX 1660 (v1)", 88 * 1.785e9, 0.8 * 192e9, 48 * 1.785e9, 5e-6, 22 * 16 * 1.785e9)
 
 BYTES_PER_PIXEL = 4  # RGB10A2 / R11G11B10F / RGBA8 backbuffer
+SCREEN_FORMAT = "RGBA8"  # the backbuffer the composite writes
 RESOLUTIONS = {"1080p": (1920, 1080), "1440p": (2560, 1440), "4k": (3840, 2160)}
 
 
-def _pass_time(nd: int, ns_read: int, taps: int, gpu: GPU, wbytes: float = BYTES_PER_PIXEL,
-               rbytes: float | None = None) -> tuple:
-    """rbytes: bytes read in total (default ns_read texels of BYTES_PER_PIXEL)."""
+def _pass_time(nd: int, ns_read: int, taps: float, gpu: GPU, wbytes: float = BYTES_PER_PIXEL,
+               rbytes: float | None = None, wfmt: str | None = None) -> tuple:
+    """rbytes: bytes read in total (default ns_read texels of BYTES_PER_PIXEL);
+    wfmt: written format (write-rate limit), default from wbytes."""
     t_tex = nd * taps / gpu.tex_rate
     rb = ns_read * BYTES_PER_PIXEL if rbytes is None else rbytes
     t_mem = (nd * wbytes + rb) / gpu.bandwidth
-    t_rop = nd / gpu.rop_rate
+    t_rop = nd / gpu.writes(wfmt or BPP_FORMAT.get(int(wbytes), "RGB10A2"))
     t = max(t_tex, t_mem, t_rop)
     return gpu.pass_overhead + t, ("tex" if t == t_tex else "mem" if t == t_mem else "rop")
 
 
 def composite_baseline(W: int, H: int, gpu: GPU) -> float:
     """A plain full-screen pass: read the backbuffer once, write the screen."""
-    return _pass_time(W * H, W * H, 1, gpu)[0]
+    return _pass_time(W * H, W * H, 1, gpu, wfmt=SCREEN_FORMAT)[0]
+
+
+def pass_format(p) -> str:
+    return p.fmt or BPP_FORMAT.get(p.bpp, "RGB10A2")
 
 
 def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660,
@@ -70,15 +98,19 @@ def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660
         taps = len(p.taps)
         ns_read = min(ns, nd * taps * 4)
         j = pl.src_index(i)
-        rbytes = ns_read * (pl.passes[j].bpp if j >= 0 else BYTES_PER_PIXEL)
-        wbytes = p.bpp
+        sfmt = pass_format(pl.passes[j]) if j >= 0 else SCREEN_FORMAT
+        rbytes = ns_read * FORMAT_BYTES[sfmt]
+        wfmt = pass_format(p)
+        ftaps = taps * (gpu.wide_filter if FORMAT_BYTES[sfmt] >= 8 else 1.0)
         if composite and i == last:
             taps += 1
-            wbytes = BYTES_PER_PIXEL  # the screen
+            ftaps += 1
+            wfmt = SCREEN_FORMAT
             if j >= 0:  # else the blur already reads the backbuffer
                 ns_read += W * H
                 rbytes += W * H * BYTES_PER_PIXEL
-        t, b = _pass_time(nd, ns_read, taps, gpu, wbytes, rbytes)
+        wbytes = FORMAT_BYTES[wfmt]
+        t, b = _pass_time(nd, ns_read, ftaps, gpu, wbytes, rbytes, wfmt)
         bounds.append(b)
         total += t
         fetches += nd * taps
@@ -107,7 +139,7 @@ def cs_tile_sep_cost(r: int, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660) -
     """
     n = W * H
     t_mem = 2 * n * BYTES_PER_PIXEL / gpu.bandwidth
-    final = _pass_time(n, 2 * n, 2, gpu)[0]  # composite reading CS output + backbuffer
+    final = _pass_time(n, 2 * n, 2, gpu, wfmt=SCREEN_FORMAT)[0]  # composite reading CS output + backbuffer
     best = None
     for T in (8, 16, 32, 64, 128):
         side = T + 2 * r

@@ -32,6 +32,19 @@ sigma 1–200 px at 1920x1080, RGB10A2 buffers, GTX 1660 as the reference GPU.
 
 Results go to `results/baseline.md`.
 
+## Cost model calibration (TexBench)
+
+TexBench (CeeJayDK/sopt) times whole passes at 3840 x 2160. Against the GTX 1660
+report the first model was close for copies and downsamples but wrong for
+render-target writes: they are limited per format, not by bandwidth (RGBA8
+28.7, R16F 29.7, R8 / RG8 24.6, RGB10A2 / RG11B10F 23.0 Gpixel/s). The GTX 1660
+profile in `topt/cost.py` now uses these rates, 155 GTexel/s, ~160 GB/s of
+combined traffic and half-rate filtering of 64-bit formats; it matches every
+TexBench write, copy and downsample pass within 6 % (`python -m
+scripts.texbench_check <report.csv>`). The per-pass overhead is still a guess.
+Results files written before this (`results/*.md`) use the first model; the
+effect's size classes do not change.
+
 ## Findings so far (model estimates, not yet timed on hardware)
 
 Target: the blur feeds the final composite pass (reads the backbuffer, writes
@@ -95,8 +108,8 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   composite is texture-bound; it also frees one "free" tap for a larger
   upsampler. To be timed.
 * Brightness-only blurs (`TOPT_BLUR_LUMA`, one-channel R16F / R8 buffers):
-  12-34 us cheaper at sigma 2-6 (sigma 3: 150 -> 116 / 109 us), nothing from
-  sigma ~16 up, where the low-res buffers are already tiny and the cost is the
+  10-30 us cheaper at sigma 2-6 (sigma 3: 145 -> 115 us), nothing from
+  sigma ~16 up; R8 is no faster than R16F (it writes slower, see below), where the low-res buffers are already tiny and the cost is the
   full-res read and the composite. Keeping colour at a lower resolution than
   brightness (video-style chroma subsampling) does not pay for a blur: render
   targets of one pass must share a size, so colour needs its own passes, and
