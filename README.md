@@ -32,6 +32,19 @@ sigma 1–200 px at 1920x1080, RGB10A2 buffers, GTX 1660 as the reference GPU.
 
 Results go to `results/baseline.md`.
 
+## Cost model calibration (TexBench)
+
+TexBench (CeeJayDK/sopt) times whole passes at 3840 x 2160. Against the GTX 1660
+report the first model was close for copies and downsamples but wrong for
+render-target writes: they are limited per format, not by bandwidth (RGBA8
+28.7, R16F 29.7, R8 / RG8 24.6, RGB10A2 / RG11B10F 23.0 Gpixel/s). The GTX 1660
+profile in `topt/cost.py` now uses these rates, 155 GTexel/s, ~160 GB/s of
+combined traffic and half-rate filtering of 64-bit formats; it matches every
+TexBench write, copy and downsample pass within 6 % (`python -m
+scripts.texbench_check <report.csv>`). The per-pass overhead is still a guess.
+Results files written before this (`results/*.md`) use the first model; the
+effect's size classes do not change.
+
 ## Findings so far (model estimates, not yet timed on hardware)
 
 Target: the blur feeds the final composite pass (reads the backbuffer, writes
@@ -95,8 +108,8 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
   composite is texture-bound; it also frees one "free" tap for a larger
   upsampler. To be timed.
 * Brightness-only blurs (`TOPT_BLUR_LUMA`, one-channel R16F / R8 buffers):
-  12-34 us cheaper at sigma 2-6 (sigma 3: 150 -> 116 / 109 us), nothing from
-  sigma ~16 up, where the low-res buffers are already tiny and the cost is the
+  10-30 us cheaper at sigma 2-6 (sigma 3: 145 -> 115 us), nothing from
+  sigma ~16 up; R8 is no faster than R16F (it writes slower, see below), where the low-res buffers are already tiny and the cost is the
   full-res read and the composite. Keeping colour at a lower resolution than
   brightness (video-style chroma subsampling) does not pay for a blur: render
   targets of one pass must share a size, so colour needs its own passes, and
@@ -138,6 +151,23 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   upsample there. Model at 4K: ~90-145 us on top of the bars pass vs ~180 us
   when the whole picture is downsampled. Try: softer glow further from the
   picture (blend two blur levels by distance), like real ambilight.
+* Quad sharing (`scripts/quad_share.py`, `results/quad_share.md`): each pixel
+  of a 2 x 2 quad makes N reads and gets its neighbours' through
+  `ddx_fine` / `ddy_fine` (4N samples). Medium quality for sigma 0.7-1.2 with
+  3-5 reads (strict at 0.9) where the exact pinwheel needs 9-17; fails at 1.3.
+  The shader form (four weighted sums, three exchanges) matches the simulator
+  exactly. RDNA3 ISA at sigma 1.0: 5 reads + 131 VALU vs 13 reads + 56 VALU,
+  so it trades reads for ALU; `TOPT_Bench_Quad.fx` decides on hardware.
+  Needs fine derivatives: ReShade emits `ddx_fine` for shader model 5, GLSL
+  and SPIR-V, but plain `ddx` for D3D9 / D3D10 (shader model 3 / 4), which may
+  be coarse; there the benchmark falls back to the pinwheel.
+* Noise sources for scatter passes (`TOPT_Bench_Noise.fx`, RDNA3 ISA, 8 random
+  2D values per pixel): blue-noise RG8 texture 99 VALU + 8 reads (any size,
+  4² to 512²), RGBA8 (two values per read) 91 VALU + 4 reads, R8 115, R8 with two
+  packed 4-bit values 147 (the unpacking costs more than it saves), IGN 148,
+  R2 145, hash 202, hard-coded 16-entry table indexed by position 211 VALU +
+  8 extra memory reads (the dynamic index goes through memory). Cache effects
+  of the texture size are for the hardware run.
 * Out-of-screen (mirrored) samples: 0.2-4 % of the taps in the passes that
   matter (up to 38 % only in the tiny low-res pass at sigma 200), and they land
   on texels the same kernel already reads (cache hits). Splitting passes into

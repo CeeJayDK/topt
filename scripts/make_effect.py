@@ -241,6 +241,12 @@ TEMPLATE = r"""/*------------------.
 #ifndef TOPT_BLUR_LUMA_FORMAT
 	#define TOPT_BLUR_LUMA_FORMAT R16F // brightness-only buffers: R16F or R8
 #endif
+#ifndef TOPT_BLUR_FROST
+	#define TOPT_BLUR_FROST 0 // 1: scatter the final read inside a disk (frosted glass)
+#endif
+#ifndef TOPT_BLUR_FROST_NOISE
+	#define TOPT_BLUR_FROST_NOISE 0 // frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
+#endif
 #ifndef TOPT_BLUR_BLEND
 	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
 #endif
@@ -257,6 +263,13 @@ uniform float TOPT_Strength <
 	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
 	ui_label = "Strength";
 > = 1.0;
+
+#if TOPT_BLUR_FROST
+uniform float TOPT_FrostRadius <
+	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
+	ui_label = "Frosted glass radius (px)";
+> = 6.0;
+#endif
 
 uniform bool TOPT_ShowBlur <
 	ui_label = "Show blur only";
@@ -478,11 +491,33 @@ float3 TOPT_BlurResolve(float2 uv)
 }
 #endif // TOPT_SMALL
 
+#if TOPT_BLUR_FROST
+	#if TOPT_BLUR_FROST_NOISE == 0
+texture TOPT_tBN < source = "topt_bn64_RG8.png"; > { Width = 64; Height = 64; Format = RG8; };
+sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+	#endif
+// Frosted glass: move the final read to a random point in a disk of TOPT_FrostRadius pixels.
+float2 TOPT_Frost(float2 pos, float2 uv)
+{
+	#if TOPT_BLUR_FROST_NOISE == 0
+	const float2 u = tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)).rg;
+	#else // interleaved gradient noise (Jimenez 2014), two decorrelated copies
+	const float2 p = floor(pos);
+	const float2 u = float2(frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))),
+	                        frac(52.9829189 * frac(dot(p + float2(47.0, 17.0), float2(0.06711056, 0.00583715)))));
+	#endif
+	float2 cs; sincos(6.2831853 * u.x, cs.y, cs.x);
+	return uv + cs * (sqrt(u.y) * TOPT_FrostRadius) * BUFFER_PIXEL_SIZE;
+}
+#else
+	#define TOPT_Frost(pos, uv) (uv)
+#endif
+
 #if TOPT_BLUR_LUMA
 // Brightness only: replace the pixel's luma with the blurred luma, keep its colour detail.
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float yb = dot(TOPT_BlurResolve(uv), TOPT_LUMA);
+	const float yb = dot(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), TOPT_LUMA);
 	if (TOPT_ShowBlur)
 		return float4(yb.xxx, 1.0);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
@@ -494,12 +529,12 @@ float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 // shader lerp below does, so the result is the same.
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(TOPT_BlurResolve(uv), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
+	return float4(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
 }
 #else
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float3 blur = TOPT_BlurResolve(uv);
+	const float3 blur = TOPT_BlurResolve(TOPT_Frost(pos.xy, uv));
 	if (TOPT_ShowBlur)
 		return float4(blur, 1.0);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;

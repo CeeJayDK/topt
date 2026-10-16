@@ -43,7 +43,7 @@ def split_cost(n, sl, sep, lbpp=1, cbpp=2):
     t += _pass_time(nc, nl, 4, g, cbpp, nl * cbpp)[0]
     t += _pass_time(nc, nc, 9, g, cbpp, nc * cbpp)[0]
     up = len(pl.passes[-1].taps)
-    t += _pass_time(N, N, up + 4 + 1, g, 4, N * 4 + nl * lbpp + nc * cbpp)[0]
+    t += _pass_time(N, N, up + 4 + 1, g, 4, N * 4 + nl * lbpp + nc * cbpp, "RGBA8")[0]
     return (t - composite_baseline(W, H, g)) * 1e6
 print("sigma  class        RGB10A2  luma R16F  luma R8   split Y8+C(RG8, 2x lower)")
 for s in (2, 3, 4, 6, 8, 12, 16, 32, 64):
