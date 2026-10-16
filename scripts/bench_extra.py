@@ -215,8 +215,23 @@ static const float2 TOPT_Q_P{tag}[{n}] = {{ {pos} }};
 static const float4 TOPT_Q_W{tag}[{n}] = {{
 	{wts}
 }};
+static const float3 TOPT_Q_K{tag}[{len(pin)}] = {{
+	{ptaps}
+}};
+float4 TOPT_Q_Pin{tag}PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{{
+	float3 c = 0.0;
+	[unroll] for (int i = 0; i < {len(pin)}; i++)
+		c += TOPT_Q_K{tag}[i].z * tex2Dlod(ReShade::BackBuffer, float4(uv + TOPT_Q_K{tag}[i].xy * BUFFER_PIXEL_SIZE, 0.0, 0.0)).rgb;
+	return float4(c, 1.0);
+}}
 float4 TOPT_Q_{tag}PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {{
+#if __RENDERER__ < 0xb000
+	// D3D9 / D3D10 (shader model 3 / 4): ReShade turns ddx_fine into ddx, which may be
+	// coarse there (one value per quad row pair), so the exchange would be wrong: use the pinwheel.
+	return TOPT_Q_Pin{tag}PS(pos, uv);
+#else
 	const float2 sgn = 1.0 - 4.0 * frac(floor(pos.xy) * 0.5); // +1 on even, -1 on odd pixels
 	float3 c0 = 0.0, cx = 0.0, cy = 0.0, cd = 0.0;
 	[unroll] for (int k = 0; k < {n}; k++)
@@ -233,16 +248,7 @@ float4 TOPT_Q_{tag}PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Targe
 	const float3 dx = cd + sgn.x * ddx_fine(cd);
 	const float3 nd = dx + sgn.y * ddy_fine(dx);
 	return float4(c0 + nx + ny + nd, 1.0);
-}}
-static const float3 TOPT_Q_K{tag}[{len(pin)}] = {{
-	{ptaps}
-}};
-float4 TOPT_Q_Pin{tag}PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
-{{
-	float3 c = 0.0;
-	[unroll] for (int i = 0; i < {len(pin)}; i++)
-		c += TOPT_Q_K{tag}[i].z * tex2Dlod(ReShade::BackBuffer, float4(uv + TOPT_Q_K{tag}[i].xy * BUFFER_PIXEL_SIZE, 0.0, 0.0)).rgb;
-	return float4(c, 1.0);
+#endif
 }}
 technique TOPT_Q_Quad_{tag} < ui_tooltip = "sigma {t}: {n} reads shared over the 2x2 quad with ddx_fine / ddy_fine"; >
 {{ pass {{ VertexShader = PostProcessVS; PixelShader = TOPT_Q_{tag}PS; }} }}

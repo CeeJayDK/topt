@@ -158,6 +158,9 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   The shader form (four weighted sums, three exchanges) matches the simulator
   exactly. RDNA3 ISA at sigma 1.0: 5 reads + 131 VALU vs 13 reads + 56 VALU,
   so it trades reads for ALU; `TOPT_Bench_Quad.fx` decides on hardware.
+  Needs fine derivatives: ReShade emits `ddx_fine` for shader model 5, GLSL
+  and SPIR-V, but plain `ddx` for D3D9 / D3D10 (shader model 3 / 4), which may
+  be coarse; there the benchmark falls back to the pinwheel.
 * Noise sources for scatter passes (`TOPT_Bench_Noise.fx`, RDNA3 ISA, 8 random
   2D values per pixel): blue-noise RG8 texture 99 VALU + 8 reads (any size,
   4² to 512²), RGBA8 (two values per read) 91 VALU + 4 reads, R8 115, R8 with two
