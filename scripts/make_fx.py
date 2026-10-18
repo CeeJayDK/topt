@@ -318,20 +318,26 @@ CS_COMP_BLOCK = (CS_BLOCK
              "Compute tile blur + composite sigma {SIGMA} (r={R}), pixel shader copy"))
 
 
-def cs_effect() -> str:
-    blocks = []
+def cs_kernels() -> list:
+    """(sigma, radius, discrete half-kernel, linear-tap pairs) of the compute benchmarks."""
+    out = []
     for sigma in (1, 2, 4):
         pl = next(p for p in M.cand_sep_linear(sigma)
                   if S.passes_profile(metrics(p, sigma), S.PROFILES["medium"]))
         r, s = pl.params["r"], pl.params["s"]
-        w = M.gauss(np.arange(-r, r + 1, dtype=float), s)[r:]
+        pos = np.arange(-r, r + 1, dtype=float)
+        out.append((sigma, r, M.gauss(pos, s)[r:], M.pair_taps(pos, M.gauss(pos, s))))
+    return out
+
+
+def cs_effect() -> str:
+    blocks = []
+    for sigma, r, w, v in cs_kernels():
         T = 16
         W = ", ".join(f"{v:.9g}" for v in w)
         blocks.append(CS_BLOCK.format(NAME=f"TOPT_C_Tile_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T, S=T + 2 * r, W=W))
         blocks.append(CS_COMP_BLOCK.format(NAME=f"TOPT_C_TileComp_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T,
                                            S=T + 2 * r, W=W))
-        pos = np.arange(-r, r + 1, dtype=float)
-        v = M.pair_taps(pos, M.gauss(pos, s))
         blocks.append(CS_SPLIT_BLOCK.format(NAME=f"TOPT_C_SplitHV_s{sigma}", SIGMA=sigma, R=r, R1=r + 1, T=T,
                                             S=T + 2 * r, W=W, NV=len(v),
                                             V=", ".join(f"float2({o:.9g}, {w_:.9g})" for o, w_ in v)))

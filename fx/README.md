@@ -70,6 +70,13 @@ Every technique ends in a composite pass that reads the backbuffer and writes
 the screen (`TOPT_Strength` blends; 1 = full blur). The cost of a blur is its
 GPU time minus `TOPT_M_Composite`.
 
+`TOPT_Bench_CS.fx` also comes as a ready-to-run package for the Test Host of
+[sopt](https://github.com/CeeJayDK/sopt): `python -m scripts.cs_package --testhost
+Test-Host-<version>.zip --shaders <folder with ReShade.fxh>` writes
+`dist/TOPT-CS-Bench.zip` (the Test Host, `TOPT-CS-Bench.bat`, the same shaders as
+`_orig` / `_sopt` pairs against a plain composite, plus a pixel-shader separable
+reference). The batch file times them on D3D11, D3D12 and Vulkan at 1080p and 4K.
+
 ## How to time
 
 1. One game/scene, fixed camera, same resolution for all runs (note it).
