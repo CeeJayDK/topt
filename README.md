@@ -42,6 +42,8 @@ profile in `topt/cost.py` now uses these rates, 155 GTexel/s, ~160 GB/s of
 combined traffic and half-rate filtering of 64-bit formats; it matches every
 TexBench write, copy and downsample pass within 6 % (`python -m
 scripts.texbench_check <report.csv>`). The per-pass overhead is still a guess.
+The tests that would settle the remaining guesses (pass overhead, free fetches,
+derivative modes, scatter rates, ...) are listed in `docs/texbench_requests.md`.
 Results files written before this (`results/*.md`) use the first model; the
 effect's size classes do not change.
 
