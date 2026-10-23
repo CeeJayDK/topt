@@ -120,8 +120,8 @@ def _f(v: float) -> str:
     return s if any(c in s for c in ".e") else s + ".0"
 
 
-def main():
-    rmax = math.ceil(TRUNC * SL_MAX)
+def class_info(rmax: int) -> dict:
+    """Per class: chain variance (C, B), low-res sigma range, screen sigma range, quality checks."""
     info = {}
     for name, (down, e, ups, upf, lo) in CLASSES.items():
         C, b = chain_variance(name)
@@ -140,6 +140,22 @@ def main():
                            "sep:" + ("/".join(oks) or "FAIL"), round(pipeline_cost(pipeline(name, float(sl), rmax, True))["us"])))
         info[name] = (C, b, lo, hi, smin, smax, checks)
         print(f"{name:>4}: C={C:8.2f} B={b:8.1f} sigma {smin:6.1f}..{smax:6.1f}  {checks}", flush=True)
+    return info
+
+
+def options(info: dict, sig: int, rmax: int) -> list:
+    """(class, separable, pipeline) candidates for an integer screen sigma."""
+    out = []
+    for name, (C, b, lo, hi, smin, smax, _) in info.items():
+        if smin - 0.5 <= sig <= smax + 0.5:
+            sl = min(hi, max(lo, math.sqrt(max(sig * sig - C, 0.0) / b)))
+            out += [(name, sep, pipeline(name, sl, rmax, sep)) for sep in (False, True)]
+    return out
+
+
+def main():
+    rmax = math.ceil(TRUNC * SL_MAX)
+    info = class_info(rmax)
     small = []
     for sig in (0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3):
         q = metrics(small_pipeline(sig))
@@ -150,11 +166,9 @@ def main():
     choice = []
     for sig in range(2, 441):
         best = None
-        for name, (C, b, lo, hi, smin, smax, _) in info.items():
-            if not smin - 0.5 <= sig <= smax + 0.5:
-                continue
-            sl = min(hi, max(lo, math.sqrt(max(sig * sig - C, 0.0) / b)))
-            us2d, ussep = (pipeline_cost(pipeline(name, sl, rmax, sep))["us"] for sep in (False, True))
+        opts = options(info, sig, rmax)
+        for (name, _, p2d), (_, _, psep) in zip(opts[::2], opts[1::2]):
+            us2d, ussep = pipeline_cost(p2d)["us"], pipeline_cost(psep)["us"]
             sep = ussep < us2d - 3.0  # separable only for a clear win
             us = ussep if sep else us2d
             if best is None or us < best[1]:
