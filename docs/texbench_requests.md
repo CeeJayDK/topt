@@ -120,3 +120,21 @@ into: R8, R16F, R32F, RG16F, RG32F (integer formats cannot be blended).
 Same test as now: full-screen pass at 3840 x 2160, plain write vs additive
 blending (blend state) vs the same math in the shader.
 Report: ms per format and mode.
+
+## P13. Follow-ups from the TexBench 0.9.0 calibration
+topt now fits one cost profile per GPU from the reports (topt/gpu_profiles.json,
+results/calibration.md). What the fits could not separate:
+
+a) Cache vs DRAM. The half-size downsample reads a 33 MB source that stays in a
+   big L2 / Infinity Cache between runs (RTX 40/50, RX 6000-9000), so it
+   overstates DRAM bandwidth there. Add the same pass reading from a source
+   larger than any GPU cache (e.g. 8192 x 8192 RGBA8, or rotating over several
+   4K textures), next to the current one.
+b) Where small passes stop running from the cache: the dependent pass chains
+   (P1) at 1/16 and 1/4 of the screen too (now 1/64 and 1/256 only).
+c) Under-filled passes with dense reads: 120 x 67 and 240 x 135 targets each
+   reading a 16 x 16 block per pixel of a 1920 x 1080 source with 64 bilinear
+   reads (an x16 downsample), vs the same reads at 480 x 270.
+d) The single-pass chain entry ("1/64, 1 pass") times much shorter than one
+   pass inside a chain, and "4 reads" times shorter than 1-3 reads on several
+   cards: worth a look at whether these two are measured like the others.
