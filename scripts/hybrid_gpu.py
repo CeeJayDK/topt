@@ -64,7 +64,7 @@ def write_md(allrecs: dict):
                     r = min(ok, key=lambda r: r["us_by"][f"{g}@{res}"])
                     win.setdefault(r["design"], []).append(f"{g} {r['us_by'][f'{g}@{res}']:.0f}")
                 for i, (d, gs) in enumerate(sorted(win.items(), key=lambda kv: -len(kv[1]))):
-                    lines.append(f"| {s if i == 0 else ''} | {d} | {', '.join(gs)} |")
+                    lines.append(f"| {s if i == 0 else ''} | {d.replace(' | ', ' / ')} | {', '.join(gs)} |")
             lines.append("")
     (OUT / "hybrid_gpu.md").write_text("\n".join(lines) + "\n")
 
