@@ -39,6 +39,12 @@ class GPU:
     lds_bytes: int = 32768 # groupshared memory per thread group (D3D11 limit)
     write_rate: tuple = () # ((format, pixels written / s), ...): render-target write limit per format
     wide_filter: float = 1.0  # bilinear cost factor for 64-bit formats (2 = half rate)
+    px_rate: float = 0.0   # pixels / s of per-pixel work added to the texture time (0 = none)
+    exchange_rate: float = 0.0  # quad exchanges (ddx_fine / ddy_fine of a float3) / s
+    sparse_waste: float = 1.0   # bytes moved / bytes used by strided (sparse) downsample reads
+    cache_bytes: float = 0.0    # last-level cache: a pass whose reads + writes fit runs from it
+    cache_bandwidth: float = 0.0  # bytes / s of such a pass (no write-rate limit, no pixel floor)
+    fill_px: float = 0.0   # a pass with fewer pixels cannot fill the GPU: its work takes fill_px / nd longer
 
     def writes(self, fmt: str) -> float:
         return dict(self.write_rate).get(fmt, self.rop_rate)
@@ -72,11 +78,18 @@ def _load_profiles() -> dict:
     out = {}
     for name, p in json.loads(path.read_text()).items():
         out[name] = GPU(name, p["tex_rate"], p["bandwidth"], p["rop_rate"], p["pass_overhead"],
-                        write_rate=tuple(p["write_rate"].items()), wide_filter=p["wide_filter"])
+                        write_rate=tuple(p["write_rate"].items()), wide_filter=p["wide_filter"],
+                        px_rate=p.get("px_rate", 0.0), exchange_rate=p.get("exchange_rate", 0.0),
+                        sparse_waste=p.get("sparse_waste", 1.0), cache_bytes=p.get("cache_bytes", 0.0),
+                        cache_bandwidth=p.get("cache_bandwidth", 0.0), fill_px=p.get("fill_px", 0.0))
     return out
 
 
 PROFILES = _load_profiles()
+# The default model: the GTX 1660 profile from its newest TexBench report (pass chains, N-reads
+# and strided-read tests); GTX1660_V2 is the hand calibration against TexBench 0.6.0.
+GTX1660_V2 = GTX1660
+GTX1660 = PROFILES.get("GTX 1660", GTX1660_V2)
 
 BYTES_PER_PIXEL = 4  # RGB10A2 / R11G11B10F / RGBA8 backbuffer
 SCREEN_FORMAT = "RGBA8"  # the backbuffer the composite writes
@@ -84,14 +97,27 @@ RESOLUTIONS = {"1080p": (1920, 1080), "1440p": (2560, 1440), "4k": (3840, 2160)}
 
 
 def _pass_time(nd: int, ns_read: int, taps: float, gpu: GPU, wbytes: float = BYTES_PER_PIXEL,
-               rbytes: float | None = None, wfmt: str | None = None) -> tuple:
+               rbytes: float | None = None, wfmt: str | None = None, exchanges: float = 0,
+               src_bytes: float | None = None) -> tuple:
     """rbytes: bytes read in total (default ns_read texels of BYTES_PER_PIXEL);
-    wfmt: written format (write-rate limit), default from wbytes."""
-    t_tex = nd * taps / gpu.tex_rate
+    wfmt: written format (write-rate limit), default from wbytes;
+    exchanges: quad exchanges (ddx_fine / ddy_fine of a float3) per pixel;
+    src_bytes: size of the source texture(s) (default rbytes): the pass runs from the cache when
+    its sources and target fit."""
     rb = ns_read * BYTES_PER_PIXEL if rbytes is None else rbytes
-    t_mem = (nd * wbytes + rb) / gpu.bandwidth
-    t_rop = nd / gpu.writes(wfmt or BPP_FORMAT.get(int(wbytes), "RGB10A2"))
-    t = max(t_tex, t_mem, t_rop)
+    traffic = nd * wbytes + rb
+    cached = gpu.cache_bandwidth and nd * wbytes + (rb if src_bytes is None else src_bytes) <= gpu.cache_bytes
+    t_tex = nd * taps / gpu.tex_rate
+    if gpu.px_rate and not cached:
+        t_tex += nd / gpu.px_rate
+    if exchanges and gpu.exchange_rate:
+        t_tex += nd * exchanges / gpu.exchange_rate
+    if cached:
+        t_mem, t_rop = traffic / gpu.cache_bandwidth, 0.0
+    else:
+        t_mem = traffic / gpu.bandwidth
+        t_rop = nd / gpu.writes(wfmt or BPP_FORMAT.get(int(wbytes), "RGB10A2"))
+    t = max(t_tex, t_mem, t_rop) * max(1.0, gpu.fill_px / max(nd, 1))
     return gpu.pass_overhead + t, ("tex" if t == t_tex else "mem" if t == t_mem else "rop")
 
 
@@ -115,11 +141,14 @@ def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660
         ns = (W // sd) * (H // sd)
         taps = len(p.taps)
         ns_read = min(ns, nd * taps * 4)
+        if ns_read < ns:  # sparse reads move whole cache lines
+            ns_read = min(ns, ns_read * gpu.sparse_waste)
         j = pl.src_index(i)
         sfmt = pass_format(pl.passes[j]) if j >= 0 else SCREEN_FORMAT
         rbytes = ns_read * FORMAT_BYTES[sfmt]
         wfmt = pass_format(p)
         ftaps = taps * (gpu.wide_filter if FORMAT_BYTES[sfmt] >= 8 else 1.0)
+        src = ns * FORMAT_BYTES[sfmt]
         if composite and i == last:
             taps += 1
             ftaps += 1
@@ -127,8 +156,9 @@ def pipeline_cost(pl: Pipeline, W: int = 1920, H: int = 1080, gpu: GPU = GTX1660
             if j >= 0:  # else the blur already reads the backbuffer
                 ns_read += W * H
                 rbytes += W * H * BYTES_PER_PIXEL
+                src += W * H * BYTES_PER_PIXEL
         wbytes = FORMAT_BYTES[wfmt]
-        t, b = _pass_time(nd, ns_read, ftaps, gpu, wbytes, rbytes, wfmt)
+        t, b = _pass_time(nd, ns_read, ftaps, gpu, wbytes, rbytes, wfmt, getattr(p, "exchanges", 0), src)
         bounds.append(b)
         total += t
         fetches += nd * taps

@@ -1,9 +1,10 @@
 {
  "GTX 860M": {
   "arch": "NVIDIA Maxwell",
-  "tex_rate": 49600000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 48545362763.10112,
   "rop_rate": 16399999999.999998,
-  "bandwidth": 73026941362.91602,
+  "bandwidth": 71120257234.72668,
   "write_rate": {
    "R8": 16388855957.320688,
    "RG8": 16388855957.320688,
@@ -18,14 +19,22 @@
   },
   "wide_filter": 1.98,
   "pass_overhead": 8.977777777777773e-07,
+  "cache_bandwidth": 128387451843.69838,
+  "px_rate": 70869593079.13991,
+  "exchange_rate": 42343076476.387726,
+  "sparse_waste": 1.93,
+  "vendor": "0x10DE",
+  "device": "0x1392",
   "report": "nvidia-gtx-860m-4.csv (TexBench 0.8.0)",
+  "fill_px": 11658,
   "overhead_measured": true
  },
  "GTX 1080": {
   "arch": "NVIDIA Pascal",
+  "cache_bytes": 2097152,
   "tex_rate": 312600000000.0,
   "rop_rate": 115700000000.0,
-  "bandwidth": 288000000000.0,
+  "bandwidth": 285521514629.94836,
   "write_rate": {
    "R8": 113156889495.2251,
    "RG8": 111184986595.17427,
@@ -39,15 +48,18 @@
    "RGBA32F": 19089528193.32566
   },
   "wide_filter": 1.98,
+  "vendor": "0x10DE",
+  "device": "0x1B80",
   "report": "nvidia-gtx-1080.csv (TexBench 0.7.0)",
   "overhead_measured": false,
   "pass_overhead": 1.0422222222222224e-06
  },
  "GTX 1660": {
   "arch": "NVIDIA Turing",
-  "tex_rate": 164600000000.0,
+  "cache_bytes": 1572864.0,
+  "tex_rate": 169174209010.01968,
   "rop_rate": 29600000000.0,
-  "bandwidth": 166020816653.32266,
+  "bandwidth": 155107994389.9018,
   "write_rate": {
    "R8": 29444089456.869007,
    "RG8": 29465008880.994675,
@@ -62,14 +74,22 @@
   },
   "wide_filter": 1.98,
   "pass_overhead": 1.077777777777778e-06,
+  "cache_bandwidth": 445190839694.6565,
+  "px_rate": 35492035644.36922,
+  "exchange_rate": 948044290987.0272,
+  "sparse_waste": 1.78,
+  "vendor": "0x10DE",
+  "device": "0x2184",
   "report": "nvidia-gtx-1660-21.csv (TexBench 0.9.0)",
+  "fill_px": 13578,
   "overhead_measured": true
  },
  "RTX 2070": {
   "arch": "NVIDIA Turing RTX",
-  "tex_rate": 247100000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 246015126798.16122,
   "rop_rate": 74500000000.0,
-  "bandwidth": 414720000000.0,
+  "bandwidth": 392402128917.8002,
   "write_rate": {
    "R8": 74456014362.65709,
    "RG8": 64497667185.06999,
@@ -84,14 +104,21 @@
   },
   "wide_filter": 2.03,
   "pass_overhead": 1.0066666666666664e-06,
+  "cache_bandwidth": 637377049180.3278,
+  "px_rate": 54817262573.52436,
+  "exchange_rate": 962320409939.0935,
+  "sparse_waste": 3.45,
+  "vendor": "0x10DE",
+  "device": "0x1F10",
   "report": "nvidia-rtx-2070-3.csv (TexBench 0.9.0)",
   "overhead_measured": true
  },
  "RTX 3060": {
   "arch": "NVIDIA Ampere",
+  "cache_bytes": 2097152,
   "tex_rate": 219600000000.0,
   "rop_rate": 74800000000.0,
-  "bandwidth": 343027295285.3598,
+  "bandwidth": 340807395993.8367,
   "write_rate": {
    "R8": 56849897189.856064,
    "RG8": 63123287671.23288,
@@ -105,15 +132,18 @@
    "RGBA32F": 20556133828.99628
   },
   "wide_filter": 1.99,
+  "vendor": "0x10DE",
+  "device": "0x2504",
   "report": "nvidia-rtx-3060.csv (TexBench 0.7.0)",
   "overhead_measured": false,
   "pass_overhead": 1.0422222222222224e-06
  },
  "RTX 4070": {
   "arch": "NVIDIA Ada",
-  "tex_rate": 483600000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 550894146948.9418,
   "rop_rate": 113600000000.0,
-  "bandwidth": 621769115442.2789,
+  "bandwidth": 462083565459.61,
   "write_rate": {
    "R8": 113621917808.21918,
    "RG8": 101398533007.33496,
@@ -128,14 +158,21 @@
   },
   "wide_filter": 1.99,
   "pass_overhead": 7.311111111111111e-07,
+  "cache_bandwidth": 1184162436548.2234,
+  "px_rate": 102358930058.92671,
+  "exchange_rate": 3735865628225.605,
+  "sparse_waste": 1.15,
+  "vendor": "0x10DE",
+  "device": "0x2786",
   "report": "nvidia-rtx-4070.csv (TexBench 0.8.0)",
   "overhead_measured": true
  },
  "RTX 5070": {
   "arch": "NVIDIA Blackwell",
-  "tex_rate": 541100000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 522317380352.645,
   "rop_rate": 216800000000.0,
-  "bandwidth": 3005217391304.3477,
+  "bandwidth": 656332344213.6499,
   "write_rate": {
    "R8": 216000000000.0,
    "RG8": 216563968668.4073,
@@ -150,14 +187,21 @@
   },
   "wide_filter": 1.99,
   "pass_overhead": 6.922222222222224e-07,
+  "cache_bandwidth": 1608827586206.897,
+  "px_rate": 204396254312.468,
+  "exchange_rate": 2145103448275.872,
+  "sparse_waste": 1.0,
+  "vendor": "0x10DE",
+  "device": "0x2F04",
   "report": "nvidia-rtx-5070.csv (TexBench 0.8.0)",
   "overhead_measured": true
  },
  "RX 590": {
   "arch": "AMD GCN 4",
+  "cache_bytes": 2097152,
   "tex_rate": 196500000000.0,
   "rop_rate": 49200000000.0,
-  "bandwidth": 219196617336.1522,
+  "bandwidth": 202673182651.19116,
   "write_rate": {
    "R8": 46131256952.16908,
    "RG8": 46441209406.49496,
@@ -171,12 +215,15 @@
    "RGBA32F": 13727904667.328701
   },
   "wide_filter": 3.56,
+  "vendor": "0x1002",
+  "device": "0x67DF",
   "report": "amd-radeon-rx-590.csv (TexBench 0.6.0)",
   "overhead_measured": false,
   "pass_overhead": 1.0422222222222224e-06
  },
  "RX 5500 XT": {
   "arch": "AMD RDNA 1",
+  "cache_bytes": 2097152,
   "tex_rate": 114300000000.0,
   "rop_rate": 28100000000.0,
   "bandwidth": 203169626454.37842,
@@ -193,15 +240,18 @@
    "RGBA32F": 12711724137.931034
   },
   "wide_filter": 1.17,
+  "vendor": "0x1002",
+  "device": "0x7340",
   "report": "amd-radeon-rx-5500-xt.csv (TexBench 0.7.0)",
   "overhead_measured": false,
   "pass_overhead": 1.0422222222222224e-06
  },
  "RX 6600": {
   "arch": "AMD RDNA 2",
-  "tex_rate": 297400000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 302798211189.1944,
   "rop_rate": 86200000000.0,
-  "bandwidth": 208297338021.0949,
+  "bandwidth": 198134368468.19946,
   "write_rate": {
    "R8": 85952331606.21762,
    "RG8": 79145038167.93892,
@@ -216,14 +266,21 @@
   },
   "wide_filter": 1.0,
   "pass_overhead": 9.97777777777778e-07,
+  "cache_bandwidth": 347660208643.8152,
+  "px_rate": 50753556677.374825,
+  "exchange_rate": 858004396362.2277,
+  "sparse_waste": 1.35,
+  "vendor": "0x1002",
+  "device": "0x73FF",
   "report": "amd-radeon-rx-6600.csv (TexBench 0.8.0)",
   "overhead_measured": true
  },
  "RX 7900 XTX": {
   "arch": "AMD RDNA 3",
+  "cache_bytes": 2097152,
   "tex_rate": 897100000000.0,
   "rop_rate": 265200000000.0,
-  "bandwidth": 3317760000000.0,
+  "bandwidth": 1671415617128.4634,
   "write_rate": {
    "R8": 193342657342.65735,
    "RG8": 252878048780.48776,
@@ -237,15 +294,18 @@
    "RGBA32F": 53067178502.879074
   },
   "wide_filter": 1.0,
+  "vendor": "0x1002",
+  "device": "0x744C",
   "report": "amd-radeon-rx-7900-xtx.csv (TexBench 0.7.0)",
   "overhead_measured": false,
   "pass_overhead": 1.0422222222222224e-06
  },
  "RX 9070 XT": {
   "arch": "AMD RDNA 4",
+  "cache_bytes": 2097152,
   "tex_rate": 767900000000.0,
   "rop_rate": 205700000000.0,
-  "bandwidth": 2137731958762.8865,
+  "bandwidth": 1204268602540.8347,
   "write_rate": {
    "R8": 192893023255.81396,
    "RG8": 199384615384.6154,
@@ -259,13 +319,16 @@
    "RGBA32F": 39838616714.69741
   },
   "wide_filter": 1.0,
+  "vendor": "0x1002",
+  "device": "0x7550",
   "report": "amd-radeon-rx-9070-xt-4.csv (TexBench 0.7.0)",
   "overhead_measured": false,
   "pass_overhead": 1.0422222222222224e-06
  },
- "Radeon 610M": {
+ "Radeon 680M": {
   "arch": "AMD RDNA 2 iGPU",
-  "tex_rate": 85700000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 117551020408.16339,
   "rop_rate": 29900000000.0,
   "bandwidth": 44937830150.34539,
   "write_rate": {
@@ -282,14 +345,22 @@
   },
   "wide_filter": 1.01,
   "pass_overhead": 5.754444444444445e-06,
+  "cache_bandwidth": 182678151918.55917,
+  "px_rate": 9394708227.618689,
+  "exchange_rate": 5877551020408.17,
+  "sparse_waste": 4.0,
+  "vendor": "0x1002",
+  "device": "0x1681",
   "report": "amd-radeon-0x1681.csv (TexBench 0.9.0)",
+  "fill_px": 14405,
   "overhead_measured": true
  },
  "UHD 630": {
   "arch": "Intel Gen9.5",
-  "tex_rate": 15500000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 14907830322.41976,
   "rop_rate": 9800000000.0,
-  "bandwidth": 34178341849.348934,
+  "bandwidth": 29257142857.142857,
   "write_rate": {
    "R8": 7716438738.487302,
    "RG8": 7712851032.174075,
@@ -304,14 +375,22 @@
   },
   "wide_filter": 1.99,
   "pass_overhead": 3.7611111111111104e-06,
+  "cache_bandwidth": 70648092065.41489,
+  "px_rate": 61523170211.57929,
+  "exchange_rate": 23072218323.387955,
+  "sparse_waste": 2.72,
+  "vendor": "0x8086",
+  "device": "0x3E92",
   "report": "intel-uhd-630-25.csv (TexBench 0.9.0)",
+  "fill_px": 13889,
   "overhead_measured": true
  },
  "Iris Xe": {
   "arch": "Intel Gen12",
-  "tex_rate": 53200000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 73851907088.55984,
   "rop_rate": 12200000000.0,
-  "bandwidth": 18031304347.826088,
+  "bandwidth": 13425704111.3629,
   "write_rate": {
    "R8": 6826104847.337667,
    "RG8": 3561356805.4959207,
@@ -326,14 +405,22 @@
   },
   "wide_filter": 1.79,
   "pass_overhead": 3.1466666666666673e-06,
+  "cache_bandwidth": 230059171597.63324,
+  "px_rate": 2308705590.909246,
+  "exchange_rate": 3692595354427.992,
+  "sparse_waste": 4.0,
+  "vendor": "0x8086",
+  "device": "0x9A49",
   "report": "intel-iris-xe-3.csv (TexBench 0.8.0)",
+  "fill_px": 12638,
   "overhead_measured": true
  },
  "Arc B580": {
   "arch": "Intel Xe2",
-  "tex_rate": 337600000000.0,
+  "cache_bytes": 2097152,
+  "tex_rate": 262066350710.90054,
   "rop_rate": 140300000000.0,
-  "bandwidth": 386145251396.6481,
+  "bandwidth": 383777906304.2221,
   "write_rate": {
    "R8": 140345177664.9746,
    "RG8": 121618768328.44574,
@@ -348,6 +435,12 @@
   },
   "wide_filter": 1.86,
   "pass_overhead": 2.5355555555555555e-06,
+  "cache_bandwidth": 601237113402.0616,
+  "px_rate": 268253557567.91443,
+  "exchange_rate": 113120880120.01636,
+  "sparse_waste": 2.46,
+  "vendor": "0x8086",
+  "device": "0xE20B",
   "report": "intel-arc-b580-2.csv (TexBench 0.9.0)",
   "overhead_measured": true
  }

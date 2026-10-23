@@ -102,6 +102,12 @@ def quad_pass(s: np.ndarray, w: np.ndarray) -> Pass:
     return Pass(1, variants[0], variants=tuple(variants), tile=2, vmap=(0, 1, 2, 3), sel="quad")
 
 
+def quad_cost(n: int) -> float:
+    """n reads + 4 float3 exchanges (the neighbours' weighted sums: nx(C10), ny(C01), ny(nx(C11))), in the
+    composite; the 12 MAD per read are ALU the memory-bound composite hides."""
+    return pipeline_cost(Pipeline("quad", {}, [Pass(1, ((0.0, 0.0, 1.0),) * n, exchanges=4)]))["us"]
+
+
 def main():
     rows = {}
     for sigma in SIGMAS:
@@ -112,7 +118,7 @@ def main():
             pl = Pipeline("quad", {"n": n, "sigma": sigma}, [p])
             q = metrics(pl, sigma)
             ok = [k for k, pr in S.PROFILES.items() if S.passes_profile(q, pr) and q["block"] <= S.NOISE_BLOCK_MAX]
-            cost = pipeline_cost(Pipeline("quad", {}, [Pass(1, p.taps[:n])]))["us"]
+            cost = quad_cost(n)
             rows[f"{sigma}_{n}"] = {"target": sigma, "reads": n, "samples": 4 * n, "us": cost,
                                     "positions": s.tolist(), "weights": w.tolist(), "ok": ok,
                                     **{k: q[k] for k in ("sigma", "tv", "leak", "iso", "phase", "block", "curv")}}
@@ -127,9 +133,9 @@ def write_md(rows: dict):
     for key, r in rows.items():  # target sigma from the key (older files stored the measured one only)
         r.setdefault("target", float(key.split("_")[0]))
     lines = ["# Quad sharing (ddx_fine / ddy_fine) vs the single-pass pinwheel (GTX 1660 model, 1080p)", "",
-             "us = marginal cost over a plain composite pass (texture reads only). The exchange costs",
-             "12 scalar derivatives per pixel whatever the read count, plus 12 MAD per read; the",
-             "composite is memory-bound, so this ALU is expected to hide. 'pinwheel' = TOPT_Blur size 1.", "",
+             "us = marginal cost over a plain composite pass: the reads plus 4 float3 quad exchanges",
+             "(TexBench's measured exchange cost; the 12 MAD per read are not counted, the composite",
+             "is memory-bound). 'pinwheel' = TOPT_Blur size 1.", "",
              "| sigma | quad: reads (samples) | quality | us | phase | block | pinwheel reads | pinwheel us |",
              "|---:|---|---|---:|---:|---:|---:|---:|"]
     for t in sorted({r["target"] for r in rows.values()}):
@@ -141,6 +147,7 @@ def write_md(rows: dict):
             pin = "- | -"
         if ok:
             r = min(ok, key=lambda r: r["reads"])
+            r["us"] = quad_cost(r["reads"])  # current cost model
             q = "strict" if "strict" in r["ok"] else "medium"
             lines.append(f"| {t} | {r['reads']} ({4 * r['reads']}) | {q} | {r['us']:.0f} | {r['phase']:.3f} | "
                          f"{r['block']:.2f} | {pin} |")

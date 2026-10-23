@@ -32,6 +32,7 @@ class Pass:
     sel: str | None = None   # how the shader derives the variant ('bayer' / 'dot'); variants are rotations
     bpp: int = 4             # bytes per output pixel (cost model only): 4 = RGB10A2, 2 = R16F, 1 = R8
     fmt: str | None = None   # output format (cost model only); overrides bpp, e.g. "RGBA8", "RG11B10F"
+    exchanges: int = 0       # quad exchanges per pixel (ddx_fine / ddy_fine of a float3; cost model only)
 
     def variant_of(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
         idx = (y % self.tile) * self.tile + (x % self.tile)
