@@ -10,10 +10,10 @@ sigma 1–200 px at 1920x1080, RGB10A2 buffers, GTX 1660 as the reference GPU.
   Each pass renders a target at `full // div` and each tap is one bilinear
   fetch at an offset in source texels. Addressing is MIRROR (clamping would
   vignette). Sampling is done with sparse matrices, so it is exact and fast.
-* **Cost model** (`topt/cost.py`): per pass `overhead + max(TMU, DRAM, ROP)`.
-  At 1080p a full-res RGB10A2 pass moves ~16.6 MB (read + write), about 90 us
-  on a 1660, so up to ~6 taps per pixel are "free" and full-res passes are what
-  cost. The per-pass overhead (5 us) is a placeholder until measured.
+* **Cost model** (`topt/cost.py`): per pass `overhead + max(TMU + per-pixel
+  work, DRAM, ROP)`, with one profile per GPU architecture fitted to TexBench
+  (see below). Small passes whose source and target fit in the cache run at
+  cache speed; passes with too few pixels to fill the GPU take longer.
 * **Quality** (`topt/quality.py`): impulse responses at several phases of the
   coarsest grid, compared to a Gaussian of the same sigma:
   `leak` (stop-band sidelobes: truncation/boxiness), `tv` (shape distance),
@@ -34,18 +34,28 @@ Results go to `results/baseline.md`.
 
 ## Cost model calibration (TexBench)
 
-TexBench (CeeJayDK/sopt) times whole passes at 3840 x 2160. Against the GTX 1660
-report the first model was close for copies and downsamples but wrong for
-render-target writes: they are limited per format, not by bandwidth (RGBA8
-28.7, R16F 29.7, R8 / RG8 24.6, RGB10A2 / RG11B10F 23.0 Gpixel/s). The GTX 1660
-profile in `topt/cost.py` now uses these rates, 155 GTexel/s, ~160 GB/s of
-combined traffic and half-rate filtering of 64-bit formats; it matches every
-TexBench write, copy and downsample pass within 6 % (`python -m
-scripts.texbench_check <report.csv>`). The per-pass overhead is still a guess.
-The tests that would settle the remaining guesses (pass overhead, free fetches,
-derivative modes, scatter rates, ...) are listed in `docs/texbench_requests.md`.
-Results files written before this (`results/*.md`) use the first model; the
-effect's size classes do not change.
+TexBench (CeeJayDK/sopt) times whole passes at 3840 x 2160 on many cards.
+`python -m scripts.gpu_profiles <sopt>/docs/texbench` makes one profile per
+architecture (16 cards, NVIDIA Maxwell to Blackwell, AMD GCN to RDNA 4, Intel
+Gen9 to Xe2) in `topt/gpu_profiles.json`, from each card's newest report:
+
+* texture rate and the per-pixel work every pass pays besides its reads, from
+  passes with 1..24 bilinear reads per pixel: the "free" fetches end at ~4-5
+  reads, not ~7 as first assumed;
+* DRAM traffic from the copy pass, render-target write rate per format;
+* filter rate of 64-bit formats;
+* per-pass overhead from chains of dependent passes: ~1 us on NVIDIA and AMD
+  desktop cards (the first guess was 5 us), 2.5-6 us on Intel and iGPUs;
+* cache-resident small passes (same chains), the read waste of strided
+  downsamples, under-filled tiny passes, and the cost of a quad exchange
+  (`ddx_fine` / `ddy_fine`).
+
+`python -m scripts.texbench_check <sopt>/docs/texbench` compares every profile
+with its report (`results/calibration.md`): median error 0-7 % per GPU. The
+largest misses are reads that stay in a big L2 / Infinity Cache (the model is
+pessimistic there) and noisy laptop reports. The GTX 1660 profile is the
+default model. Open requests to TexBench: `docs/texbench_requests.md`.
+Results files written before the calibration (`results/*.md`) use older models.
 
 ## Findings so far (model estimates, not yet timed on hardware)
 
@@ -143,8 +153,11 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
 * Quality profiles in `topt/search.py` are calibrated by eye with
   `scripts/calibrate.py` renders (truncation, blockiness, motion, isotropy,
   noise).
-* Next: hardware timing (`fx/README.md`), then refit the cost model (per-pass
-  overhead, memory-bound claim) and re-run the searches.
+* `TOPT_Blur.fx` picks its size classes per GPU family (`__VENDOR__` /
+  `__DEVICE__`) from the calibrated profiles; unknown GPUs get the choice with
+  the least mean regret over all profiles.
+* Next: re-run the searches on the calibrated profiles; hardware timing of the
+  effects (`fx/README.md`).
 * Parked: temporal stochastic sampling and extra downsample/upsample variants.
 * Later, Movie Night (blur in the black gutter of letterboxed video):
   downsample only the picture strips the bars show (plus ~3 sigma), clamped to

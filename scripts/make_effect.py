@@ -153,6 +153,76 @@ def options(info: dict, sig: int, rmax: int) -> list:
     return out
 
 
+# GPU families by PCI vendor / device id ranges (approximate, from the PCI id lists), each mapped to the
+# profile (topt/gpu_profiles.json) of its architecture. Unlisted GPUs get the least-regret table.
+FAMILIES = [
+    (0x10DE, 0x1340, 0x17FF, "GTX 860M", "NVIDIA Maxwell"),
+    (0x10DE, 0x1B00, 0x1DFF, "GTX 1080", "NVIDIA Pascal"),
+    (0x10DE, 0x2180, 0x21FF, "GTX 1660", "NVIDIA Turing GTX 16 (TU116)"),
+    (0x10DE, 0x1E00, 0x1FFF, "RTX 2070", "NVIDIA Turing (TU10x, TU117)"),
+    (0x10DE, 0x2200, 0x25FF, "RTX 3060", "NVIDIA Ampere"),
+    (0x10DE, 0x2600, 0x28FF, "RTX 4070", "NVIDIA Ada"),
+    (0x10DE, 0x2900, 0x2FFF, "RTX 5070", "NVIDIA Blackwell"),
+    (0x1002, 0x6700, 0x69FF, "RX 590", "AMD GCN (Polaris, Vega)"),
+    (0x1002, 0x7310, 0x739F, "RX 5500 XT", "AMD RDNA 1"),
+    (0x1002, 0x73A0, 0x743F, "RX 6600", "AMD RDNA 2"),
+    (0x1002, 0x7440, 0x74FF, "RX 7900 XTX", "AMD RDNA 3"),
+    (0x1002, 0x7500, 0x75FF, "RX 9070 XT", "AMD RDNA 4"),
+    (0x1002, 0x1500, 0x19FF, "Radeon 680M", "AMD Ryzen iGPUs (RDNA 2 / 3)"),
+    (0x8086, 0x1900, 0x193F, "UHD 630", "Intel Gen9 (Skylake)"),
+    (0x8086, 0x5900, 0x59FF, "UHD 630", "Intel Gen9.5 (Kaby Lake)"),
+    (0x8086, 0x3E90, 0x3EFF, "UHD 630", "Intel Gen9.5 (Coffee Lake)"),
+    (0x8086, 0x9B00, 0x9BFF, "UHD 630", "Intel Gen9.5 (Comet Lake)"),
+    (0x8086, 0x9A40, 0x9AFF, "Iris Xe", "Intel Gen12 (Tiger Lake)"),
+    (0x8086, 0x4680, 0x46FF, "Iris Xe", "Intel Gen12 (Alder Lake)"),
+    (0x8086, 0xA780, 0xA7FF, "Iris Xe", "Intel Gen12 (Raptor Lake)"),
+    (0x8086, 0x5690, 0x56FF, "Arc B580", "Intel Arc (Alchemist)"),
+    (0x8086, 0xE200, 0xE2FF, "Arc B580", "Intel Arc (Battlemage)"),
+    (0x8086, 0x6400, 0x64FF, "Arc B580", "Intel Xe2 (Lunar Lake)"),
+    (0x8086, 0x7D40, 0x7DFF, "Arc B580", "Intel Xe-LPG (Meteor Lake)"),
+]
+TABLE_RES = ("1080p", "4k")
+SEP_MARGIN = 1.0   # % of a composite pass the separable variant must save (near-ties keep the 2D pass)
+
+
+def gpu_tables(info: dict, rmax: int) -> tuple:
+    """Per GPU profile the class choice for every integer screen sigma (least regret over 1080p and 4K,
+    regret in % of that GPU's composite pass); profiles with the same choices share a table. Also the
+    least mean regret over all profiles, for unknown GPUs."""
+    import numpy as np
+    from topt.cost import PROFILES, RESOLUTIONS, composite_baseline
+    gpus = list(PROFILES)
+    picks = {g: [] for g in gpus + [None]}
+    for sig in range(2, 441):
+        opts = options(info, sig, rmax)
+        if not opts:
+            for g in picks:
+                picks[g].append(picks[g][-1])
+            continue
+        cost = np.array([[[pipeline_cost(p, *RESOLUTIONS[r], gpu=PROFILES[g])["us"] for r in TABLE_RES] for g in gpus]
+                         for _, _, p in opts])
+        base = np.array([[composite_baseline(*RESOLUTIONS[r], PROFILES[g]) * 1e6 for r in TABLE_RES] for g in gpus])
+        regret = (100 * (cost - cost.min(0)) / base).mean(2)       # option x gpu
+        regret[1::2] += SEP_MARGIN                                  # separable only for a clear win
+        for j, g in enumerate(gpus + [None]):
+            r = regret.mean(1) if g is None else regret[:, j]
+            k = int(np.argmin(r))
+            picks[g].append((opts[k][0], opts[k][1]))
+    def intervals(choice):
+        iv = [[1, 1, ("1", False)]]
+        for sig, key in enumerate(choice, 2):
+            if iv[-1][2] == key:
+                iv[-1][1] = sig
+            else:
+                iv.append([sig, sig, key])
+        return iv
+    groups = {}
+    for g in gpus:
+        groups.setdefault(tuple(picks[g]), []).append(g)
+    tables = [(gs, intervals(list(k))) for k, gs in groups.items()]
+    return tables, intervals(picks[None])
+
+
 def main():
     rmax = math.ceil(TRUNC * SL_MAX)
     info = class_info(rmax)
@@ -162,37 +232,32 @@ def main():
         ok = [n for n, p in S.PROFILES.items() if S.passes_profile({**q, "sigma_err": 0.0}, p)]
         small.append((round(q["sigma"], 2), "/".join(ok) or "FAIL", round(pipeline_cost(small_pipeline(sig))["us"])))
     print(f"   1: single pass {small}", flush=True)
-    # cheapest valid (class, separable) for every integer screen sigma; near-ties keep the 2D pass
-    choice = []
-    for sig in range(2, 441):
-        best = None
-        opts = options(info, sig, rmax)
-        for (name, _, p2d), (_, _, psep) in zip(opts[::2], opts[1::2]):
-            us2d, ussep = pipeline_cost(p2d)["us"], pipeline_cost(psep)["us"]
-            sep = ussep < us2d - 3.0  # separable only for a clear win
-            us = ussep if sep else us2d
-            if best is None or us < best[1]:
-                best = ((name, sep), us)
-        choice.append((sig, best[0] if best else choice[-1][1]))
-    intervals = [[1, 1, ("1", False)]]
-    for sig, key in choice:
-        if intervals and intervals[-1][2] == key:
-            intervals[-1][1] = sig
-        else:
-            intervals.append([sig, sig, key])
-    print("selection:", [(a, b, n) for a, b, n in intervals])
-    (ROOT / "fx" / "TOPT_Blur.fx").write_text(render(info, intervals, rmax))
+    tables, default = gpu_tables(info, rmax)
+    for t, (gpus, iv) in enumerate(tables, 1):
+        print(f"table {t} ({', '.join(gpus)}):", [(a, b, n) for a, b, n in iv])
+    print("table 0 (unknown GPU):", [(a, b, n) for a, b, n in default])
+    (ROOT / "fx" / "TOPT_Blur.fx").write_text(render(info, tables, default, rmax))
     print("wrote fx/TOPT_Blur.fx")
 
 
-def render(info: dict, intervals: list, rmax: int) -> str:
+def render(info: dict, tables: list, default: list, rmax: int) -> str:
     ids = {n: i + 1 for i, n in enumerate(CLASSES)}
     ids["1"] = 0
-    sel = []
-    for i, (a, b, (name, sep)) in enumerate(intervals):
-        cond = "#if" if i == 0 else "#elif"
-        body = f"\t#define TOPT_CLASS {ids[name]} // '{name}'{' separable' if sep else ''}\n\t#define TOPT_SEP {int(sep)}"
-        sel.append(f"{cond} TOPT_SIGMA_SCREEN <= {b}\n{body}" if i < len(intervals) - 1 else f"#else\n{body}")
+    table_of = {g: t for t, (gs, _) in enumerate(tables, 1) for g in gs}
+    sel = ["#ifndef TOPT_GPU"]
+    for i, (vendor, lo, hi, prof, label) in enumerate(f for f in FAMILIES if f[3] in table_of):
+        sel.append(f"\t#{'if' if i == 0 else 'elif'} __VENDOR__ == 0x{vendor:04X} && __DEVICE__ >= 0x{lo:04X} && "
+                   f"__DEVICE__ <= 0x{hi:04X}\n\t\t#define TOPT_GPU {table_of[prof]} // {label} ({prof} profile)")
+    sel += ["\t#else\n\t\t#define TOPT_GPU 0 // unknown GPU: least regret over all profiles", "\t#endif", "#endif", ""]
+    for t, iv in [(t, iv) for t, (_, iv) in enumerate(tables, 1)] + [(0, default)]:
+        gs = ", ".join(tables[t - 1][0]) if t else "unknown GPUs"
+        sel.append(f"#{'if' if t == 1 else 'elif'} TOPT_GPU == {t} // {gs}" if t else f"#else // {gs}")
+        for i, (a, b, (name, sep)) in enumerate(iv):
+            cond = "#if" if i == 0 else "#elif"
+            body = (f"\t\t#define TOPT_CLASS {ids[name]} // '{name}'{' separable' if sep else ''}\n"
+                    f"\t\t#define TOPT_SEP {int(sep)}")
+            sel.append(f"\t{cond} TOPT_SIGMA_SCREEN <= {b}\n{body}" if i < len(iv) - 1 else f"\t#else\n{body}")
+        sel.append("\t#endif")
     sel.append("#endif")
     arm = ", ".join(f"float2({x}.0, {y}.0)" for x, y in SMALL_ARM)
     steps = " : ".join(f"sigma <= {_f(smax)} ? {n}" for smax, n in SMALL_STEPS[:-1]) + f" : {SMALL_STEPS[-1][1]}"
@@ -289,7 +354,9 @@ uniform bool TOPT_ShowBlur <
 	ui_label = "Show blur only";
 > = false;
 
-// ---- size class (chosen at compile time from the blur size and the resolution)
+// ---- size class (chosen at compile time from the blur size, the resolution and the GPU: each GPU
+// family gets the choices the cost model, calibrated on its TexBench report, finds cheapest.
+// TOPT_GPU forces a table, e.g. to time them against each other.)
 {SELECT}
 
 {CLASSES}
