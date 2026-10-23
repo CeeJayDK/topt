@@ -60,6 +60,24 @@ GTX1660 = GPU("GTX 1660", 155e9, 160e9, 63.5e9, 5e-6, 22 * 16 * 1.785e9,
 # The model before the TexBench calibration (kept to compare old results).
 GTX1660_V1 = GPU("GTX 1660 (v1)", 88 * 1.785e9, 0.8 * 192e9, 48 * 1.785e9, 5e-6, 22 * 16 * 1.785e9)
 
+
+
+def _load_profiles() -> dict:
+    """One GPU per architecture, from TexBench reports (scripts/gpu_profiles.py)."""
+    import json
+    from pathlib import Path
+    path = Path(__file__).with_name("gpu_profiles.json")
+    if not path.exists():
+        return {}
+    out = {}
+    for name, p in json.loads(path.read_text()).items():
+        out[name] = GPU(name, p["tex_rate"], p["bandwidth"], p["rop_rate"], p["pass_overhead"],
+                        write_rate=tuple(p["write_rate"].items()), wide_filter=p["wide_filter"])
+    return out
+
+
+PROFILES = _load_profiles()
+
 BYTES_PER_PIXEL = 4  # RGB10A2 / R11G11B10F / RGBA8 backbuffer
 SCREEN_FORMAT = "RGBA8"  # the backbuffer the composite writes
 RESOLUTIONS = {"1080p": (1920, 1080), "1440p": (2560, 1440), "4k": (3840, 2160)}

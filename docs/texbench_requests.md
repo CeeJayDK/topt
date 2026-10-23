@@ -76,7 +76,11 @@ full-screen draw + stencil vs full-screen + discard.
 Report: ms for each.
 
 ## P11. Scatter rate: blended points (vertex-shader histogram) and splats
-Vertex-shader scatter, the no-compute way to build a histogram: POINTLIST,
+Vertex-shader scatter, the way to build a histogram without compute. In
+ReShade that is only Direct3D 9 and 10: OpenGL always runs at 4.3 or later
+(ReShade raises older contexts to 4.3), so it has compute like D3D11 / D3D12 /
+Vulkan. There is no gather on D3D9 either, and integer render targets cannot
+be blended, so this path counts in float targets. POINTLIST,
 VertexCount = number of source pixels used, the vertex shader takes its pixel
 from SV_VertexID, reads it with tex2Dlod and places the point in its bin;
 additive blending (BlendOp ADD, SrcBlend ONE, DestBlend ONE) counts.
@@ -87,15 +91,32 @@ a) Contention: every point to 1 pixel; to 16 bins; to 256 bins (256x1
    no contention).
 b) Subsampling: every pixel, every 4th, every 16th (the usual histogram trick).
 c) Target format: R32F, R16F, RGBA16F, RGBA8.
-d) APIs: D3D9 (vs_3_0 vertex texture fetch: the case without compute),
-   D3D11, Vulkan.
-e) Reference: the same 256-bin histogram as a compute shader (InterlockedAdd
-   in groupshared per thread group, then one atomic add per bin to a global
-   buffer), and the same with global atomics only.
+d) APIs: D3D9 (vs_3_0 vertex texture fetch) and D3D10, the APIs without
+   compute in ReShade; D3D11 for comparison with e).
+e) Reference (D3D11, D3D12, Vulkan, OpenGL): the same 256-bin histogram as a
+   compute shader (atomicAdd in groupshared per thread group, then one atomic
+   add per bin to an R32U storage texture), and the same with storage
+   atomics only.
 f) Splats (bokeh-style scatter): one 2-triangle quad per source pixel of a
    1/8- and a 1/16-size source, quad size 4x4, 8x8, 16x16 pixels, additive
    blending into RGBA16F at full res.
 
-Report: ms per variant, plus points/s (a-e) and blended pixels/s (f). The
+g) Spread copies (less contention, D3D9 / D3D10 path): each bin is a 2 x 2
+   block and a point goes to the block pixel picked by its source pixel's
+   parity (x & 1, y & 1), so neighbouring source pixels, which usually fall
+   in the same bin, blend into different pixels. Read back with one bilinear
+   sample at the block centre (average of 4, x4 = count). Variants: 1 pixel
+   per bin; 2 x 2 (1 bilinear read); 4 x 4 (4 bilinear reads); 4 copies in
+   rows far apart (4 point reads). 256 bins, R32F, every pixel of the source.
+
+Report: ms per variant, plus points/s (a-e, g) and blended pixels/s (f). The
 point is the blend rate under contention versus the uncontended write rate;
 f decides whether scatter-based blur (bokeh) can ever compete with gather.
+
+## P12. Blend rate per format
+TexBench's blend tests cover RGBA8, RGB10A2, RG11B10F, RGBA16F, RGBA32F.
+Add the formats a histogram, a luma buffer or an accumulation would blend
+into: R8, R16F, R32F, RG16F, RG32F (integer formats cannot be blended).
+Same test as now: full-screen pass at 3840 x 2160, plain write vs additive
+blending (blend state) vs the same math in the shader.
+Report: ms per format and mode.
