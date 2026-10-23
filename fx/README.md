@@ -36,22 +36,24 @@ low resolution (one 2D pass, or H + V passes where that is clearly cheaper),
 and the upsample fused into the composite. Size 1 is a single pass in the
 composite: a centre texel plus a 4-fold pinwheel of 2x2 texel blocks, each
 reproducing its block's Gaussian weights exactly with one bilinear fetch (9, 13
-or 17 fetches as sigma grows). Modelled cost on a GTX 1660 at 1080p, over a
-plain composite pass:
+or 17 fetches as sigma grows). Modelled cost on a GTX 1660 at 1080p (its table),
+over a plain composite pass:
 
 | sigma (1080p) | method | us |
 |---|---|---:|
-| 0.7–0.9 / –1.1 / –1.3 | single pass, 9 / 13 / 17 fetches | 30 / 84 / 137 |
-| 2 | x2, 2D | 118 |
-| 3 | x2, separable | 145 |
-| 4–6 | x4 (+x2 up pass), 2D | 113–126 |
-| 7–12 | x4, separable | 86–88 |
-| 13–19 | x8, 2D | 69–74 |
-| 20–26 | x8, separable | 72 |
-| 27–51 | x16, 2D | 64–66 |
-| 52–200 | x16 then x2/x4, 2D | 67–68 |
+| 0.7–0.9 / –1.1 / –1.3 | single pass, 9 / 13 / 17 fetches | 74 / 123 / 172 |
+| 2 | x2, 2D | 125 |
+| 3 | x2, separable | 143 |
+| 4 / 5–6 | x4 (+x2 up pass), 2D / separable | 107 / 109 |
+| 7–12 | x4, separable | 96–99 |
+| 13–27 | x8, separable | 72–75 |
+| 28–54 | x16, separable | 108 |
+| 55–200 | x16 then x2/x4 | 111–112 |
 
-(Cost model calibrated against TexBench on a GTX 1660, see the README.)
+The x16 classes cost more than x8 on this card: their 120 x 67 downsample pass
+has too few pixels to fill the GPU (TexBench's strided-downsample test).
+
+(Cost model calibrated against TexBench, see the README.)
 
 # Hardware timing effects
 
