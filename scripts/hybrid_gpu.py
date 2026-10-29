@@ -33,7 +33,7 @@ def targets() -> list:
 
 
 def _run(s):
-    return s, search_multi(s, targets())
+    return s, search_multi(s, targets(), log=lambda m: print(m, file=sys.stderr, flush=True))
 
 
 def best_of(recs: list) -> dict:
