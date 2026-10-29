@@ -1,0 +1,107 @@
+# The per-GPU hybrid search (scripts/hybrid_gpu.py), one job per sigma.
+# Runs on workflow_dispatch, or on a push that changes the sigma list in .github/hybrid-gpu-sigmas.
+# A job that runs out of time saves its checkpoint in the Actions cache; rerunning resumes from it.
+# Finished sigmas are merged into results/hybrid_gpu_best.json / .md and pushed to the run's branch.
+name: hybrid-gpu
+
+on:
+  workflow_dispatch:
+    inputs:
+      sigmas:
+        description: "Sigmas, space separated (empty: .github/hybrid-gpu-sigmas)"
+        required: false
+  push:
+    paths:
+      - .github/hybrid-gpu-sigmas
+      - .github/workflows/hybrid-gpu.yml
+
+concurrency:
+  group: hybrid-gpu-${{ github.ref }}
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      sigmas: ${{ steps.s.outputs.sigmas }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: s
+        env:
+          INPUT: ${{ github.event.inputs.sigmas }}
+        run: |
+          s="${INPUT:-$(cat .github/hybrid-gpu-sigmas)}"
+          echo "sigmas=$(python3 -c 'import json,sys; print(json.dumps(sys.argv[1:]))' $s)" >> "$GITHUB_OUTPUT"
+
+  search:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      matrix:
+        sigma: ${{ fromJSON(needs.plan.outputs.sigmas) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/cache/restore@v4
+        with:
+          path: results/hybrid_gpu_${{ matrix.sigma }}.partial.json
+          key: hybrid-partial-${{ matrix.sigma }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: hybrid-partial-${{ matrix.sigma }}-
+      - name: search
+        run: timeout 340m python -m scripts.hybrid_gpu ${{ matrix.sigma }} || echo "stopped ($?)"
+      - uses: actions/cache/save@v4
+        if: always() && hashFiles(format('results/hybrid_gpu_{0}.partial.json', matrix.sigma)) != ''
+        with:
+          path: results/hybrid_gpu_${{ matrix.sigma }}.partial.json
+          key: hybrid-partial-${{ matrix.sigma }}-${{ github.run_id }}-${{ github.run_attempt }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: best-${{ matrix.sigma }}
+          path: results/hybrid_gpu_best.json
+          if-no-files-found: ignore
+
+  merge:
+    needs: search
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: merge finished sigmas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("results/hybrid_gpu_best.json")
+          best = json.loads(p.read_text()) if p.exists() else {}
+          for f in Path("art").glob("best-*/hybrid_gpu_best.json"):
+              s = f.parent.name[5:]
+              got = json.loads(f.read_text())
+              if s in got:
+                  best[s] = got[s]
+                  print("merged sigma", s)
+          p.write_text(json.dumps(best, indent=1, default=str))
+          PY
+          python -m scripts.hybrid_gpu --md
+      - name: push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/hybrid_gpu_best.json results/hybrid_gpu.md
+          git diff --cached --quiet && exit 0
+          git commit -m "Hybrid search per GPU: results from workflow run ${{ github.run_id }}"
+          for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 5; done
+          exit 1
