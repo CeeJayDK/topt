@@ -15,9 +15,6 @@ on:
       - .github/hybrid-gpu-sigmas
       - .github/workflows/hybrid-gpu.yml
 
-concurrency:
-  group: hybrid-gpu-${{ github.ref }}
-
 jobs:
   plan:
     runs-on: ubuntu-latest
