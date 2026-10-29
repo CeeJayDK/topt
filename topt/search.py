@@ -325,11 +325,14 @@ def search(sigma: float, W: int = 1920, H: int = 1080, log=None) -> list:
     return out
 
 
-def search_multi(sigma: float, targets: list, log=None, pool=None, chunk: int = 32) -> list:
+def search_multi(sigma: float, targets: list, log=None, pool=None, chunk: int = 32, checkpoint=None) -> list:
     """search() for several (name, gpu, W, H) targets at once: every design is fitted once (quality does
     not depend on the GPU) and priced on every target; a target stops as search() does, and the search
     ends when every target has stopped. Records carry "us_by" = {name: us}. With a multiprocessing
-    pool, designs are fitted `chunk` at a time in parallel (the stopping rule is checked per chunk)."""
+    pool, designs are fitted `chunk` at a time in parallel (the stopping rule is checked per chunk). With a
+    checkpoint path, progress is saved after every chunk and an interrupted search resumes from it."""
+    import json
+    from pathlib import Path
     from .cost import composite_baseline
     base = {n: composite_baseline(W, H, g) * 1e6 for n, g, W, H in targets}
     queue = []
@@ -343,6 +346,12 @@ def search_multi(sigma: float, targets: list, log=None, pool=None, chunk: int = 
     stop = {n: math.inf for n in base}
     out = []
     i, done = 0, False
+    if checkpoint and Path(checkpoint).exists():
+        i, out = json.loads(Path(checkpoint).read_text())
+        for rec in out:
+            if passes_profile(rec, strict):
+                for n in stop:
+                    stop[n] = min(stop[n], rec["us_by"][n])
     while i < len(queue) and not done:
         batch = []
         while i < len(queue) and len(batch) < (chunk if pool else 1):
@@ -369,6 +378,8 @@ def search_multi(sigma: float, targets: list, log=None, pool=None, chunk: int = 
                     stop[n] = min(stop[n], us_by[n])
             if log and len(out) % 200 == 0:
                 log(f"  sigma {sigma:g}: {len(out)} evaluated, at key {key:.3f}")
+        if checkpoint:
+            Path(checkpoint).write_text(json.dumps([i, out], default=str))
     return out
 
 

@@ -54,13 +54,16 @@ def main():
     t0 = time.time()
     with Pool(os.cpu_count() or 1) as pool:  # one sigma at a time, its fits in parallel
         for s in sigmas:
-            recs = search_multi(s, targets(), log=lambda m: print(m, file=sys.stderr, flush=True), pool=pool)
+            ck = OUT / f"hybrid_gpu_{s:g}.partial.json"  # resume point if the run is interrupted
+            recs = search_multi(s, targets(), log=lambda m: print(m, file=sys.stderr, flush=True), pool=pool,
+                                checkpoint=ck)
             allrecs[f"{s:g}"] = recs
             best[f"{s:g}"] = best_of(recs)
             print(f"sigma {s:g}: {len(recs)} evaluated ({time.time() - t0:.0f}s elapsed)", file=sys.stderr, flush=True)
             path.write_text(json.dumps(allrecs, default=str))
             bpath.write_text(json.dumps(best, indent=1, default=str))
             write_md(best)
+            ck.unlink(missing_ok=True)
 
 
 def write_md(best: dict):

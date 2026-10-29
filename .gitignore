@@ -3,3 +3,4 @@ __pycache__/
 .pytest_cache/
 dist/
 results/hybrid_gpu.json
+results/hybrid_gpu_*.partial.json
