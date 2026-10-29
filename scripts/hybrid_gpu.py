@@ -32,10 +32,6 @@ def targets() -> list:
     return [(f"{g}@{r}", GPUS[g], *RESOLUTIONS[r]) for g in GPUS for r in RES]
 
 
-def _run(s):
-    return s, search_multi(s, targets(), log=lambda m: print(m, file=sys.stderr, flush=True))
-
-
 def best_of(recs: list) -> dict:
     """quality profile -> target -> the cheapest record meeting it (compact)."""
     out = {}
@@ -56,8 +52,9 @@ def main():
     allrecs = json.loads(path.read_text()) if path.exists() else {}
     best = json.loads(bpath.read_text()) if bpath.exists() else {}
     t0 = time.time()
-    with Pool(min(len(sigmas), os.cpu_count() or 1)) as pool:
-        for s, recs in pool.imap_unordered(_run, sigmas):
+    with Pool(os.cpu_count() or 1) as pool:  # one sigma at a time, its fits in parallel
+        for s in sigmas:
+            recs = search_multi(s, targets(), log=lambda m: print(m, file=sys.stderr, flush=True), pool=pool)
             allrecs[f"{s:g}"] = recs
             best[f"{s:g}"] = best_of(recs)
             print(f"sigma {s:g}: {len(recs)} evaluated ({time.time() - t0:.0f}s elapsed)", file=sys.stderr, flush=True)

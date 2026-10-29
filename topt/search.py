@@ -325,10 +325,11 @@ def search(sigma: float, W: int = 1920, H: int = 1080, log=None) -> list:
     return out
 
 
-def search_multi(sigma: float, targets: list, log=None) -> list:
+def search_multi(sigma: float, targets: list, log=None, pool=None, chunk: int = 32) -> list:
     """search() for several (name, gpu, W, H) targets at once: every design is fitted once (quality does
     not depend on the GPU) and priced on every target; a target stops as search() does, and the search
-    ends when every target has stopped. Records carry "us_by" = {name: us}."""
+    ends when every target has stopped. Records carry "us_by" = {name: us}. With a multiprocessing
+    pool, designs are fitted `chunk` at a time in parallel (the stopping rule is checked per chunk)."""
     from .cost import composite_baseline
     base = {n: composite_baseline(W, H, g) * 1e6 for n, g, W, H in targets}
     queue = []
@@ -341,26 +342,33 @@ def search_multi(sigma: float, targets: list, log=None) -> list:
     strict = next(iter(PROFILES.values()))
     stop = {n: math.inf for n in base}
     out = []
-    for key, est, d in queue:
-        if all(key > stop[n] * 1.02 / base[n] for n in base):
-            break
-        if all(est[n] > stop[n] * 1.02 for n in base):
-            continue
-        r = fit(d, sigma)
-        if r is None:
-            continue
-        pl, q = r
-        us_by = {n: pipeline_cost(pl, W, H, g)["us"] for n, g, W, H in targets}
-        c = pipeline_cost(pl)
-        rec = {"design": d.label(), "params": pl.params, **{k: c[k] for k in ("us", "passes", "fetch_per_px")},
-               "us_by": us_by, **q}
-        rec["profiles"] = [n for n, p in PROFILES.items() if passes_profile(q, p)]
-        out.append(rec)
-        if passes_profile(q, strict):
-            for n in stop:
-                stop[n] = min(stop[n], us_by[n])
-        if log and len(out) % 200 == 0:
-            log(f"  sigma {sigma:g}: {len(out)} evaluated, at key {key:.3f}")
+    i, done = 0, False
+    while i < len(queue) and not done:
+        batch = []
+        while i < len(queue) and len(batch) < (chunk if pool else 1):
+            key, est, d = queue[i]
+            i += 1
+            if all(key > stop[n] * 1.02 / base[n] for n in base):
+                done = True
+                break
+            if not all(est[n] > stop[n] * 1.02 for n in base):
+                batch.append((key, d))
+        fits = pool.starmap(fit, [(d, sigma) for _, d in batch]) if pool else [fit(d, sigma) for _, d in batch]
+        for (key, d), r in zip(batch, fits):
+            if r is None:
+                continue
+            pl, q = r
+            us_by = {n: pipeline_cost(pl, W, H, g)["us"] for n, g, W, H in targets}
+            c = pipeline_cost(pl)
+            rec = {"design": d.label(), "params": pl.params, **{k: c[k] for k in ("us", "passes", "fetch_per_px")},
+                   "us_by": us_by, **q}
+            rec["profiles"] = [n for n, p in PROFILES.items() if passes_profile(q, p)]
+            out.append(rec)
+            if passes_profile(q, strict):
+                for n in stop:
+                    stop[n] = min(stop[n], us_by[n])
+            if log and len(out) % 200 == 0:
+                log(f"  sigma {sigma:g}: {len(out)} evaluated, at key {key:.3f}")
     return out
 
 
