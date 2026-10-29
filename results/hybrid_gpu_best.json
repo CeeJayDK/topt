@@ -1,0 +1,5560 @@
+{
+ "12": {
+  "medium": {
+   "GTX 860M@1080p": {
+    "design": "down 8 e5 | sep 3s | up 8 p4",
+    "us": 137.3975813802088,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3741321727654456,
+     "label": "down 8 e5 | sep 3s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 12.000000000001057,
+    "leak": 0.006355142107722867,
+    "tv": 0.0037706894844326136,
+    "phase": 0.04324938837352087,
+    "block": 0.32642327869571514
+   },
+   "GTX 860M@4k": {
+    "design": "down 8 e5 | sep 3s | up 8 p4",
+    "us": 541.5103255208351,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3741321727654456,
+     "label": "down 8 e5 | sep 3s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 12.000000000001057,
+    "leak": 0.006355142107722867,
+    "tv": 0.0037706894844326136,
+    "phase": 0.04324938837352087,
+    "block": 0.32642327869571514
+   },
+   "GTX 1080@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 33.70060627265941,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "GTX 1080@4k": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 128.54909175730427,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "GTX 1660@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 64.95154947916667,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "GTX 1660@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 259.50689236111117,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RTX 2070@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 35.99345052083332,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RTX 2070@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 139.39119791666664,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RTX 3060@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 29.543147057149373,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RTX 3060@4k": {
+    "design": "down 8 e5 | sep 3s | up 8 p4",
+    "us": 109.60322916666668,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3741321727654456,
+     "label": "down 8 e5 | sep 3s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 12.000000000001057,
+    "leak": 0.006355142107722867,
+    "tv": 0.0037706894844326136,
+    "phase": 0.04324938837352087,
+    "block": 0.32642327869571514
+   },
+   "RTX 4070@1080p": {
+    "design": "down 8 e3 | direct 2s | up 2x4 e1",
+    "us": 23.033914930555554,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3675619526899045,
+     "label": "down 8 e3 | direct 2s | up 2x4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000003467,
+    "leak": 0.006680818599895822,
+    "tv": 0.026695294969888542,
+    "phase": 0.05880410815345713,
+    "block": 0.22082966709764623
+   },
+   "RTX 4070@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 88.22139756944446,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RTX 5070@1080p": {
+    "design": "down 8 e3 | direct 2s | up 2x4 e1",
+    "us": 17.096749131944442,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3675619526899045,
+     "label": "down 8 e3 | direct 2s | up 2x4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000003467,
+    "leak": 0.006680818599895822,
+    "tv": 0.026695294969888542,
+    "phase": 0.05880410815345713,
+    "block": 0.22082966709764623
+   },
+   "RTX 5070@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 63.20232638888888,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RX 590@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 46.926518633375764,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RX 590@4k": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 181.45274120016973,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RX 5500 XT@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 55.61302951388889,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RX 5500 XT@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 209.94545138888884,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RX 6600@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 46.87828993055557,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RX 6600@4k": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 181.5264930555556,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RX 7900 XTX@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 9.33458550226269,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RX 7900 XTX@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 28.897795138888892,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "RX 9070 XT@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 9.862266721515029,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "RX 9070 XT@4k": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 33.19573355272678,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "Radeon 680M@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 206.2618576388889,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "Radeon 680M@4k": {
+    "design": "down 8 e5 | sep 2.5s | up 8 p5",
+    "us": 789.9863194444446,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3709403011991281,
+     "label": "down 8 e5 | sep 2.5s | up 8 p5"
+    },
+    "passes": 4,
+    "sigma": 12.000000000001053,
+    "leak": 0.006118055908776764,
+    "tv": 0.007128308611333773,
+    "phase": 0.043008059329471986,
+    "block": 0.28008128927780007
+   },
+   "UHD 630@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 347.25194010416664,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "UHD 630@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 1395.7792881944447,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   },
+   "Iris Xe@1080p": {
+    "design": "down 8 e5 | sep 2s | up 8 p9",
+    "us": 649.1785449218751,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 9,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3499723267446355,
+     "label": "down 8 e5 | sep 2s | up 8 p9"
+    },
+    "passes": 4,
+    "sigma": 12.000000000000417,
+    "leak": 0.0019487122523462305,
+    "tv": 0.02861053282436353,
+    "phase": 0.04236222934419024,
+    "block": 0.3428689051470023
+   },
+   "Iris Xe@4k": {
+    "design": "down 8 e5 | sep 2s | up 8 p9",
+    "us": 2568.3941796875,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 9,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3499723267446355,
+     "label": "down 8 e5 | sep 2s | up 8 p9"
+    },
+    "passes": 4,
+    "sigma": 12.000000000000417,
+    "leak": 0.0019487122523462305,
+    "tv": 0.02861053282436353,
+    "phase": 0.04236222934419024,
+    "block": 0.3428689051470023
+   },
+   "Arc B580@1080p": {
+    "design": "down 8 e3 | direct 2s | up 8 p4",
+    "us": 33.06693142361118,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.3760260032291982,
+     "label": "down 8 e3 | direct 2s | up 8 p4"
+    },
+    "passes": 3,
+    "sigma": 12.000000000001025,
+    "leak": 0.005157793736635745,
+    "tv": 0.028243355523501143,
+    "phase": 0.058850858711335025,
+    "block": 0.33282845024977425
+   },
+   "Arc B580@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 2x4 e1",
+    "us": 114.05628472222224,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.36756195268972,
+     "label": "down 8 e3 | sep 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 12.000000000002126,
+    "leak": 0.006110678191260325,
+    "tv": 0.007131148559281273,
+    "phase": 0.05964682230409557,
+    "block": 0.24655858033838943
+   }
+  },
+  "strict": {
+   "GTX 860M@1080p": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e2",
+    "us": 169.38763834635466,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373972838,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 12.000000000002139,
+    "leak": 0.005558772909270485,
+    "tv": 0.007125249049846863,
+    "phase": 0.0032860887547922967,
+    "block": 0.056497847389392036
+   },
+   "GTX 860M@4k": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e2",
+    "us": 673.2274414062522,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373972838,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 12.000000000002139,
+    "leak": 0.005558772909270485,
+    "tv": 0.007125249049846863,
+    "phase": 0.0032860887547922967,
+    "block": 0.056497847389392036
+   },
+   "GTX 1080@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 43.27048864363404,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "GTX 1080@4k": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 160.97009450309227,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "GTX 1660@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 77.18204427083333,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "GTX 1660@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 328.2403645833334,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RTX 2070@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 43.38968749999998,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RTX 2070@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 183.41249999999997,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RTX 3060@1080p": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 39.958412454462675,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "RTX 3060@4k": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e2",
+    "us": 145.01095742258656,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373972838,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 12.000000000002139,
+    "leak": 0.005558772909270485,
+    "tv": 0.007125249049846863,
+    "phase": 0.0032860887547922967,
+    "block": 0.056497847389392036
+   },
+   "RTX 4070@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 26.621653645833337,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RTX 4070@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 110.03567708333333,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RTX 5070@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 20.760104166666668,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RTX 5070@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 81.88291666666669,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RX 590@1080p": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 60.167084857400354,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "RX 590@4k": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 228.16167276293473,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "RX 5500 XT@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 69.46424048556432,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RX 5500 XT@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 268.4769619422572,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RX 6600@1080p": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 57.33739257812498,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "RX 6600@4k": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 229.53638454861118,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "RX 7900 XTX@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 11.309858165663432,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RX 7900 XTX@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 35.85943266265374,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RX 9070 XT@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 13.912999725984289,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "RX 9070 XT@4k": {
+    "design": "down 4x2 e9 | direct 2s | up 2x4 e2",
+    "us": 45.219789885112355,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373974816,
+     "label": "down 4x2 e9 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 12.000000000003306,
+    "leak": 0.006080741423353335,
+    "tv": 0.005197384795917191,
+    "phase": 0.003296657753754577,
+    "block": 0.05740187873697516
+   },
+   "Radeon 680M@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 244.7552083333332,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "Radeon 680M@4k": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e2",
+    "us": 1001.210520833333,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373972838,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 12.000000000002139,
+    "leak": 0.005558772909270485,
+    "tv": 0.007125249049846863,
+    "phase": 0.0032860887547922967,
+    "block": 0.056497847389392036
+   },
+   "UHD 630@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 500.5531770833332,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "UHD 630@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 1985.2148958333346,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "Iris Xe@1080p": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e2",
+    "us": 731.3779768880208,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373972838,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 12.000000000002139,
+    "leak": 0.005558772909270485,
+    "tv": 0.007125249049846863,
+    "phase": 0.0032860887547922967,
+    "block": 0.056497847389392036
+   },
+   "Iris Xe@4k": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e2",
+    "us": 3306.6500130208333,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.0416178373972838,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 12.000000000002139,
+    "leak": 0.005558772909270485,
+    "tv": 0.007125249049846863,
+    "phase": 0.0032860887547922967,
+    "block": 0.056497847389392036
+   },
+   "Arc B580@1080p": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 40.822291666666665,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   },
+   "Arc B580@4k": {
+    "design": "down 4 e9 | sep 3s | up 4 e1",
+    "us": 144.3341666666667,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 2.9348438419680662,
+     "label": "down 4 e9 | sep 3s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 12.000000000002508,
+    "leak": 0.007752734776171565,
+    "tv": 0.0078275257539594,
+    "phase": 0.0037198540731352473,
+    "block": 0.04978839922852799
+   }
+  }
+ },
+ "8": {
+  "medium": {
+   "GTX 860M@1080p": {
+    "design": "down 4x2 e3 | direct 2s | up 2x4 e2",
+    "us": 155.48354817708383,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.46817093863073284,
+     "label": "down 4x2 e3 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 8.000000000002311,
+    "leak": 0.0035429604615224036,
+    "tv": 0.01483333390455531,
+    "phase": 0.03649309528199044,
+    "block": 0.3423084969930286
+   },
+   "GTX 860M@4k": {
+    "design": "down 4x2 e3 | direct 2s | up 2x4 e2",
+    "us": 634.7321267361131,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.46817093863073284,
+     "label": "down 4x2 e3 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 8.000000000002311,
+    "leak": 0.0035429604615224036,
+    "tv": 0.01483333390455531,
+    "phase": 0.03649309528199044,
+    "block": 0.3423084969930286
+   },
+   "GTX 1080@1080p": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 39.57357638888889,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "GTX 1080@4k": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 145.78763888888886,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "GTX 1660@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 71.05345052083332,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "GTX 1660@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 303.7259895833335,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RTX 2070@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 39.17531249999999,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RTX 2070@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 166.555,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RTX 3060@1080p": {
+    "design": "down 4x2 e3 | direct 2s | up 2x4 e2",
+    "us": 36.57114618909382,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.46817093863073284,
+     "label": "down 4x2 e3 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 8.000000000002311,
+    "leak": 0.0035429604615224036,
+    "tv": 0.01483333390455531,
+    "phase": 0.03649309528199044,
+    "block": 0.3423084969930286
+   },
+   "RTX 3060@4k": {
+    "design": "down 4x2 e3 | direct 2s | up 2x4 e2",
+    "us": 133.77791808970863,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.46817093863073284,
+     "label": "down 4x2 e3 | direct 2s | up 2x4 e2"
+    },
+    "passes": 5,
+    "sigma": 8.000000000002311,
+    "leak": 0.0035429604615224036,
+    "tv": 0.01483333390455531,
+    "phase": 0.03649309528199044,
+    "block": 0.3423084969930286
+   },
+   "RTX 4070@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 24.739622395833333,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RTX 4070@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 102.50755208333331,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RTX 5070@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 18.775104166666665,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RTX 5070@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 73.94291666666668,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RX 590@1080p": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 54.14667693755302,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "RX 590@4k": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 204.08004108354547,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "RX 5500 XT@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 60.393374343832015,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RX 5500 XT@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 232.1934973753281,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RX 6600@1080p": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 52.75526909722221,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "RX 6600@4k": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 209.2618055555556,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "RX 7900 XTX@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 10.154134166109312,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RX 7900 XTX@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 31.23653666443726,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RX 9070 XT@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 12.596979166666667,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "RX 9070 XT@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 41.00791666666667,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "Radeon 680M@1080p": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 230.3629774305555,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "Radeon 680M@4k": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 907.5785763888887,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "UHD 630@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 417.15501302083334,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "UHD 630@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 1651.6222395833342,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "Iris Xe@1080p": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 690.0589029947917,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "Iris Xe@4k": {
+    "design": "down 8 e9 | sep 3s | up 2x4 p5",
+    "us": 2994.603346354167,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7546472217740056,
+     "label": "down 8 e9 | sep 3s | up 2x4 p5"
+    },
+    "passes": 5,
+    "sigma": 8.000000000000925,
+    "leak": 0.001825349367378665,
+    "tv": 0.026830127854695983,
+    "phase": 0.054965833072332757,
+    "block": 0.3410379862671177
+   },
+   "Arc B580@1080p": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 36.86604166666666,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   },
+   "Arc B580@4k": {
+    "design": "down 4 e3 | sep 2.5s | up 4 e1",
+    "us": 128.5091666666667,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9207384286026916,
+     "label": "down 4 e3 | sep 2.5s | up 4 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000000986,
+    "leak": 0.005983873972562446,
+    "tv": 0.020662020831637137,
+    "phase": 0.033260461534692004,
+    "block": 0.27728941568313226
+   }
+  },
+  "strict": {
+   "GTX 860M@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 225.1427517361111,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "GTX 860M@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 904.4273611111114,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "GTX 1080@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 58.63763888888889,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "GTX 1080@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 222.0438888888889,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "GTX 1660@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 102.14618923611111,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "GTX 1660@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 424.8636111111112,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 2070@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 52.799635416666675,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 2070@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 218.03229166666682,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 3060@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 51.31882485200366,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 3060@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 192.76863274134791,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 4070@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 35.31241319444446,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 4070@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 142.60538194444453,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 5070@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 26.28232638888889,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RTX 5070@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 101.8951388888889,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 590@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 80.90326388888893,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 590@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 311.106388888889,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 5500 XT@1080p": {
+    "design": "down 4 e9 | sep 2.5s | up 2x2 e2",
+    "us": 88.60278406605424,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7995300432991213,
+     "label": "down 4 e9 | sep 2.5s | up 2x2 e2"
+    },
+    "passes": 5,
+    "sigma": 7.99999999999972,
+    "leak": 0.0073678505290019165,
+    "tv": 0.010712638330969665,
+    "phase": 0.005392161715647129,
+    "block": 0.08968139638808847
+   },
+   "RX 5500 XT@4k": {
+    "design": "down 4 e9 | sep 2.5s | up 2x2 e2",
+    "us": 341.90446959755036,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7995300432991213,
+     "label": "down 4 e9 | sep 2.5s | up 2x2 e2"
+    },
+    "passes": 5,
+    "sigma": 7.99999999999972,
+    "leak": 0.0073678505290019165,
+    "tv": 0.010712638330969665,
+    "phase": 0.005392161715647129,
+    "block": 0.08968139638808847
+   },
+   "RX 6600@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 77.98211805555555,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 6600@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 317.95986111111114,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 7900 XTX@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 14.50325613822007,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 7900 XTX@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 45.5063578862136,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "RX 9070 XT@1080p": {
+    "design": "down 4 e9 | sep 2.5s | up 2x2 e2",
+    "us": 18.068107638888893,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7995300432991213,
+     "label": "down 4 e9 | sep 2.5s | up 2x2 e2"
+    },
+    "passes": 5,
+    "sigma": 7.99999999999972,
+    "leak": 0.0073678505290019165,
+    "tv": 0.010712638330969665,
+    "phase": 0.005392161715647129,
+    "block": 0.08968139638808847
+   },
+   "RX 9070 XT@4k": {
+    "design": "down 4 e9 | sep 2.5s | up 2x2 e2",
+    "us": 59.765763888888905,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7995300432991213,
+     "label": "down 4 e9 | sep 2.5s | up 2x2 e2"
+    },
+    "passes": 5,
+    "sigma": 7.99999999999972,
+    "leak": 0.0073678505290019165,
+    "tv": 0.010712638330969665,
+    "phase": 0.005392161715647129,
+    "block": 0.08968139638808847
+   },
+   "Radeon 680M@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 338.0924652777779,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "Radeon 680M@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 1414.971527777778,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "UHD 630@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 593.9037803819444,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "UHD 630@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 2347.3339756944447,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "Iris Xe@1080p": {
+    "design": "down 4 e9 | sep 2.5s | up 2x2 e2",
+    "us": 1148.2227994791672,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7995300432991213,
+     "label": "down 4 e9 | sep 2.5s | up 2x2 e2"
+    },
+    "passes": 5,
+    "sigma": 7.99999999999972,
+    "leak": 0.0073678505290019165,
+    "tv": 0.010712638330969665,
+    "phase": 0.005392161715647129,
+    "block": 0.08968139638808847
+   },
+   "Iris Xe@4k": {
+    "design": "down 4 e9 | direct 2.5s | up 2x2 e1",
+    "us": 4959.03171875,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "direct",
+     "trunc": 2.5,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429633,
+     "label": "down 4 e9 | direct 2.5s | up 2x2 e1"
+    },
+    "passes": 4,
+    "sigma": 8.000000000002137,
+    "leak": 0.00745736711599513,
+    "tv": 0.012097735474817212,
+    "phase": 0.005527803001731947,
+    "block": 0.061154530615085544
+   },
+   "Arc B580@1080p": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 51.1969097222222,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   },
+   "Arc B580@4k": {
+    "design": "down 4 e9 | sep 3s | up 2x2 e1",
+    "us": 178.2259722222222,
+    "params": {
+     "down": [
+      4
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      2
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.8843588768429327,
+     "label": "down 4 e9 | sep 3s | up 2x2 e1"
+    },
+    "passes": 5,
+    "sigma": 8.000000000001366,
+    "leak": 0.008512708460715598,
+    "tv": 0.004290373559771599,
+    "phase": 0.005514738277828832,
+    "block": 0.080101215339685
+   }
+  }
+ },
+ "16": {
+  "medium": {
+   "GTX 860M@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 129.63703450520833,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "GTX 860M@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 510.4681380208332,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "GTX 1080@1080p": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 34.80251736111111,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "GTX 1080@4k": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 126.7235763888889,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "GTX 1660@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 60.294612630208356,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "GTX 1660@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 231.47845052083335,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RTX 2070@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 34.233515624999995,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RTX 2070@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 127.87406249999992,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RTX 3060@1080p": {
+    "design": "down 8 e1 | sep 2.5s | up 8 p4",
+    "us": 29.74580729166667,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 1,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9142311498081157,
+     "label": "down 8 e1 | sep 2.5s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 16.000000000002167,
+    "leak": 0.008863283354824732,
+    "tv": 0.019904683999078007,
+    "phase": 0.09511939143998169,
+    "block": 0.30683982072610894
+   },
+   "RTX 3060@4k": {
+    "design": "down 8x2 e3 | direct 2s | up 2x8 e2",
+    "us": 109.58364618909381,
+    "params": {
+     "down": [
+      8,
+      2
+     ],
+     "down_e": 3,
+     "bottom": "direct",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.4645646483543526,
+     "label": "down 8x2 e3 | direct 2s | up 2x8 e2"
+    },
+    "passes": 5,
+    "sigma": 16.000000000003478,
+    "leak": 0.006693416775168951,
+    "tv": 0.015650946901771535,
+    "phase": 0.051613973162018344,
+    "block": 0.3254698388809498
+   },
+   "RTX 4070@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 21.292405598958336,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RTX 4070@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 78.58962239583333,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RTX 5070@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 15.72940104166666,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RTX 5070@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 56.68760416666667,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RX 590@1080p": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 47.35116503878642,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "RX 590@4k": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 176.92167693755312,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "RX 5500 XT@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 48.06209358595801,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RX 5500 XT@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 182.86837434383207,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RX 6600@1080p": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 47.575052991576655,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "RX 6600@4k": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 178.34276909722217,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "RX 7900 XTX@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 8.605408541527332,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RX 7900 XTX@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 25.041634166109315,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "RX 9070 XT@1080p": {
+    "design": "down 8 e1 | sep 2.5s | up 8 p4",
+    "us": 10.659869791666669,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 1,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9142311498081157,
+     "label": "down 8 e1 | sep 2.5s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 16.000000000002167,
+    "leak": 0.008863283354824732,
+    "tv": 0.019904683999078007,
+    "phase": 0.09511939143998169,
+    "block": 0.30683982072610894
+   },
+   "RX 9070 XT@4k": {
+    "design": "down 8 e1 | sep 2.5s | up 8 p4",
+    "us": 33.25947916666666,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 1,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9142311498081157,
+     "label": "down 8 e1 | sep 2.5s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 16.000000000002167,
+    "leak": 0.008863283354824732,
+    "tv": 0.019904683999078007,
+    "phase": 0.09511939143998169,
+    "block": 0.30683982072610894
+   },
+   "Radeon 680M@1080p": {
+    "design": "down 8 e1 | sep 2.5s | up 8 p4",
+    "us": 210.4440798611111,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 1,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9142311498081157,
+     "label": "down 8 e1 | sep 2.5s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 16.000000000002167,
+    "leak": 0.008863283354824732,
+    "tv": 0.019904683999078007,
+    "phase": 0.09511939143998169,
+    "block": 0.30683982072610894
+   },
+   "Radeon 680M@4k": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 784.0879774305553,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "UHD 630@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 325.3762532552083,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "UHD 630@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 1267.655013020833,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "Iris Xe@1080p": {
+    "design": "down 8 e1 | sep 2.5s | up 8 p4",
+    "us": 650.9334082031249,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 1,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 4,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9142311498081157,
+     "label": "down 8 e1 | sep 2.5s | up 8 p4"
+    },
+    "passes": 4,
+    "sigma": 16.000000000002167,
+    "leak": 0.008863283354824732,
+    "tv": 0.019904683999078007,
+    "phase": 0.09511939143998169,
+    "block": 0.30683982072610894
+   },
+   "Iris Xe@4k": {
+    "design": "down 16 e9 | sep 2s | up 2x8 p5",
+    "us": 2543.079941406251,
+    "params": {
+     "down": [
+      16
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      8
+     ],
+     "up_e": 5,
+     "warp": null,
+     "up_pin": true,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 0.7532810581575174,
+     "label": "down 16 e9 | sep 2s | up 2x8 p5"
+    },
+    "passes": 5,
+    "sigma": 16.000000000000018,
+    "leak": 0.0046967911085340095,
+    "tv": 0.02716482866215625,
+    "phase": 0.06396303760080466,
+    "block": 0.34881441044494776
+   },
+   "Arc B580@1080p": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 31.130885416666665,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   },
+   "Arc B580@4k": {
+    "design": "down 8 e3 | sep 2.5s | up 8 e1",
+    "us": 101.70354166666671,
+    "params": {
+     "down": [
+      8
+     ],
+     "down_e": 3,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      8
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.9190429110482314,
+     "label": "down 8 e3 | sep 2.5s | up 8 e1"
+    },
+    "passes": 4,
+    "sigma": 16.000000000001435,
+    "leak": 0.008881794732959102,
+    "tv": 0.020502326092269783,
+    "phase": 0.04328576544879845,
+    "block": 0.2557455679361231
+   }
+  },
+  "strict": {
+   "GTX 860M@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 154.7549929470486,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "GTX 860M@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 634.2280295138889,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "GTX 1080@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 44.2470486111111,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "GTX 1080@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 161.35486111111106,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "GTX 1660@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 71.02570909288197,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "GTX 1660@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 290.3864670138888,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 2070@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 39.70302734374998,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 2070@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 153.57372395833332,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 3060@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 38.29390760188981,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 3060@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 137.54229707422593,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 4070@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 25.649511718750006,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 4070@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 98.86852430555554,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 5070@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 19.38373263888889,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RTX 5070@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 71.2057986111111,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 590@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 60.204079861111126,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 590@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 225.18298611111115,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 5500 XT@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 62.60838903926072,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 5500 XT@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 234.80022282370953,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 6600@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 57.30309027777777,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 6600@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 225.49864583333328,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 7900 XTX@1080p": {
+    "design": "down 4x2 e5 | direct 2.5s | up 2x4 e1",
+    "us": 11.961461200887271,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "direct",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127848,
+     "label": "down 4x2 e5 | direct 2.5s | up 2x4 e1"
+    },
+    "passes": 5,
+    "sigma": 16.00000000000288,
+    "leak": 0.009670648030894104,
+    "tv": 0.0094781740740094,
+    "phase": 0.008183530258251817,
+    "block": 0.08517249158701976
+   },
+   "RX 7900 XTX@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 32.91422836044229,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "RX 9070 XT@1080p": {
+    "design": "down 4x2 e5 | sep 2.5s | up 2x4 e2",
+    "us": 14.712478298611112,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7578260030345636,
+     "label": "down 4x2 e5 | sep 2.5s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 15.999999999998963,
+    "leak": 0.008488288633249848,
+    "tv": 0.008477758800438755,
+    "phase": 0.008089827569382535,
+    "block": 0.042734989862762314
+   },
+   "RX 9070 XT@4k": {
+    "design": "down 4x2 e5 | sep 2.5s | up 2x4 e2",
+    "us": 43.216579861111114,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 2.5,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 2,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.7578260030345636,
+     "label": "down 4x2 e5 | sep 2.5s | up 2x4 e2"
+    },
+    "passes": 6,
+    "sigma": 15.999999999998963,
+    "leak": 0.008488288633249848,
+    "tv": 0.008477758800438755,
+    "phase": 0.008089827569382535,
+    "block": 0.042734989862762314
+   },
+   "Radeon 680M@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 246.82104166666664,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "Radeon 680M@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 989.8594097222217,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "UHD 630@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 392.5557221137153,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "UHD 630@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 1576.0640711805556,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "Iris Xe@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 722.7880322265621,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "Iris Xe@4k": {
+    "design": "down 4x2 e9 | sep 2s | up 2x4 e3",
+    "us": 3310.159739583333,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 9,
+     "bottom": "sep",
+     "trunc": 2.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 3,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.588227854932677,
+     "label": "down 4x2 e9 | sep 2s | up 2x4 e3"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000102,
+    "leak": 0.0063616432234696605,
+    "tv": 0.012136505847618863,
+    "phase": 0.0021667796341783884,
+    "block": 0.008240343872597053
+   },
+   "Arc B580@1080p": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 40.66590711805556,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   },
+   "Arc B580@4k": {
+    "design": "down 4x2 e5 | sep 3s | up 2x4 e1",
+    "us": 129.3762152777778,
+    "params": {
+     "down": [
+      4,
+      2
+     ],
+     "down_e": 5,
+     "bottom": "sep",
+     "trunc": 3.0,
+     "up": [
+      2,
+      4
+     ],
+     "up_e": 1,
+     "warp": null,
+     "up_pin": false,
+     "down_pin": 0,
+     "rot": false,
+     "sl": 1.844573733127817,
+     "label": "down 4x2 e5 | sep 3s | up 2x4 e1"
+    },
+    "passes": 6,
+    "sigma": 16.00000000000019,
+    "leak": 0.009225194980516651,
+    "tv": 0.003465926911403204,
+    "phase": 0.008198690330497705,
+    "block": 0.08700830076846683
+   }
+  }
+ }
+}
