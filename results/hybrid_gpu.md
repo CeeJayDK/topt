@@ -69,6 +69,11 @@ composite pass. GPUs with the same winner are listed together.
 |  | down 8x2x2 e1 / sep 3s / up 32 e1 | GTX 860M 133 |
 |  | down 8x4x2 e1 / sep 2.5s / up 64 e1 | UHD 630 336 |
 |  | down 8x4 e1 / sep 2.5s / up 32 e3 | Iris Xe 649 |
+| 200 | down 16x4 e1 / direct 2.5s / up 64 e1 | GTX 1080 32, RTX 2070 33, RTX 3060 28, RTX 4070 20, RTX 5070 15, RX 590 44, RX 5500 XT 44, RX 7900 XTX 8, RX 9070 XT 10, Arc B580 30 |
+|  | down 8x4x2 e1 / sep 2.5s / up 64 e1 | GTX 860M 135, GTX 1660 64, UHD 630 339 |
+|  | down 16x8 e3 / direct 2.5s / up 128 p4 | RX 6600 45 |
+|  | down 8x4 e1 / sep 3s / up 32 e1 | Radeon 680M 221 |
+|  | down 8x4x4 e3 / direct 2s / up 128 p8 | Iris Xe 650 |
 
 ## medium, 4k
 
@@ -131,6 +136,12 @@ composite pass. GPUs with the same winner are listed together.
 |  | down 16x2 e1 / sep 3s / up 32 e1 | GTX 1660 222 |
 |  | down 16x2 e3 / sep 2.5s / up 32 e2 | Radeon 680M 769 |
 |  | down 16x4 e1 / sep 2.5s / up 64 e1 | Iris Xe 2500 |
+| 200 | down 16x8 e3 / direct 2.5s / up 128 p4 | GTX 1080 120, RTX 3060 101, RX 590 168, RX 6600 172, RX 9070 XT 31 |
+|  | down 16x4 e1 / direct 2.5s / up 64 e1 | RTX 2070 122, RTX 4070 75, RTX 5070 53, RX 7900 XTX 23, Arc B580 95 |
+|  | down 16x2x2 e1 / sep 2.5s / up 64 e1 | GTX 860M 480, UHD 630 1180 |
+|  | down 16x4 e1 / sep 2.5s / up 64 e1 | GTX 1660 223, Iris Xe 2501 |
+|  | down 16x8 e3 / direct 2.5s / up 2x64 e1 | RX 5500 XT 169 |
+|  | down 16x2 e1 / sep 3s / up 32 e1 | Radeon 680M 771 |
 
 ## strict, 1080p
 
@@ -170,6 +181,10 @@ composite pass. GPUs with the same winner are listed together.
 |  | down 8x4 e5 / sep 3s / up 32 e1 | GTX 1660 63, Radeon 680M 220, Iris Xe 649 |
 |  | down 8x2x2 e3 / sep 3s / up 32 e1 | GTX 860M 133, UHD 630 341 |
 |  | down 16x2 e5 / direct 3s / up 32 e1 | RX 7900 XTX 9, Arc B580 31 |
+| 200 | down 16x4 e5 / direct 3s / up 64 e1 | GTX 1080 33, RTX 2070 33, RTX 3060 28, RTX 4070 20, RTX 5070 15, RX 590 45, RX 5500 XT 45, RX 6600 45, RX 7900 XTX 8, RX 9070 XT 10, Arc B580 30 |
+|  | down 8x4 e3 / sep 3s / up 32 e1 | GTX 1660 64, Radeon 680M 221, Iris Xe 651 |
+|  | down 8x2x2 e3 / sep 3s / up 32 e1 | GTX 860M 136 |
+|  | down 8x4x2 e3 / sep 3s / up 64 e1 | UHD 630 343 |
 
 ## strict, 4k
 
@@ -206,4 +221,9 @@ composite pass. GPUs with the same winner are listed together.
 | 150 | down 16x4 e9 / direct 2.5s / up 2x32 e1 | RTX 2070 123, RTX 4070 75, RTX 5070 54, RX 5500 XT 170, RX 7900 XTX 24, Arc B580 98 |
 |  | down 16x2 e5 / sep 3s / up 32 e1 | GTX 860M 481, GTX 1660 222, Radeon 680M 770, UHD 630 1189, Iris Xe 2502 |
 |  | down 16x4 e9 / direct 2.5s / up 64 p4 | GTX 1080 121, RTX 3060 102, RX 590 169, RX 6600 172, RX 9070 XT 31 |
+| 200 | down 16x4 e5 / direct 3s / up 64 e1 | GTX 1080 121, RTX 2070 123, RTX 3060 102, RTX 4070 75, RTX 5070 53, RX 590 169, RX 6600 172, RX 7900 XTX 23, RX 9070 XT 31, Arc B580 96 |
+|  | down 16x2x2 e3 / sep 3s / up 64 e1 | GTX 860M 481, UHD 630 1184 |
+|  | down 16x4 e5 / sep 3s / up 64 e1 | GTX 1660 223, RX 5500 XT 169 |
+|  | down 16x2 e3 / sep 3s / up 32 e1 | Radeon 680M 771 |
+|  | down 16x4 e5 / sep 3s / up 64 e3 | Iris Xe 2501 |
 
