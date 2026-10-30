@@ -379,7 +379,9 @@ def search_multi(sigma: float, targets: list, log=None, pool=None, chunk: int = 
             if log and len(out) % 200 == 0:
                 log(f"  sigma {sigma:g}: {len(out)} evaluated, at key {key:.3f}")
         if checkpoint:
-            Path(checkpoint).write_text(json.dumps([i, out], default=str))
+            tmp = Path(f"{checkpoint}.tmp")  # a run killed mid-write keeps the previous checkpoint
+            tmp.write_text(json.dumps([i, out], default=str))
+            tmp.replace(checkpoint)
     return out
 
 

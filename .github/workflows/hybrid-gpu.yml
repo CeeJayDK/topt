@@ -70,21 +70,30 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
       - uses: actions/download-artifact@v4
         with:
-          path: art
-      - name: merge finished sigmas
+          path: ${{ runner.temp }}/art
+      - name: merge finished sigmas and push
+        env:
+          ART: ${{ runner.temp }}/art
         run: |
-          python - <<'PY'
-          import json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5; do
+            # on the branch's newest commit, so runs that finish at the same time do not conflict
+            git fetch -q origin "$GITHUB_REF_NAME" && git reset -q --hard "origin/$GITHUB_REF_NAME"
+            python - <<'PY'
+          import json, os
           from pathlib import Path
           p = Path("results/hybrid_gpu_best.json")
           best = json.loads(p.read_text()) if p.exists() else {}
-          for f in Path("art").glob("best-*/hybrid_gpu_best.json"):
+          for f in Path(os.environ["ART"]).glob("best-*/hybrid_gpu_best.json"):
               s = f.parent.name[5:]
               got = json.loads(f.read_text())
               if s in got:
@@ -92,13 +101,11 @@ jobs:
                   print("merged sigma", s)
           p.write_text(json.dumps(best, indent=1, default=str))
           PY
-          python -m scripts.hybrid_gpu --md
-      - name: push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add results/hybrid_gpu_best.json results/hybrid_gpu.md
-          git diff --cached --quiet && exit 0
-          git commit -m "Hybrid search per GPU: results from workflow run ${{ github.run_id }}"
-          for i in 1 2 3; do git pull --rebase -q && git push && exit 0; sleep 5; done
+            python -m scripts.hybrid_gpu --md
+            git add results/hybrid_gpu_best.json results/hybrid_gpu.md
+            git diff --cached --quiet && exit 0
+            git commit -q -m "Hybrid search per GPU: results from workflow run $GITHUB_RUN_ID"
+            git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            sleep 10
+          done
           exit 1
