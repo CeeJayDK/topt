@@ -30,10 +30,20 @@ CLASSES = {
     "4s": ((4,), 9, (2, 2), "e2", 0.3),   # two-step 2x2 upsample: smooth enough at small sl
     "4": ((4,), 5, (4,), "p5", SL_MIN),
     "8": ((8,), 3, (8,), "p4", SL_MIN),
-    "16": ((16,), 3, (16,), "p4", SL_MIN),
-    "32": ((16, 2), 9, (32,), "p4", 1.2),
-    "64": ((16, 4), 3, (64,), "p4", SL_MIN),
-    "128": ((16, 8), 3, (128,), "p4", SL_MIN),
+    # x16 and more: x8 first, then the rest (one x16 pass into a 1/16 target leaves the GPU under-filled at
+    # 1080p and reads 144 taps per pixel: TexBench P13c)
+    "16": ((8, 2), 3, (16,), "p4", 1.4),
+    "32": ((8, 4), 3, (32,), "p4", 1.4),
+    "64": ((8, 8), 3, (64,), "p4", 1.4),
+    "128": ((8, 16), 3, (128,), "p4", 1.4),
+    # one bilinear read to upsample (e1): medium quality from a wider low-res Gaussian (sl >= 2.0..2.6),
+    # so a narrower sigma range, but 3 fewer full-resolution reads
+    "4e": ((4,), 3, (4,), "e1", 2.0),
+    "8e": ((8,), 3, (8,), "e1", 2.4),
+    "16e": ((8, 2), 3, (16,), "e1", 2.2),
+    "32e": ((8, 4), 1, (32,), "e1", 2.6),
+    "64e": ((8, 8), 1, (64,), "e1", 2.6),
+    "128e": ((8, 16), 1, (128,), "e1", 2.6),
 }
 
 
