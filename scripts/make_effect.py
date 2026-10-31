@@ -46,7 +46,7 @@ CLASSES = {
     "128e": ((8, 16), 1, (128,), "e1", 2.6),
     # in-between factors, so the one-read classes also cover the sigmas between the ones above
     # (1/48 at 1080p is 40 x 22.5 texels: the target rounds to 22, 2 % off vertically)
-    "6e": ((6,), 3, (6,), "e1", 2.4),
+    "6e": ((6,), 3, (6,), "e1", 2.45),  # r = ceil(2.5 sl) = 6 (sl <= 2.4) fails medium
     "12e": ((4, 3), 3, (12,), "e1", 2.4),
     "24e": ((8, 3), 3, (24,), "e1", 2.2),
     "48e": ((8, 6), 3, (48,), "e1", 2.0),
