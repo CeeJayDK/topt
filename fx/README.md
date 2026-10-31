@@ -35,8 +35,8 @@ Passes: one wide downsample (x8 then the rest above sigma ~27), a runtime-width
 Gaussian at low resolution (one 2D pass, or H + V passes where that is clearly
 cheaper), and the upsample fused into the composite: a pinwheel, or in the "e"
 classes one bilinear read (medium quality once the low-res Gaussian is wide
-enough, sl >= 2.2-2.6, so each "e" class covers the upper part of its factor's
-range). Size 1 is a single pass in the composite: a centre texel plus a 4-fold
+enough, sl >= 2.0-2.6, so each "e" class covers the upper part of its factor's
+range; in-between factors x6, x12, x24 and x48 fill the gaps). Size 1 is a single pass in the composite: a centre texel plus a 4-fold
 pinwheel of 2x2 texel blocks, each reproducing its block's Gaussian weights
 exactly with one bilinear fetch (9, 13 or 17 fetches as sigma grows). Modelled
 cost on a GTX 1660 at 1080p (its table), over a plain composite pass:
@@ -48,10 +48,15 @@ cost on a GTX 1660 at 1080p (its table), over a plain composite pass:
 | 3 | x2, separable | 157 |
 | 4 / 5–6 | x4 (+x2 up pass), 2D / separable | 109 / 111 |
 | 7–12 | x4, separable | 95–104 |
-| 13–18 / 19–27 | x8, separable / "e" | 74–75 / 61–62 |
-| 28–35 / 36–54 | x8 + x2, separable / "e" | 76 / 61–63 |
-| 55–83 / 84–108 | x8 + x4, separable / "e" | 79 / 64–65 |
-| 109–166 / 167–200 | x8 + x8, separable / "e" | 89–90 / 75 |
+| 13–14 | x8, separable | 74–75 |
+| 15–18 | x6 "e", separable | 65 |
+| 19–27 | x8 "e", separable | 61–62 |
+| 28 / 29–35 | x8 + x2 / x4 + x3 "e", separable | 76 / 65–66 |
+| 36–53 | x8 + x2 "e", separable | 61–63 |
+| 54–81 | x8 + x3 "e", separable | 62–63 |
+| 82–83 / 84–108 | x8 + x4, separable / "e" | 79 / 64–65 |
+| 109–162 | x8 + x6 "e", separable | 68–69 |
+| 163–166 / 167–200 | x8 + x8, separable / "e" | 89–90 / 75 |
 
 Splitting x16 and more into x8 first matters on this card: one x16 pass writes
 a 120 x 67 target with 144 reads per pixel, too few pixels to fill the GPU
