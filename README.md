@@ -163,13 +163,14 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   of the cards with a TexBench report (topt/gpu_profiles.json has every
   reported GPU) instead of the approximate family ranges, once the reports
   show how many distinct tables that needs (it must stay manageable).
-* Later, Movie Night (blur in the black gutter of letterboxed video):
-  downsample only the picture strips the bars show (plus ~3 sigma), clamped to
-  the picture rectangle so the black bars do not darken the glow; blur those
-  low-res strips; draw only the bars (custom vertex-shader triangles) and
-  upsample there. Model at 4K: ~90-145 us on top of the bars pass vs ~180 us
-  when the whole picture is downsampled. Try: softer glow further from the
-  picture (blend two blur levels by distance), like real ambilight.
+* Movie Night (`fx/MovieNight.fx`, CeeJay.dk's effect on the topt blur, written
+  by `scripts/make_effect.py` from `scripts/movienight.py`): the black bars of
+  letterboxed / pillarboxed video show a blurred continuation of the picture.
+  The blur passes draw only the picture strips the bars show plus the blur's
+  reach (two triangles per bar), and the downsample reads the screen clamped
+  to the picture so the bars do not darken the glow. Same size classes and
+  per-GPU tables as TOPT_Blur. Next: softer glow further from the picture
+  (blend two blur levels by distance), like real ambilight; hardware timing.
 * Quad sharing (`scripts/quad_share.py`, `results/quad_share.md`): each pixel
   of a 2 x 2 quad makes N reads and gets its neighbours' through
   `ddx_fine` / `ddy_fine` (4N samples). Medium quality for sigma 0.7-1.2 with
