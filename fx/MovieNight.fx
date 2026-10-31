@@ -1757,7 +1757,7 @@ uniform float TOPT_SizeTune <
 	static const float3 TOPT_UP[1] = {
 		float3(0.0, 0.0, 1.0)
 	};
-#elif TOPT_CLASS == 14 // '6e': sigma 14.5..20.3 px
+#elif TOPT_CLASS == 14 // '6e': sigma 14.8..20.3 px
 	#define TOPT_SMALL 0
 	#define TOPT_STEPS 1
 	#define TOPT_F1 6
@@ -1765,7 +1765,7 @@ uniform float TOPT_SizeTune <
 	#define TOPT_UPSTEPS 1
 	static const float TOPT_C = 11.3495687;  // chain variance (px^2): sigma^2 = C + B * sl^2
 	static const float TOPT_B = 34.5529197;
-	static const float TOPT_SL_MIN = 2.4;
+	static const float TOPT_SL_MIN = 2.45;
 	static const float TOPT_SL_MAX = 3.4;
 	#define TOPT_ND1 16
 	static const float3 TOPT_DOWN1[16] = {
