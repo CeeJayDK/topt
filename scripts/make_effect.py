@@ -43,6 +43,12 @@ CLASSES = {
     "32e": ((8, 4), 1, (32,), "e1", 2.6),
     "64e": ((8, 8), 1, (64,), "e1", 2.6),
     "128e": ((8, 16), 1, (128,), "e1", 2.6),
+    # in-between factors, so the one-read classes also cover the sigmas between the ones above
+    # (1/48 at 1080p is 40 x 22.5 texels: the target rounds to 22, 2 % off vertically)
+    "6e": ((6,), 3, (6,), "e1", 2.0),
+    "12e": ((4, 3), 3, (12,), "e1", 2.4),
+    "24e": ((8, 3), 3, (24,), "e1", 2.0),
+    "48e": ((8, 6), 3, (48,), "e1", 2.0),
 }
 
 
