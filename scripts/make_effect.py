@@ -1,4 +1,5 @@
-"""Generate the research blur effect fx/TOPT_Blur.fx from the optimizer's designs.
+"""Generate the research blur effect fx/TOPT_Blur.fx from the optimizer's designs (and fx/MovieNight.fx,
+which uses the same blur: scripts/movienight.py).
 
 Structure per size class (downsample factor D): one wide box*binomial
 downsample pass (x8 then the rest for D >= 16), one single-pass 2D Gaussian at
@@ -45,9 +46,9 @@ CLASSES = {
     "128e": ((8, 16), 1, (128,), "e1", 2.6),
     # in-between factors, so the one-read classes also cover the sigmas between the ones above
     # (1/48 at 1080p is 40 x 22.5 texels: the target rounds to 22, 2 % off vertically)
-    "6e": ((6,), 3, (6,), "e1", 2.0),
+    "6e": ((6,), 3, (6,), "e1", 2.4),
     "12e": ((4, 3), 3, (12,), "e1", 2.4),
-    "24e": ((8, 3), 3, (24,), "e1", 2.0),
+    "24e": ((8, 3), 3, (24,), "e1", 2.2),
     "48e": ((8, 6), 3, (48,), "e1", 2.0),
 }
 
@@ -253,9 +254,12 @@ def main():
     print("table 0 (unknown GPU):", [(a, b, n) for a, b, n in default])
     (ROOT / "fx" / "TOPT_Blur.fx").write_text(render(info, tables, default, rmax))
     print("wrote fx/TOPT_Blur.fx")
+    from scripts import movienight
+    (ROOT / "fx" / "MovieNight.fx").write_text(render(info, tables, default, rmax, movienight.TEMPLATE))
+    print("wrote fx/MovieNight.fx")
 
 
-def render(info: dict, tables: list, default: list, rmax: int) -> str:
+def render(info: dict, tables: list, default: list, rmax: int, template: str | None = None) -> str:
     ids = {n: i + 1 for i, n in enumerate(CLASSES)}
     ids["1"] = 0
     table_of = {g: t for t, (gs, _) in enumerate(tables, 1) for g in gs}
@@ -301,11 +305,13 @@ def render(info: dict, tables: list, default: list, rmax: int) -> str:
         lines += [f"\t#define TOPT_NUP {len(up)}", arr("TOPT_UP", up)]
         blocks.append("\n".join(lines))
     blocks.append("#endif")
-    return TEMPLATE.replace("{SELECT}", "\n".join(sel)).replace("{CLASSES}", "\n".join(blocks)) \
+    return (template or TEMPLATE).replace("{SELECT}", "\n".join(sel)).replace("{CLASSES}", "\n".join(blocks)) \
         .replace("{RMAX}", str(rmax)).replace("{NARM}", str(len(SMALL_ARM))).replace("{TRUNC}", _f(TRUNC))
 
 
-TEMPLATE = r"""/*------------------.
+# The effect = HEAD + BODY + TAIL. BODY (settings, size classes, the blur passes and TOPT_BlurResolve) is
+# shared with other effects built on the blur (scripts/movienight.py).
+HEAD = r"""/*------------------.
 | :: TOPT Blur ::   |
 '------------------*/
 /*
@@ -322,7 +328,9 @@ TEMPLATE = r"""/*------------------.
   running the TOPT_Down / TOPT_Blur (H/V) passes.
 */
 
-#include "ReShade.fxh"
+"""
+
+BODY = r"""#include "ReShade.fxh"
 
 #ifndef TOPT_BLUR_SIZE
 	#define TOPT_BLUR_SIZE 16 // blur sigma in pixels at 1080p (integer, 1..200; 1 = single pass, 0.7..1.3 with the fine-tune); scales with resolution
@@ -354,22 +362,6 @@ uniform float TOPT_SizeTune <
 	ui_tooltip = "Multiplies the blur size set by TOPT_BLUR_SIZE.\nThe usable range of each size class is limited; the blur stops growing at its edges.";
 > = 1.0;
 
-uniform float TOPT_Strength <
-	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
-	ui_label = "Strength";
-> = 1.0;
-
-#if TOPT_BLUR_FROST
-uniform float TOPT_FrostRadius <
-	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
-	ui_label = "Frosted glass radius (px)";
-> = 6.0;
-#endif
-
-uniform bool TOPT_ShowBlur <
-	ui_label = "Show blur only";
-> = false;
-
 // ---- size class (chosen at compile time from the blur size, the resolution and the GPU: each GPU
 // family gets the choices the cost model, calibrated on its TexBench report, finds cheapest.
 // TOPT_GPU forces a table, e.g. to time them against each other.)
@@ -378,6 +370,9 @@ uniform bool TOPT_ShowBlur <
 {CLASSES}
 
 sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
+#ifndef TOPT_SRC_UV
+	#define TOPT_SRC_UV(uv) (uv) // where the first downsample reads the screen (an effect can clamp it to a region)
+#endif
 
 static const float3 TOPT_LUMA = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
 #if TOPT_BLUR_LUMA && !TOPT_SMALL
@@ -461,7 +456,7 @@ float4 TOPT_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = BUFFER_PIXEL_SIZE;
 	float3 c = 0.0; // backbuffer colour; converted to brightness once at the end (it is linear)
 	[unroll] for (int i = 0; i < TOPT_ND1; i++)
-		c += TOPT_DOWN1[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_DOWN1[i].xy * px, 0.0, 0.0)).rgb;
+		c += TOPT_DOWN1[i].z * tex2Dlod(TOPT_sBackBuffer, float4(TOPT_SRC_UV(uv + TOPT_DOWN1[i].xy * px), 0.0, 0.0)).rgb;
 	return TOPT_OUT(TOPT_TO_LOW(c));
 }
 
@@ -587,6 +582,25 @@ float3 TOPT_BlurResolve(float2 uv)
 	return c; // brightness-only: the blurred luma in all three channels
 }
 #endif // TOPT_SMALL
+"""
+
+TAIL = r"""
+uniform float TOPT_Strength <
+	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
+	ui_label = "Strength";
+> = 1.0;
+
+#if TOPT_BLUR_FROST
+uniform float TOPT_FrostRadius <
+	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
+	ui_label = "Frosted glass radius (px)";
+> = 6.0;
+#endif
+
+uniform bool TOPT_ShowBlur <
+	ui_label = "Show blur only";
+> = false;
+
 
 #if TOPT_BLUR_FROST
 	#if TOPT_BLUR_FROST_NOISE == 0
@@ -666,6 +680,9 @@ technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the siz
 	}
 }
 """
+
+TEMPLATE = HEAD + BODY + TAIL
+
 
 
 if __name__ == "__main__":
