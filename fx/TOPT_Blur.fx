@@ -47,22 +47,6 @@ uniform float TOPT_SizeTune <
 	ui_tooltip = "Multiplies the blur size set by TOPT_BLUR_SIZE.\nThe usable range of each size class is limited; the blur stops growing at its edges.";
 > = 1.0;
 
-uniform float TOPT_Strength <
-	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
-	ui_label = "Strength";
-> = 1.0;
-
-#if TOPT_BLUR_FROST
-uniform float TOPT_FrostRadius <
-	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
-	ui_label = "Frosted glass radius (px)";
-> = 6.0;
-#endif
-
-uniform bool TOPT_ShowBlur <
-	ui_label = "Show blur only";
-> = false;
-
 // ---- size class (chosen at compile time from the blur size, the resolution and the GPU: each GPU
 // family gets the choices the cost model, calibrated on its TexBench report, finds cheapest.
 // TOPT_GPU forces a table, e.g. to time them against each other.)
@@ -183,26 +167,41 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 13
 		#define TOPT_CLASS 4 // '8'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 29
+		#define TOPT_CLASS 15 // '12e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 51
 		#define TOPT_CLASS 10 // '16e'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
 		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 108
+	#elif TOPT_SIGMA_SCREEN <= 97
 		#define TOPT_CLASS 11 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
@@ -286,11 +285,20 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 53
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 58
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 102
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 108
-		#define TOPT_CLASS 6 // '32' separable
+	#elif TOPT_SIGMA_SCREEN <= 153
+		#define TOPT_CLASS 17 // '48e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 204
 		#define TOPT_CLASS 7 // '64'
@@ -324,27 +332,39 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 58
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 101
+	#elif TOPT_SIGMA_SCREEN <= 97
 		#define TOPT_CLASS 11 // '32e'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 108
-		#define TOPT_CLASS 11 // '32e' separable
-		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
@@ -468,8 +488,17 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 102
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 58
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 97
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 153
+		#define TOPT_CLASS 17 // '48e'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 217
 		#define TOPT_CLASS 7 // '64'
@@ -494,23 +523,35 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 108
 		#define TOPT_CLASS 11 // '32e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64' separable
@@ -547,23 +588,35 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 108
 		#define TOPT_CLASS 11 // '32e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64' separable
@@ -609,14 +662,20 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 35
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 108
 		#define TOPT_CLASS 11 // '32e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64' separable
@@ -653,23 +712,38 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 76
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 108
+	#elif TOPT_SIGMA_SCREEN <= 97
 		#define TOPT_CLASS 11 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
@@ -750,26 +824,38 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 38
 		#define TOPT_CLASS 10 // '16e'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
 		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 108
+	#elif TOPT_SIGMA_SCREEN <= 97
 		#define TOPT_CLASS 11 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
@@ -803,26 +889,41 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 18
+	#elif TOPT_SIGMA_SCREEN <= 14
 		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 14 // '6e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 9 // '8e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 35
+	#elif TOPT_SIGMA_SCREEN <= 28
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 15 // '12e' separable
+		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 38
 		#define TOPT_CLASS 10 // '16e'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 53
 		#define TOPT_CLASS 10 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 76
+		#define TOPT_CLASS 16 // '24e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 81
+		#define TOPT_CLASS 16 // '24e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 108
+	#elif TOPT_SIGMA_SCREEN <= 97
 		#define TOPT_CLASS 11 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 162
+		#define TOPT_CLASS 17 // '48e'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
@@ -1602,9 +1703,198 @@ uniform bool TOPT_ShowBlur <
 	static const float3 TOPT_UP[1] = {
 		float3(0.0, 0.0, 1.0)
 	};
+#elif TOPT_CLASS == 14 // '6e': sigma 14.5..20.3 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 1
+	#define TOPT_F1 6
+	#define TOPT_F2 1
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 11.3495687;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 34.5529197;
+	static const float TOPT_SL_MIN = 2.4;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 16
+	static const float3 TOPT_DOWN1[16] = {
+		float3(-2.75, -2.75, 0.0277777778),
+		float3(-2.75, -1.0, 0.0555555556),
+		float3(-2.75, 1.0, 0.0555555556),
+		float3(-2.75, 2.75, 0.0277777778),
+		float3(-1.0, -2.75, 0.0555555556),
+		float3(-1.0, -1.0, 0.111111111),
+		float3(-1.0, 1.0, 0.111111111),
+		float3(-1.0, 2.75, 0.0555555556),
+		float3(1.0, -2.75, 0.0555555556),
+		float3(1.0, -1.0, 0.111111111),
+		float3(1.0, 1.0, 0.111111111),
+		float3(1.0, 2.75, 0.0555555556),
+		float3(2.75, -2.75, 0.0277777778),
+		float3(2.75, -1.0, 0.0555555556),
+		float3(2.75, 1.0, 0.0555555556),
+		float3(2.75, 2.75, 0.0277777778)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 15 // '12e': sigma 29.0..40.6 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 4
+	#define TOPT_F2 3
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 47.4816083;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 138.211679;
+	static const float TOPT_SL_MIN = 2.4;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 9
+	static const float3 TOPT_DOWN1[9] = {
+		float3(-1.75, -1.75, 0.0625),
+		float3(-1.75, 0.0, 0.125),
+		float3(-1.75, 1.75, 0.0625),
+		float3(0.0, -1.75, 0.125),
+		float3(0.0, 0.0, 0.25),
+		float3(0.0, 1.75, 0.125),
+		float3(1.75, -1.75, 0.0625),
+		float3(1.75, 0.0, 0.125),
+		float3(1.75, 1.75, 0.0625)
+	};
+	#define TOPT_ND2 9
+	static const float3 TOPT_DOWN2[9] = {
+		float3(-1.25, -1.25, 0.111111111),
+		float3(-1.25, 0.428571429, 0.194444444),
+		float3(-1.25, 2.0, 0.0277777778),
+		float3(0.428571429, -1.25, 0.194444444),
+		float3(0.428571429, 0.428571429, 0.340277778),
+		float3(0.428571429, 2.0, 0.0486111111),
+		float3(2.0, -1.25, 0.0277777778),
+		float3(2.0, 0.428571429, 0.0486111111),
+		float3(2.0, 2.0, 0.00694444444)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 16 // '24e': sigma 53.5..81.1 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 3
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 191.009766;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 552.846716;
+	static const float TOPT_SL_MIN = 2.2;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
+	};
+	#define TOPT_ND2 9
+	static const float3 TOPT_DOWN2[9] = {
+		float3(-1.25, -1.25, 0.111111111),
+		float3(-1.25, 0.428571429, 0.194444444),
+		float3(-1.25, 2.0, 0.0277777778),
+		float3(0.428571429, -1.25, 0.194444444),
+		float3(0.428571429, 0.428571429, 0.340277778),
+		float3(0.428571429, 2.0, 0.0486111111),
+		float3(2.0, -1.25, 0.0277777778),
+		float3(2.0, 0.428571429, 0.0486111111),
+		float3(2.0, 2.0, 0.00694444444)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 17 // '48e': sigma 98.0..162.3 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 6
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 767.122399;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 2211.38686;
+	static const float TOPT_SL_MIN = 2.0;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
+	};
+	#define TOPT_ND2 16
+	static const float3 TOPT_DOWN2[16] = {
+		float3(-2.75, -2.75, 0.0277777778),
+		float3(-2.75, -1.0, 0.0555555556),
+		float3(-2.75, 1.0, 0.0555555556),
+		float3(-2.75, 2.75, 0.0277777778),
+		float3(-1.0, -2.75, 0.0555555556),
+		float3(-1.0, -1.0, 0.111111111),
+		float3(-1.0, 1.0, 0.111111111),
+		float3(-1.0, 2.75, 0.0555555556),
+		float3(1.0, -2.75, 0.0555555556),
+		float3(1.0, -1.0, 0.111111111),
+		float3(1.0, 1.0, 0.111111111),
+		float3(1.0, 2.75, 0.0555555556),
+		float3(2.75, -2.75, 0.0277777778),
+		float3(2.75, -1.0, 0.0555555556),
+		float3(2.75, 1.0, 0.0555555556),
+		float3(2.75, 2.75, 0.0277777778)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
 #endif
 
 sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
+#ifndef TOPT_SRC_UV
+	#define TOPT_SRC_UV(uv) (uv) // where the first downsample reads the screen (an effect can clamp it to a region)
+#endif
 
 static const float3 TOPT_LUMA = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
 #if TOPT_BLUR_LUMA && !TOPT_SMALL
@@ -1688,7 +1978,7 @@ float4 TOPT_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = BUFFER_PIXEL_SIZE;
 	float3 c = 0.0; // backbuffer colour; converted to brightness once at the end (it is linear)
 	[unroll] for (int i = 0; i < TOPT_ND1; i++)
-		c += TOPT_DOWN1[i].z * tex2Dlod(TOPT_sBackBuffer, float4(uv + TOPT_DOWN1[i].xy * px, 0.0, 0.0)).rgb;
+		c += TOPT_DOWN1[i].z * tex2Dlod(TOPT_sBackBuffer, float4(TOPT_SRC_UV(uv + TOPT_DOWN1[i].xy * px), 0.0, 0.0)).rgb;
 	return TOPT_OUT(TOPT_TO_LOW(c));
 }
 
@@ -1814,6 +2104,23 @@ float3 TOPT_BlurResolve(float2 uv)
 	return c; // brightness-only: the blurred luma in all three channels
 }
 #endif // TOPT_SMALL
+
+uniform float TOPT_Strength <
+	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
+	ui_label = "Strength";
+> = 1.0;
+
+#if TOPT_BLUR_FROST
+uniform float TOPT_FrostRadius <
+	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
+	ui_label = "Frosted glass radius (px)";
+> = 6.0;
+#endif
+
+uniform bool TOPT_ShowBlur <
+	ui_label = "Show blur only";
+> = false;
+
 
 #if TOPT_BLUR_FROST
 	#if TOPT_BLUR_FROST_NOISE == 0

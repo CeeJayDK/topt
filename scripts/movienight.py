@@ -85,7 +85,7 @@ float2 MN_PicMax() { return 1.0 - float2(Right, Bottom) * MN_PX; }
 
 TAIL = r"""
 #if TOPT_SMALL
-	#error "Movie Night needs MOVIENIGHT_BLUR_SIZE >= 2"
+	#error "Movie Night needs a blur of at least 2 px at this resolution: raise MOVIENIGHT_BLUR_SIZE"
 #endif
 
 // The picture point a bar pixel shows (CeeJay's mapping): pulled towards the centre by the bars'
