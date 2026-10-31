@@ -23,12 +23,17 @@
 	Version 0.4 WIP
 	* Real blur (topt) instead of the noise-scattered read; left / right bars
 	  map the picture the same way as top / bottom.
+	* Optional soft glow (MOVIENIGHT_SOFT_GLOW): a second, wider blur level
+	  mixed in towards the outer edge of the bars.
 */
 
 #ifndef MOVIENIGHT_BLUR_SIZE
 	#define MOVIENIGHT_BLUR_SIZE 32 // blur sigma in pixels at 1080p (2..200); scales with resolution
 #endif
 #define TOPT_BLUR_SIZE MOVIENIGHT_BLUR_SIZE
+#ifndef MOVIENIGHT_SOFT_GLOW
+	#define MOVIENIGHT_SOFT_GLOW 0 // 1: a second, ~3 x wider blur level, mixed in towards the outer edge of the bars
+#endif
 
 uniform float Top <
 	ui_type = "drag"; ui_min = 0.0; ui_max = 1000.0; ui_step = 1.0;
@@ -54,6 +59,14 @@ uniform float Opacity <
 	ui_type = "drag"; ui_min = 0.0; ui_max = 1.0; ui_step = 0.01;
 	ui_label = "Opacity";
 > = 0.5;
+
+#if MOVIENIGHT_SOFT_GLOW
+uniform float SoftGlow <
+	ui_type = "drag"; ui_min = 0.0; ui_max = 1.0; ui_step = 0.01;
+	ui_label = "Soft glow";
+	ui_tooltip = "How much of the wider blur the bars use at their outer edge (none at the picture edge).";
+> = 1.0;
+#endif
 
 uniform float Zoom <
 	ui_type = "drag"; ui_min = 1.0; ui_max = 10.0; ui_step = 0.1;
@@ -2171,16 +2184,41 @@ float2 MN_Map(float2 uv)
 	return uv + (0.5 - uv) * d;
 }
 
+#if MOVIENIGHT_SOFT_GLOW
+// The soft level: the blur's low-res level made 4 x coarser (a 4 x 4 box) and blurred again with a
+// Gaussian of MN_SOFT_SL of its texels (wide enough for a one-read upsample): ~3 x the blur's sigma.
+	#define MN_SOFT_DIV (TOPT_DIVL * 4)
+	#define MN_SOFT_SL 2.5
+	#define MN_SOFT_R 7 // ceil(2.5 * MN_SOFT_SL)
+texture MN_tSoftDown { Width = BUFFER_WIDTH / MN_SOFT_DIV; Height = BUFFER_HEIGHT / MN_SOFT_DIV; Format = TOPT_FMT; };
+sampler MN_sSoftDown { Texture = MN_tSoftDown; AddressU = MIRROR; AddressV = MIRROR; };
+texture MN_tSoftH { Width = BUFFER_WIDTH / MN_SOFT_DIV; Height = BUFFER_HEIGHT / MN_SOFT_DIV; Format = TOPT_FMT; };
+sampler MN_sSoftH { Texture = MN_tSoftH; AddressU = MIRROR; AddressV = MIRROR; };
+texture MN_tSoft { Width = BUFFER_WIDTH / MN_SOFT_DIV; Height = BUFFER_HEIGHT / MN_SOFT_DIV; Format = TOPT_FMT; };
+sampler MN_sSoft { Texture = MN_tSoft; AddressU = MIRROR; AddressV = MIRROR; };
+#endif
+
+// How far (uv) outside the picture strip a bar shows the blur passes must draw: 3 sigma of the widest
+// level plus its downsample footprint.
+float2 MN_Reach()
+{
+	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
+#if MOVIENIGHT_SOFT_GLOW
+	const float soft = sqrt(sigma * sigma + MN_SOFT_DIV * MN_SOFT_SL * MN_SOFT_DIV * MN_SOFT_SL);
+	return (3.0 * soft + 2.0 * MN_SOFT_DIV) * MN_PX;
+#else
+	return (3.0 * sigma + 2.0 * TOPT_DIVL) * MN_PX;
+#endif
+}
+
 /*
 	The strips the blur passes draw: for each bar, the picture strip it shows
-	(MN_Map of the bar), widened by the blur's reach (3 sigma plus the
-	downsample footprint), as two triangles. A side without a bar gets an
-	empty strip.
+	(MN_Map of the bar), widened by the blur's reach, as two triangles. A side
+	without a bar gets an empty strip.
 */
 void MN_StripVS(in uint id : SV_VertexID, out float4 position : SV_Position, out float2 texcoord : TEXCOORD)
 {
-	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
-	const float2 m = (3.0 * sigma + 2.0 * TOPT_DIVL) * MN_PX; // reach, uv
+	const float2 m = MN_Reach();
 	const float2 lo = MN_PicMin(), hi = MN_PicMax();
 	const float2 d = float2(Left + Right, Top + Bottom) * MN_PX;
 	const uint side = id / 6; // 0 top, 1 bottom, 2 left, 3 right
@@ -2251,11 +2289,68 @@ void MN_BarsVS(in uint id : SV_VertexID, out float4 position : SV_Position, out 
 	position = float4(texcoord * float2(2.0, -2.0) + float2(-1.0, 1.0), 1.0, Zoom);
 }
 
+#if MOVIENIGHT_SOFT_GLOW
+float4 MN_SoftDownPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
+	return TOPT_OUT(0.25 * (tex2Dlod(TOPT_sBlur, float4(uv + float2(-1.0, -1.0) * px, 0.0, 0.0)).TOPT_CH
+	                      + tex2Dlod(TOPT_sBlur, float4(uv + float2( 1.0, -1.0) * px, 0.0, 0.0)).TOPT_CH
+	                      + tex2Dlod(TOPT_sBlur, float4(uv + float2(-1.0,  1.0) * px, 0.0, 0.0)).TOPT_CH
+	                      + tex2Dlod(TOPT_sBlur, float4(uv + float2( 1.0,  1.0) * px, 0.0, 0.0)).TOPT_CH));
+}
+
+TOPT_T MN_Soft1D(sampler s, float2 uv, float2 dir)
+{
+	const float2 d = dir / float2(BUFFER_WIDTH / MN_SOFT_DIV, BUFFER_HEIGHT / MN_SOFT_DIV);
+	const float k = -0.5 / (MN_SOFT_SL * MN_SOFT_SL);
+	TOPT_T c = tex2Dlod(s, float4(uv, 0.0, 0.0)).TOPT_CH;
+	float wsum = 1.0;
+	[unroll] for (int m = 1; m <= (MN_SOFT_R + 1) / 2; m++)
+	{
+		const float2 p = TOPT_Pair(m, k, MN_SOFT_R);
+		c += p.y * (tex2Dlod(s, float4(uv + p.x * d, 0.0, 0.0)).TOPT_CH + tex2Dlod(s, float4(uv - p.x * d, 0.0, 0.0)).TOPT_CH);
+		wsum += 2.0 * p.y;
+	}
+	return c / wsum;
+}
+
+float4 MN_SoftHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	return TOPT_OUT(MN_Soft1D(MN_sSoftDown, uv, float2(1.0, 0.0)));
+}
+
+float4 MN_SoftVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+{
+	return TOPT_OUT(MN_Soft1D(MN_sSoftH, uv, float2(0.0, 1.0)));
+}
+
+// How far into its bar a pixel is: 0 at the picture edge, 1 at the screen edge.
+float MN_Depth(float2 uv)
+{
+	const float2 lo = MN_PicMin(), hi = MN_PicMax();
+	float t = 0.0;
+	if (Top > 0.0)    t = max(t, (lo.y - uv.y) / lo.y);
+	if (Bottom > 0.0) t = max(t, (uv.y - hi.y) / (1.0 - hi.y));
+	if (Left > 0.0)   t = max(t, (lo.x - uv.x) / lo.x);
+	if (Right > 0.0)  t = max(t, (uv.x - hi.x) / (1.0 - hi.x));
+	return saturate(t);
+}
+#endif
+
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
 	float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
 	if (all(color <= 2.0 / 255.0)) // only the black of the bars (subtitles stay)
-		color = TOPT_BlurResolve(MN_Map(texcoord)) * Opacity;
+	{
+		const float2 p = MN_Map(texcoord);
+		float3 glow = TOPT_BlurResolve(p);
+#if MOVIENIGHT_SOFT_GLOW
+		// softer further from the picture, like the light of an ambilight on the wall
+		const float3 soft = tex2Dlod(MN_sSoft, float4(p, 0.0, 0.0)).TOPT_CH;
+		glow = lerp(glow, soft, smoothstep(0.0, 1.0, MN_Depth(texcoord)) * SoftGlow);
+#endif
+		color = glow * Opacity;
+	}
 	return saturate(color);
 }
 
@@ -2273,6 +2368,11 @@ technique MovieNight
 #endif
 #if TOPT_UPSTEPS > 1
 	pass Up { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_UpPS; RenderTarget = TOPT_tUp; }
+#endif
+#if MOVIENIGHT_SOFT_GLOW
+	pass SoftDown { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = MN_SoftDownPS; RenderTarget = MN_tSoftDown; }
+	pass SoftH { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = MN_SoftHPS; RenderTarget = MN_tSoftH; }
+	pass SoftV { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = MN_SoftVPS; RenderTarget = MN_tSoft; }
 #endif
 	pass Bars { PrimitiveTopology = TRIANGLELIST; VertexCount = 12; VertexShader = MN_BarsVS; PixelShader = MN_BarsPS; }
 }

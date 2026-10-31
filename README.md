@@ -169,8 +169,9 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   The blur passes draw only the picture strips the bars show plus the blur's
   reach (two triangles per bar), and the downsample reads the screen clamped
   to the picture so the bars do not darken the glow. Same size classes and
-  per-GPU tables as TOPT_Blur. Next: softer glow further from the picture
-  (blend two blur levels by distance), like real ambilight; hardware timing.
+  per-GPU tables as TOPT_Blur. Optional softer glow further from the picture
+  (`MOVIENIGHT_SOFT_GLOW`: a second, ~3 x wider level blended in by distance
+  into the bar). Next: hardware timing.
 * Quad sharing (`scripts/quad_share.py`, `results/quad_share.md`): each pixel
   of a 2 x 2 quad makes N reads and gets its neighbours' through
   `ddx_fine` / `ddy_fine` (4N samples). Medium quality for sigma 0.7-1.2 with

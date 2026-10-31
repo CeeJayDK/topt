@@ -76,6 +76,12 @@ only pixels that are black are replaced (subtitles stay).
   px at the running resolution).
 * Top / Bottom / Left / Right: bar sizes in pixels; Opacity; Zoom shrinks the
   bar geometry (for testing).
+* `MOVIENIGHT_SOFT_GLOW` 1: a second blur level, the first one's low-res level
+  4 x coarser and blurred again (about 3 x the sigma), mixed in towards the
+  outer edge of each bar (smoothstep from the picture edge to the screen
+  edge, scaled by the Soft glow setting), like the light of an ambilight
+  spreading on the wall. Costs three small extra passes over the strips, and
+  the strips grow by the wider blur's reach.
 * The blur passes draw only the strips of the picture the bars show plus the
   blur's reach, and the downsample reads the screen clamped to the picture, so
   the cost follows the bar area and the bars do not darken the glow.
