@@ -67,97 +67,59 @@ uniform bool TOPT_ShowBlur <
 // TOPT_GPU forces a table, e.g. to time them against each other.)
 #ifndef TOPT_GPU
 	#if __VENDOR__ == 0x10DE && __DEVICE__ >= 0x1340 && __DEVICE__ <= 0x17FF
-		#define TOPT_GPU 1 // NVIDIA Maxwell (GTX 860M profile)
+		#define TOPT_GPU 8 // NVIDIA Maxwell (GTX 860M profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x1B00 && __DEVICE__ <= 0x1DFF
-		#define TOPT_GPU 2 // NVIDIA Pascal (GTX 1080 profile)
+		#define TOPT_GPU 1 // NVIDIA Pascal (GTX 1080 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2180 && __DEVICE__ <= 0x21FF
-		#define TOPT_GPU 1 // NVIDIA Turing GTX 16 (TU116) (GTX 1660 profile)
+		#define TOPT_GPU 8 // NVIDIA Turing GTX 16 (TU116) (GTX 1660 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x1E00 && __DEVICE__ <= 0x1FFF
-		#define TOPT_GPU 3 // NVIDIA Turing (TU10x, TU117) (RTX 2070 profile)
+		#define TOPT_GPU 9 // NVIDIA Turing (TU10x, TU117) (RTX 2070 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2200 && __DEVICE__ <= 0x25FF
-		#define TOPT_GPU 3 // NVIDIA Ampere (RTX 3060 profile)
+		#define TOPT_GPU 10 // NVIDIA Ampere (RTX 3060 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2600 && __DEVICE__ <= 0x28FF
-		#define TOPT_GPU 4 // NVIDIA Ada (RTX 4070 profile)
+		#define TOPT_GPU 10 // NVIDIA Ada (RTX 4070 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2900 && __DEVICE__ <= 0x2FFF
-		#define TOPT_GPU 4 // NVIDIA Blackwell (RTX 5070 profile)
+		#define TOPT_GPU 10 // NVIDIA Blackwell (RTX 5070 profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x6700 && __DEVICE__ <= 0x69FF
-		#define TOPT_GPU 4 // AMD GCN (Polaris, Vega) (RX 590 profile)
+		#define TOPT_GPU 1 // AMD GCN (Polaris, Vega) (RX 590 profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x7310 && __DEVICE__ <= 0x739F
-		#define TOPT_GPU 5 // AMD RDNA 1 (RX 5500 XT profile)
+		#define TOPT_GPU 4 // AMD RDNA 1 (RX 5500 XT profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x73A0 && __DEVICE__ <= 0x743F
-		#define TOPT_GPU 2 // AMD RDNA 2 (RX 6600 profile)
+		#define TOPT_GPU 1 // AMD RDNA 2 (RX 6600 profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x7440 && __DEVICE__ <= 0x74FF
-		#define TOPT_GPU 6 // AMD RDNA 3 (RX 7900 XTX profile)
+		#define TOPT_GPU 2 // AMD RDNA 3 (RX 7900 XTX profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x7500 && __DEVICE__ <= 0x75FF
-		#define TOPT_GPU 7 // AMD RDNA 4 (RX 9070 XT profile)
+		#define TOPT_GPU 2 // AMD RDNA 4 (RX 9070 XT profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x1500 && __DEVICE__ <= 0x19FF
-		#define TOPT_GPU 8 // AMD Ryzen iGPUs (RDNA 2 / 3) (Radeon 680M profile)
+		#define TOPT_GPU 3 // AMD Ryzen iGPUs (RDNA 2 / 3) (Radeon 680M profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x1900 && __DEVICE__ <= 0x193F
-		#define TOPT_GPU 9 // Intel Gen9 (Skylake) (UHD 630 profile)
+		#define TOPT_GPU 7 // Intel Gen9 (Skylake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x5900 && __DEVICE__ <= 0x59FF
-		#define TOPT_GPU 9 // Intel Gen9.5 (Kaby Lake) (UHD 630 profile)
+		#define TOPT_GPU 7 // Intel Gen9.5 (Kaby Lake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x3E90 && __DEVICE__ <= 0x3EFF
-		#define TOPT_GPU 9 // Intel Gen9.5 (Coffee Lake) (UHD 630 profile)
+		#define TOPT_GPU 7 // Intel Gen9.5 (Coffee Lake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x9B00 && __DEVICE__ <= 0x9BFF
-		#define TOPT_GPU 9 // Intel Gen9.5 (Comet Lake) (UHD 630 profile)
+		#define TOPT_GPU 7 // Intel Gen9.5 (Comet Lake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x9A40 && __DEVICE__ <= 0x9AFF
-		#define TOPT_GPU 10 // Intel Gen12 (Tiger Lake) (Iris Xe profile)
+		#define TOPT_GPU 6 // Intel Gen12 (Tiger Lake) (Iris Xe profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x4680 && __DEVICE__ <= 0x46FF
-		#define TOPT_GPU 10 // Intel Gen12 (Alder Lake) (Iris Xe profile)
+		#define TOPT_GPU 6 // Intel Gen12 (Alder Lake) (Iris Xe profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0xA780 && __DEVICE__ <= 0xA7FF
-		#define TOPT_GPU 10 // Intel Gen12 (Raptor Lake) (Iris Xe profile)
+		#define TOPT_GPU 6 // Intel Gen12 (Raptor Lake) (Iris Xe profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x5690 && __DEVICE__ <= 0x56FF
-		#define TOPT_GPU 7 // Intel Arc (Alchemist) (Arc B580 profile)
+		#define TOPT_GPU 5 // Intel Arc (Alchemist) (Arc B580 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0xE200 && __DEVICE__ <= 0xE2FF
-		#define TOPT_GPU 7 // Intel Arc (Battlemage) (Arc B580 profile)
+		#define TOPT_GPU 5 // Intel Arc (Battlemage) (Arc B580 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x6400 && __DEVICE__ <= 0x64FF
-		#define TOPT_GPU 7 // Intel Xe2 (Lunar Lake) (Arc B580 profile)
+		#define TOPT_GPU 5 // Intel Xe2 (Lunar Lake) (Arc B580 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x7D40 && __DEVICE__ <= 0x7DFF
-		#define TOPT_GPU 7 // Intel Xe-LPG (Meteor Lake) (Arc B580 profile)
+		#define TOPT_GPU 5 // Intel Xe-LPG (Meteor Lake) (Arc B580 profile)
 	#else
 		#define TOPT_GPU 0 // unknown GPU: least regret over all profiles
 	#endif
 #endif
 
-#if TOPT_GPU == 1 // GTX 860M, GTX 1660
-	#if TOPT_SIGMA_SCREEN <= 1
-		#define TOPT_CLASS 0 // '1'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 2
-		#define TOPT_CLASS 1 // '2'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 3
-		#define TOPT_CLASS 1 // '2' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 4
-		#define TOPT_CLASS 2 // '4s'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 6
-		#define TOPT_CLASS 2 // '4s' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 27
-		#define TOPT_CLASS 4 // '8' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
-		#define TOPT_CLASS 5 // '16' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 58
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
-		#define TOPT_CLASS 6 // '32' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 217
-		#define TOPT_CLASS 7 // '64' separable
-		#define TOPT_SEP 1
-	#else
-		#define TOPT_CLASS 8 // '128' separable
-		#define TOPT_SEP 1
-	#endif
-#elif TOPT_GPU == 2 // GTX 1080, RX 6600
+#if TOPT_GPU == 1 // RX 6600, RX 590, GTX 1080
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -198,118 +160,7 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 3 // RTX 2070, RTX 3060
-	#if TOPT_SIGMA_SCREEN <= 1
-		#define TOPT_CLASS 0 // '1'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 2
-		#define TOPT_CLASS 1 // '2'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 3
-		#define TOPT_CLASS 1 // '2' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 4
-		#define TOPT_CLASS 2 // '4s'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 6
-		#define TOPT_CLASS 2 // '4s' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 26
-		#define TOPT_CLASS 4 // '8' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 47
-		#define TOPT_CLASS 5 // '16' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 107
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
-		#define TOPT_CLASS 7 // '64'
-		#define TOPT_SEP 0
-	#else
-		#define TOPT_CLASS 8 // '128'
-		#define TOPT_SEP 0
-	#endif
-#elif TOPT_GPU == 4 // RTX 4070, RTX 5070, RX 590
-	#if TOPT_SIGMA_SCREEN <= 1
-		#define TOPT_CLASS 0 // '1'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 2
-		#define TOPT_CLASS 1 // '2'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 3
-		#define TOPT_CLASS 1 // '2' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 4
-		#define TOPT_CLASS 2 // '4s'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 6
-		#define TOPT_CLASS 2 // '4s' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 26
-		#define TOPT_CLASS 4 // '8' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 38
-		#define TOPT_CLASS 5 // '16'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 47
-		#define TOPT_CLASS 5 // '16' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 107
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
-		#define TOPT_CLASS 7 // '64'
-		#define TOPT_SEP 0
-	#else
-		#define TOPT_CLASS 8 // '128'
-		#define TOPT_SEP 0
-	#endif
-#elif TOPT_GPU == 5 // RX 5500 XT
-	#if TOPT_SIGMA_SCREEN <= 1
-		#define TOPT_CLASS 0 // '1'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 2
-		#define TOPT_CLASS 1 // '2'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 3
-		#define TOPT_CLASS 1 // '2' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 4
-		#define TOPT_CLASS 2 // '4s'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 7
-		#define TOPT_CLASS 2 // '4s' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 26
-		#define TOPT_CLASS 4 // '8' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 47
-		#define TOPT_CLASS 5 // '16' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 104
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
-		#define TOPT_CLASS 6 // '32' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 214
-		#define TOPT_CLASS 7 // '64'
-		#define TOPT_SEP 0
-	#else
-		#define TOPT_CLASS 8 // '128'
-		#define TOPT_SEP 0
-	#endif
-#elif TOPT_GPU == 6 // RX 7900 XTX
+#elif TOPT_GPU == 2 // RX 7900 XTX, RX 9070 XT
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -347,45 +198,7 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 7 // RX 9070 XT, Arc B580
-	#if TOPT_SIGMA_SCREEN <= 1
-		#define TOPT_CLASS 0 // '1'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 2
-		#define TOPT_CLASS 1 // '2'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 3
-		#define TOPT_CLASS 1 // '2' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 4
-		#define TOPT_CLASS 2 // '4s'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 6
-		#define TOPT_CLASS 2 // '4s' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 13
-		#define TOPT_CLASS 4 // '8'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 26
-		#define TOPT_CLASS 4 // '8' separable
-		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 47
-		#define TOPT_CLASS 5 // '16'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
-		#define TOPT_CLASS 7 // '64'
-		#define TOPT_SEP 0
-	#else
-		#define TOPT_CLASS 8 // '128'
-		#define TOPT_SEP 0
-	#endif
-#elif TOPT_GPU == 8 // Radeon 680M
+#elif TOPT_GPU == 3 // Radeon 680M
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -426,36 +239,83 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 8 // '128' separable
 		#define TOPT_SEP 1
 	#endif
-#elif TOPT_GPU == 9 // UHD 630
+#elif TOPT_GPU == 4 // RX 5500 XT
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 3
 		#define TOPT_CLASS 1 // '2' separable
 		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 7
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 12
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 27
+	#elif TOPT_SIGMA_SCREEN <= 26
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 104
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 107
 		#define TOPT_CLASS 6 // '32' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 217
-		#define TOPT_CLASS 7 // '64' separable
-		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 214
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
 	#else
-		#define TOPT_CLASS 8 // '128' separable
-		#define TOPT_SEP 1
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 10 // Iris Xe
+#elif TOPT_GPU == 5 // Arc B580
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 13
+		#define TOPT_CLASS 4 // '8'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 26
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 47
+		#define TOPT_CLASS 5 // '16'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 107
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 214
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#endif
+#elif TOPT_GPU == 6 // Iris Xe
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -487,7 +347,80 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
 	#endif
-#else // unknown GPUs
+#elif TOPT_GPU == 7 // UHD 630
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 7
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 58
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 107
+		#define TOPT_CLASS 6 // '32' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 217
+		#define TOPT_CLASS 7 // '64' separable
+		#define TOPT_SEP 1
+	#else
+		#define TOPT_CLASS 8 // '128' separable
+		#define TOPT_SEP 1
+	#endif
+#elif TOPT_GPU == 8 // GTX 1660, GTX 860M
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 58
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 107
+		#define TOPT_CLASS 6 // '32' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 217
+		#define TOPT_CLASS 7 // '64' separable
+		#define TOPT_SEP 1
+	#else
+		#define TOPT_CLASS 8 // '128' separable
+		#define TOPT_SEP 1
+	#endif
+#elif TOPT_GPU == 9 // RTX 2070
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -507,6 +440,79 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 26
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 47
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 107
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 214
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#endif
+#elif TOPT_GPU == 10 // RTX 3060, RTX 4070, RTX 5070
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 26
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 38
+		#define TOPT_CLASS 5 // '16'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 47
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 107
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 214
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#endif
+#else // unknown GPUs
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 27
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 38
