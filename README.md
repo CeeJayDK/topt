@@ -159,6 +159,10 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
 * Next: re-run the searches on the calibrated profiles; hardware timing of the
   effects (`fx/README.md`).
 * Parked: temporal stochastic sampling and extra downsample/upsample variants.
+* Waiting for more reports: pick TOPT_Blur's table by the exact PCI device ids
+  of the cards with a TexBench report (topt/gpu_profiles.json has every
+  reported GPU) instead of the approximate family ranges, once the reports
+  show how many distinct tables that needs (it must stay manageable).
 * Later, Movie Night (blur in the black gutter of letterboxed video):
   downsample only the picture strips the bars show (plus ~3 sigma), clamped to
   the picture rectangle so the black bars do not darken the glow; blur those
