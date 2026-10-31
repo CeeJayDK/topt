@@ -5,7 +5,8 @@
 For every sigma of results/hybrid_gpu_best.json and every GPU profile / resolution there: the class
 TOPT_Blur picks for that GPU (scripts.make_effect's rule: least regret over 1080p and 4K, the separable
 variant only when it saves SEP_MARGIN), its cost, and the cheapest hybrid design that meets the same
-quality profile (medium, the classes' target). Writes results/blur_vs_hybrid.md.
+quality profile (medium, the classes' target), rebuilt from its parameters and priced with the current
+profiles (the search ran on earlier ones). Writes results/blur_vs_hybrid.md.
 """
 from __future__ import annotations
 
@@ -17,7 +18,8 @@ from pathlib import Path
 import numpy as np
 
 from scripts import make_effect as ME
-from topt.cost import PROFILES, RESOLUTIONS, composite_baseline, pipeline_cost
+from topt import search as S
+from topt.cost import CORE as PROFILES, RESOLUTIONS, composite_baseline, pipeline_cost
 
 OUT = Path(__file__).resolve().parent.parent / "results"
 RES = ME.TABLE_RES
@@ -47,9 +49,11 @@ def main():
             for r in RES:
                 h = hyb.get(f"{g}@{r}")
                 if h:
+                    d = next(x for x in S.designs(float(s)) if x.label() == h["design"])
+                    hus = pipeline_cost(S.build(d, h["params"]["sl"]), *RESOLUTIONS[r], gpu=PROFILES[g])["us"]
                     us = pipeline_cost(pl, *RESOLUTIONS[r], gpu=PROFILES[g])["us"]
                     base = composite_baseline(*RESOLUTIONS[r], PROFILES[g]) * 1e6
-                    rows.append((float(s), g, r, name + (" sep" if sep else ""), us, h["design"], h["us"], base))
+                    rows.append((float(s), g, r, name + (" sep" if sep else ""), us, h["design"], hus, base))
     write_md(rows)
 
 

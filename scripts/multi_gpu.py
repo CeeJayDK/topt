@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 
 from scripts import make_effect as ME
-from topt.cost import PROFILES, RESOLUTIONS, composite_baseline, pipeline_cost
+from topt.cost import CORE as PROFILES, RESOLUTIONS, composite_baseline, pipeline_cost
 
 OUT = Path(__file__).resolve().parent.parent / "results"
 RES = ("1080p", "4k")
@@ -75,7 +75,7 @@ def intervals(rows: dict, key) -> list:
 
 
 def write_md(rows: dict, gpus: list):
-    from topt.cost import PROFILES as P
+    from topt.cost import CORE as P
     rows = {int(k): v for k, v in rows.items()}
     lines = ["# TOPT_Blur class choice across GPU architectures", "",
              "Regret = extra time over the cheapest candidate on that GPU, in % of its plain composite pass",

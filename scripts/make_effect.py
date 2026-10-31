@@ -190,7 +190,7 @@ def gpu_tables(info: dict, rmax: int) -> tuple:
     regret in % of that GPU's composite pass); profiles with the same choices share a table. Also the
     least mean regret over all profiles, for unknown GPUs."""
     import numpy as np
-    from topt.cost import PROFILES, RESOLUTIONS, composite_baseline
+    from topt.cost import CORE as PROFILES, RESOLUTIONS, composite_baseline
     gpus = list(PROFILES)
     picks = {g: [] for g in gpus + [None]}
     for sig in range(2, 441):

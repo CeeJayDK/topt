@@ -18,7 +18,7 @@ import time
 from multiprocessing import Pool
 from pathlib import Path
 
-from topt.cost import PROFILES as GPUS, RESOLUTIONS
+from topt.cost import CORE as GPUS, RESOLUTIONS
 from topt.search import PROFILES, passes_profile, search_multi
 
 from .common import parse_args

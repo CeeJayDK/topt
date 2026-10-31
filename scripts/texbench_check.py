@@ -47,6 +47,13 @@ def tests(gpu) -> list:
             out.append(("chain", f"{frac}, {k} passes", "pass", t))
     out.append(("quad", "4 reads + 12 exchanges", "pass", _pass_time(N, N, 4, gpu, 4, 4 * N, "RGBA8", 12)[0]))
     out.append(("quad", "16 reads", "pass", _pass_time(N, N, 16, gpu, 4, 4 * N, "RGBA8")[0]))
+    for name, dw, dh in (("120 x 67", 120, 67), ("240 x 135", 240, 135), ("480 x 270", 480, 270)):
+        ns = 1920 * 1080  # 64 bilinear reads (a 16 x 16 block) per pixel of a 1920 x 1080 area
+        out.append(("underfill", f"64 reads into {name}", "pass", _pass_time(dw * dh, ns, 64, gpu, 4, 4 * ns, "RGBA8")[0]))
+    for f in ("RGBA8", "RGB10A2", "RG11B10F", "RGBA16F", "RGBA32F", "R8", "R16F", "R32F", "RG16F", "RG32F"):
+        if f in FORMAT_BYTES:
+            b = FORMAT_BYTES[f]
+            out.append(("blend", f"{f} add blend", "blend", _pass_time(N, 0, 0, gpu, b, 0, f, blend=True)[0]))
     return out
 
 
@@ -56,7 +63,7 @@ def main():
     lines = ["# Cost model vs TexBench", "",
              "Model (topt/cost.py, profile from topt/gpu_profiles.json) against the TexBench report the profile",
              "was made from, 3840 x 2160, ms. err = model / measured - 1.", ""]
-    summary = ["| GPU | report | tests | median abs err | worst |", "|---|---|---|---|---|"]
+    summary = ["| GPU | core | report | tests | median abs err | worst |", "|---|---|---|---|---|---|"]
     for name, gpu in PROFILES.items():
         report = meta[name]["report"].split()[0]
         _, rows = read(folder / report)
@@ -69,7 +76,7 @@ def main():
             continue
         errs = [(mod / mea - 1, t) for _, t, mea, mod in got]
         worst = max(errs, key=lambda e: abs(e[0]))
-        summary.append(f"| {name} | {report} | {len(got)} | {100 * statistics.median(abs(e) for e, _ in errs):.0f} % "
+        summary.append(f"| {name} | {'yes' if meta[name].get('core') else ''} | {report} | {len(got)} | {100 * statistics.median(abs(e) for e, _ in errs):.0f} % "
                        f"| {100 * worst[0]:+.0f} % ({worst[1]}) |")
         lines += [f"## {name} ({meta[name]['arch']})", "", "| section | test | measured | model | err |",
                   "|---|---|---:|---:|---:|"]

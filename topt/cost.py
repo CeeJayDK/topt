@@ -45,9 +45,14 @@ class GPU:
     cache_bytes: float = 0.0    # last-level cache: a pass whose reads + writes fit runs from it
     cache_bandwidth: float = 0.0  # bytes / s of such a pass (no write-rate limit, no pixel floor)
     fill_px: float = 0.0   # a pass with fewer pixels cannot fill the GPU: its work takes fill_px / nd longer
+    blend_rate: tuple = () # ((format, pixels additively blended / s), ...)
 
     def writes(self, fmt: str) -> float:
         return dict(self.write_rate).get(fmt, self.rop_rate)
+
+    def blends(self, fmt: str) -> float:
+        """Blended-write limit; formats TexBench did not blend: half the write rate."""
+        return dict(self.blend_rate).get(fmt, 0.5 * self.writes(fmt))
 
 
 # GTX 1660: 22 SMs, 88 TMUs, 48 ROPs, ~1.785 GHz boost, 192-bit GDDR5 @ 8 Gbps.
@@ -69,7 +74,7 @@ GTX1660_V1 = GPU("GTX 1660 (v1)", 88 * 1.785e9, 0.8 * 192e9, 48 * 1.785e9, 5e-6,
 
 
 def _load_profiles() -> dict:
-    """One GPU per architecture, from TexBench reports (scripts/gpu_profiles.py)."""
+    """One GPU per TexBench report GPU (scripts/gpu_profiles.py)."""
     import json
     from pathlib import Path
     path = Path(__file__).with_name("gpu_profiles.json")
@@ -81,11 +86,22 @@ def _load_profiles() -> dict:
                         write_rate=tuple(p["write_rate"].items()), wide_filter=p["wide_filter"],
                         px_rate=p.get("px_rate", 0.0), exchange_rate=p.get("exchange_rate", 0.0),
                         sparse_waste=p.get("sparse_waste", 1.0), cache_bytes=p.get("cache_bytes", 0.0),
-                        cache_bandwidth=p.get("cache_bandwidth", 0.0), fill_px=p.get("fill_px", 0.0))
+                        cache_bandwidth=p.get("cache_bandwidth", 0.0), fill_px=p.get("fill_px", 0.0),
+                        blend_rate=tuple(p.get("blend_rate", {}).items()))
     return out
 
 
+def _load_core() -> list:
+    import json
+    from pathlib import Path
+    path = Path(__file__).with_name("gpu_profiles.json")
+    return [n for n, p in json.loads(path.read_text()).items() if p.get("core")] if path.exists() else []
+
+
 PROFILES = _load_profiles()
+# One profile per architecture (scripts/gpu_profiles.py CARDS): the set the searches and TOPT_Blur's
+# tables are made for; PROFILES also holds every other GPU with a TexBench report.
+CORE = {n: PROFILES[n] for n in _load_core()}
 # The default model: the GTX 1660 profile from its newest TexBench report (pass chains, N-reads
 # and strided-read tests); GTX1660_V2 is the hand calibration against TexBench 0.6.0.
 GTX1660_V2 = GTX1660
@@ -98,14 +114,15 @@ RESOLUTIONS = {"1080p": (1920, 1080), "1440p": (2560, 1440), "4k": (3840, 2160)}
 
 def _pass_time(nd: int, ns_read: int, taps: float, gpu: GPU, wbytes: float = BYTES_PER_PIXEL,
                rbytes: float | None = None, wfmt: str | None = None, exchanges: float = 0,
-               src_bytes: float | None = None) -> tuple:
+               src_bytes: float | None = None, blend: bool = False) -> tuple:
     """rbytes: bytes read in total (default ns_read texels of BYTES_PER_PIXEL);
     wfmt: written format (write-rate limit), default from wbytes;
     exchanges: quad exchanges (ddx_fine / ddy_fine of a float3) per pixel;
     src_bytes: size of the source texture(s) (default rbytes): the pass runs from the cache when
-    its sources and target fit."""
+    its sources and target fit; blend: additive blending into the target (blend-rate limit, and the
+    target is read too)."""
     rb = ns_read * BYTES_PER_PIXEL if rbytes is None else rbytes
-    traffic = nd * wbytes + rb
+    traffic = nd * wbytes * (2 if blend else 1) + rb
     cached = gpu.cache_bandwidth and nd * wbytes + (rb if src_bytes is None else src_bytes) <= gpu.cache_bytes
     t_tex = nd * taps / gpu.tex_rate
     if gpu.px_rate and not cached:
@@ -116,7 +133,8 @@ def _pass_time(nd: int, ns_read: int, taps: float, gpu: GPU, wbytes: float = BYT
         t_mem, t_rop = traffic / gpu.cache_bandwidth, 0.0
     else:
         t_mem = traffic / gpu.bandwidth
-        t_rop = nd / gpu.writes(wfmt or BPP_FORMAT.get(int(wbytes), "RGB10A2"))
+        f = wfmt or BPP_FORMAT.get(int(wbytes), "RGB10A2")
+        t_rop = nd / (gpu.blends(f) if blend else gpu.writes(f))
     t = max(t_tex, t_mem, t_rop) * max(1.0, gpu.fill_px / max(nd, 1))
     return gpu.pass_overhead + t, ("tex" if t == t_tex else "mem" if t == t_mem else "rop")
 

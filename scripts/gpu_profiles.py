@@ -2,7 +2,9 @@
 
     python -m scripts.gpu_profiles <sopt>/docs/texbench
 
-For each card in CARDS, the newest report gives (all full-screen passes at 3840 x 2160):
+Every GPU (PCI vendor / device id) with a report gets a profile from its newest report; the cards in
+CARDS are the core set (one per architecture) the searches and TOPT_Blur's tables are made for.
+Each profile (all full-screen passes at 3840 x 2160):
   tex_rate      the report's texture rate (bilinear RGBA8)
   bandwidth     combined read + write traffic of the RGBA8 copy
   rop_rate      the report's pixel fill rate (formats without a write test)
@@ -15,7 +17,9 @@ For each card in CARDS, the newest report gives (all full-screen passes at 3840 
   cache_bandwidth  traffic / s of passes whose reads and writes fit in the last-level cache
                 (cache_bytes, spec sheets), from the pass chains below
   fill_px       a pass with fewer pixels leaves the GPU part idle: its work takes fill_px / pixels
-                longer (from the 1/1024 strided downsample)
+                longer (from the under-filled passes, 64 reads into 120 x 67, TexBench 0.9.2+; else
+                the 1/1024 strided downsample)
+  blend_rate    per format, pixels / s of additive blending (TexBench 0.9.2+)
   pass_overhead from the dependent pass chains (TexBench 0.7.27+): time per extra pass (2 to 32) at 1/64 and
                 1/256 of the screen, fitted as overhead + pixels * cost; cards without the chains get
                 the median of the others
@@ -37,8 +41,10 @@ from topt.cost import FORMAT_BYTES
 OUT = Path(__file__).resolve().parent.parent / "topt" / "gpu_profiles.json"
 N = 3840 * 2160
 
-# label: (architecture, report GPU name, last-level GPU cache in MB from the spec sheets: L2, or AMD's
-# Infinity Cache, or Intel's L3 / LLC share). One card per architecture, desktop where there is one.
+# The core set, label: (architecture, report GPU name[, PCI device id], last-level GPU cache in MB from
+# the spec sheets: L2, or AMD's Infinity Cache, or Intel's L3 / LLC share). One card per architecture,
+# desktop where there is one. Other GPUs: label from the report's name, architecture from
+# make_effect.FAMILIES, 2 MB cache (the cache rule is capped at 2 MB anyway).
 CARDS = {
     "GTX 860M": ("NVIDIA Maxwell", "NVIDIA GeForce GTX 860M", 2),
     "GTX 1080": ("NVIDIA Pascal", "NVIDIA GeForce GTX 1080", 2),
@@ -52,7 +58,7 @@ CARDS = {
     "RX 6600": ("AMD RDNA 2", "AMD Radeon RX 6600", 32),
     "RX 7900 XTX": ("AMD RDNA 3", "AMD Radeon RX 7900 XTX", 96),
     "RX 9070 XT": ("AMD RDNA 4", "AMD Radeon RX 9070 XT", 64),
-    "Radeon 680M": ("AMD RDNA 2 iGPU", "AMD Radeon(TM) Graphics", 2),
+    "Radeon 680M": ("AMD RDNA 2 iGPU", "AMD Radeon(TM) Graphics", "0x1681", 2),
     "UHD 630": ("Intel Gen9.5", "Intel(R) UHD Graphics 630", 4),
     "Iris Xe": ("Intel Gen12", "Intel(R) Iris(R) Xe Graphics", 4),
     "Arc B580": ("Intel Xe2", "Intel(R) Arc(TM) B580 Graphics", 18),
@@ -60,17 +66,45 @@ CARDS = {
 
 
 def newest(folder: Path) -> dict:
-    """GPU name -> (version, path) of its newest report."""
+    """(GPU name, device id) -> (version, path) of its newest report."""
     out = {}
     for f in folder.glob("*.csv"):
-        head = f.read_text(encoding="utf-8", errors="ignore").splitlines()[:2]
+        head = f.read_text(encoding="utf-8", errors="ignore").splitlines()[:8]
         if len(head) < 2 or not head[0].startswith("# TexBench"):
             continue
         v = tuple(int(x) for x in re.findall(r"\d+", head[0])[:3])
         g = head[1].split(":", 1)[1].strip()
-        if g not in out or v > out[g][0]:
-            out[g] = (v, f)
+        dev = next((h.split(":", 1)[1].strip().upper().replace("0X", "0x") for h in head if h.startswith("# device:")), "")
+        if (g, dev) not in out or v > out[(g, dev)][0]:
+            out[(g, dev)] = (v, f)
     return out
+
+
+VENDORS = {"0x10DE": "NVIDIA", "0x1002": "AMD", "0x8086": "Intel"}
+
+
+def auto_label(gpu: str, vendor: str, dev: str) -> str:
+    s = re.sub(r"\((R|TM)\)", "", gpu)
+    for pre in ("NVIDIA GeForce ", "NVIDIA ", "AMD Radeon ", "AMD ", "Intel ", "Radeon "):
+        if s.startswith(pre):
+            s = s[len(pre):]
+            break
+    s = " ".join(s.replace("Graphics", "").split())
+    if s in ("", "Radeon"):
+        return f"{VENDORS.get(vendor, vendor)} {dev}"
+    if vendor == "0x1002" and not s.startswith(("RX", "HD", "R")):
+        s = "Radeon " + s
+    return s
+
+
+def family(vendor: str, dev: str) -> str:
+    from scripts.make_effect import FAMILIES
+    try:
+        d = int(dev, 16)
+    except ValueError:
+        return VENDORS.get(vendor, "unknown")
+    return next((name for v, lo, hi, _, name in FAMILIES if f"0x{v:04X}" == vendor and lo <= d <= hi),
+                VENDORS.get(vendor, "unknown"))
 
 
 def read(path: Path) -> tuple:
@@ -134,40 +168,58 @@ def profile(path: Path) -> dict:
              if (t := ms(rows, "pass", name))]
     if waste:
         p["sparse_waste"] = round(min(4.0, max(1.0, statistics.median(waste))), 2)
+    p["blend_rate"] = {f: N / t for f in FORMAT_BYTES if (t := ms(rows, "blend", f"{f} add blend"))}
     p["vendor"], p["device"] = hdr.get("vendor"), hdr.get("device")
     p["report"] = f"{path.name} ({path.read_text(encoding='utf-8', errors='ignore').splitlines()[0][2:]})"
     return p
 
 
 def fit_fill(p: dict, path: Path):
-    """Too few pixels to fill the GPU: the 1/1024 strided downsample (120 x 67) against the model."""
+    """Too few pixels to fill the GPU: the under-filled pass (64 bilinear reads, a 16 x 16 block, per
+    pixel of 120 x 67 covering a 1920 x 1080 area), or else the 1/1024 strided downsample (120 x 67),
+    against the model."""
     from topt.cost import GPU, _pass_time
     _, rows = read(path)
-    t = ms(rows, "pass", "1/1024 (120 x 67)")
-    if not t:
-        return
     over = p.get("pass_overhead", 1e-6)
     g = GPU("fit", p["tex_rate"], p["bandwidth"], p["rop_rate"], over, write_rate=tuple(p["write_rate"].items()),
             px_rate=p.get("px_rate", 0.0), sparse_waste=p.get("sparse_waste", 1.0),
             cache_bytes=p["cache_bytes"], cache_bandwidth=p.get("cache_bandwidth", 0.0))
     nd = 120 * 67
-    ns = min(N, nd * 16 * g.sparse_waste)
-    work = _pass_time(nd, ns, 4, g, 4, 4 * ns, "RGBA8", src_bytes=4 * N)[0] - over
+    if (t := ms(rows, "pass", "64 reads into 120 x 67")):
+        ns = 1920 * 1080
+        work = _pass_time(nd, ns, 64, g, 4, 4 * ns, "RGBA8")[0] - over
+    elif (t := ms(rows, "pass", "1/1024 (120 x 67)")):
+        ns = min(N, nd * 16 * g.sparse_waste)
+        work = _pass_time(nd, ns, 4, g, 4, 4 * ns, "RGBA8", src_bytes=4 * N)[0] - over
+    else:
+        return
     if t - over > work > 0:
         p["fill_px"] = round(nd * (t - over) / work)
 
 
 def main():
     reports = newest(Path(sys.argv[1]))
+    core = {}
+    for label, (arch, gpu, *dev, cache) in CARDS.items():
+        keys = [k for k in reports if k[0] == gpu and (not dev or k[1] == dev[0])]
+        if not keys:
+            print("no report:", label, gpu)
+        else:
+            core[max(keys, key=lambda k: reports[k][0])] = (label, arch, cache)
     profiles = {}
-    for label, (arch, gpu, cache) in CARDS.items():
-        if gpu not in reports:
-            print("no report:", gpu)
-            continue
+    for key in [k for k in reports if not ms(read(reports[k][1])[1], "pass", "copy Sample RGBA8")]:
+        print("no pass tests (TexBench too old):", key[0], reports.pop(key)[1].name)
+    for key in sorted(reports, key=lambda k: (k not in core, VENDORS.get(read(reports[k][1])[0].get("vendor"), "~"), k[0], k[1])):
+        hdr = read(reports[key][1])[0]
+        label, arch, cache = core.get(key) or (auto_label(key[0], hdr.get("vendor", ""), key[1]),
+                                               family(hdr.get("vendor", ""), key[1]), 2)
+        while label in profiles:
+            label += f" {key[1]}"
         # cache rule only as far as measured: the chains move 1 MB per pass; whole-screen writes into
         # a big L2 / Infinity Cache still run at DRAM rate
-        profiles[label] = {"arch": arch, "cache_bytes": min(cache, 2) * 2 ** 20, **profile(reports[gpu][1])}
-        fit_fill(profiles[label], reports[gpu][1])
+        profiles[label] = {"arch": arch, "core": key in core, "cache_bytes": min(cache, 2) * 2 ** 20,
+                           **profile(reports[key][1])}
+        fit_fill(profiles[label], reports[key][1])
     measured = [p["pass_overhead"] for p in profiles.values() if "pass_overhead" in p]
     med = statistics.median(measured)
     for p in profiles.values():
@@ -176,11 +228,11 @@ def main():
     OUT.write_text(json.dumps(profiles, indent=1) + "\n")
     for k, p in profiles.items():
         w = p["write_rate"]
-        print(f"{k:12s} {p['arch']:18s} tex {p['tex_rate'] / 1e9:6.0f} bw {p['bandwidth'] / 1e9:5.0f} "
+        print(f"{k:22s} {p['arch'][:18]:18s} tex {p['tex_rate'] / 1e9:6.0f} bw {p['bandwidth'] / 1e9:5.0f} "
               f"RGBA8 {w.get('RGBA8', 0) / 1e9:5.1f} R8 {w.get('R8', 0) / 1e9:5.1f} wide {p['wide_filter']:.2f} "
               f"overhead {p['pass_overhead'] * 1e6:5.2f} us{'' if p['overhead_measured'] else ' (median)'} "
               f"px {p.get('px_rate', 0) / 1e9:5.1f} xch {p.get('exchange_rate', 0) / 1e9:6.0f} "
-              f"waste {p.get('sparse_waste', 1):.2f}")
+              f"waste {p.get('sparse_waste', 1):.2f} fill {p.get('fill_px', 0):6.0f}{' core' if p['core'] else ''}")
     print("wrote", OUT)
 
 
