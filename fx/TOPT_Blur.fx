@@ -67,59 +67,59 @@ uniform bool TOPT_ShowBlur <
 // TOPT_GPU forces a table, e.g. to time them against each other.)
 #ifndef TOPT_GPU
 	#if __VENDOR__ == 0x10DE && __DEVICE__ >= 0x1340 && __DEVICE__ <= 0x17FF
-		#define TOPT_GPU 8 // NVIDIA Maxwell (GTX 860M profile)
+		#define TOPT_GPU 11 // NVIDIA Maxwell (GTX 860M profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x1B00 && __DEVICE__ <= 0x1DFF
-		#define TOPT_GPU 1 // NVIDIA Pascal (GTX 1080 profile)
+		#define TOPT_GPU 6 // NVIDIA Pascal (GTX 1080 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2180 && __DEVICE__ <= 0x21FF
-		#define TOPT_GPU 8 // NVIDIA Turing GTX 16 (TU116) (GTX 1660 profile)
+		#define TOPT_GPU 10 // NVIDIA Turing GTX 16 (TU116) (GTX 1660 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x1E00 && __DEVICE__ <= 0x1FFF
-		#define TOPT_GPU 9 // NVIDIA Turing (TU10x, TU117) (RTX 2070 profile)
+		#define TOPT_GPU 12 // NVIDIA Turing (TU10x, TU117) (RTX 2070 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2200 && __DEVICE__ <= 0x25FF
-		#define TOPT_GPU 10 // NVIDIA Ampere (RTX 3060 profile)
+		#define TOPT_GPU 13 // NVIDIA Ampere (RTX 3060 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2600 && __DEVICE__ <= 0x28FF
-		#define TOPT_GPU 10 // NVIDIA Ada (RTX 4070 profile)
+		#define TOPT_GPU 14 // NVIDIA Ada (RTX 4070 profile)
 	#elif __VENDOR__ == 0x10DE && __DEVICE__ >= 0x2900 && __DEVICE__ <= 0x2FFF
-		#define TOPT_GPU 10 // NVIDIA Blackwell (RTX 5070 profile)
+		#define TOPT_GPU 14 // NVIDIA Blackwell (RTX 5070 profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x6700 && __DEVICE__ <= 0x69FF
-		#define TOPT_GPU 1 // AMD GCN (Polaris, Vega) (RX 590 profile)
+		#define TOPT_GPU 6 // AMD GCN (Polaris, Vega) (RX 590 profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x7310 && __DEVICE__ <= 0x739F
-		#define TOPT_GPU 4 // AMD RDNA 1 (RX 5500 XT profile)
+		#define TOPT_GPU 5 // AMD RDNA 1 (RX 5500 XT profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x73A0 && __DEVICE__ <= 0x743F
 		#define TOPT_GPU 1 // AMD RDNA 2 (RX 6600 profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x7440 && __DEVICE__ <= 0x74FF
 		#define TOPT_GPU 2 // AMD RDNA 3 (RX 7900 XTX profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x7500 && __DEVICE__ <= 0x75FF
-		#define TOPT_GPU 2 // AMD RDNA 4 (RX 9070 XT profile)
+		#define TOPT_GPU 3 // AMD RDNA 4 (RX 9070 XT profile)
 	#elif __VENDOR__ == 0x1002 && __DEVICE__ >= 0x1500 && __DEVICE__ <= 0x19FF
-		#define TOPT_GPU 3 // AMD Ryzen iGPUs (RDNA 2 / 3) (Radeon 680M profile)
+		#define TOPT_GPU 4 // AMD Ryzen iGPUs (RDNA 2 / 3) (Radeon 680M profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x1900 && __DEVICE__ <= 0x193F
-		#define TOPT_GPU 7 // Intel Gen9 (Skylake) (UHD 630 profile)
+		#define TOPT_GPU 9 // Intel Gen9 (Skylake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x5900 && __DEVICE__ <= 0x59FF
-		#define TOPT_GPU 7 // Intel Gen9.5 (Kaby Lake) (UHD 630 profile)
+		#define TOPT_GPU 9 // Intel Gen9.5 (Kaby Lake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x3E90 && __DEVICE__ <= 0x3EFF
-		#define TOPT_GPU 7 // Intel Gen9.5 (Coffee Lake) (UHD 630 profile)
+		#define TOPT_GPU 9 // Intel Gen9.5 (Coffee Lake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x9B00 && __DEVICE__ <= 0x9BFF
-		#define TOPT_GPU 7 // Intel Gen9.5 (Comet Lake) (UHD 630 profile)
+		#define TOPT_GPU 9 // Intel Gen9.5 (Comet Lake) (UHD 630 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x9A40 && __DEVICE__ <= 0x9AFF
-		#define TOPT_GPU 6 // Intel Gen12 (Tiger Lake) (Iris Xe profile)
+		#define TOPT_GPU 8 // Intel Gen12 (Tiger Lake) (Iris Xe profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x4680 && __DEVICE__ <= 0x46FF
-		#define TOPT_GPU 6 // Intel Gen12 (Alder Lake) (Iris Xe profile)
+		#define TOPT_GPU 8 // Intel Gen12 (Alder Lake) (Iris Xe profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0xA780 && __DEVICE__ <= 0xA7FF
-		#define TOPT_GPU 6 // Intel Gen12 (Raptor Lake) (Iris Xe profile)
+		#define TOPT_GPU 8 // Intel Gen12 (Raptor Lake) (Iris Xe profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x5690 && __DEVICE__ <= 0x56FF
-		#define TOPT_GPU 5 // Intel Arc (Alchemist) (Arc B580 profile)
+		#define TOPT_GPU 7 // Intel Arc (Alchemist) (Arc B580 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0xE200 && __DEVICE__ <= 0xE2FF
-		#define TOPT_GPU 5 // Intel Arc (Battlemage) (Arc B580 profile)
+		#define TOPT_GPU 7 // Intel Arc (Battlemage) (Arc B580 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x6400 && __DEVICE__ <= 0x64FF
-		#define TOPT_GPU 5 // Intel Xe2 (Lunar Lake) (Arc B580 profile)
+		#define TOPT_GPU 7 // Intel Xe2 (Lunar Lake) (Arc B580 profile)
 	#elif __VENDOR__ == 0x8086 && __DEVICE__ >= 0x7D40 && __DEVICE__ <= 0x7DFF
-		#define TOPT_GPU 5 // Intel Xe-LPG (Meteor Lake) (Arc B580 profile)
+		#define TOPT_GPU 7 // Intel Xe-LPG (Meteor Lake) (Arc B580 profile)
 	#else
 		#define TOPT_GPU 0 // unknown GPU: least regret over all profiles
 	#endif
 #endif
 
-#if TOPT_GPU == 1 // RX 6600, RX 590, GTX 1080
+#if TOPT_GPU == 1 // RX 6600
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -141,26 +141,26 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 13
 		#define TOPT_CLASS 4 // '8'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 26
+	#elif TOPT_SIGMA_SCREEN <= 23
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 38
+	#elif TOPT_SIGMA_SCREEN <= 39
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 95
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 191
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
 	#else
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 2 // RX 7900 XTX, RX 9070 XT
+#elif TOPT_GPU == 2 // RX 7900 XTX
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -176,29 +176,100 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 6
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
+	#elif TOPT_SIGMA_SCREEN <= 7
 		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 13
 		#define TOPT_CLASS 4 // '8'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 26
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 51
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 51
+		#define TOPT_CLASS 11 // '16e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
+		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 3 // Radeon 680M
+#elif TOPT_GPU == 3 // RX 9070 XT
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 7
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 13
+		#define TOPT_CLASS 4 // '8'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 23
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 47
+		#define TOPT_CLASS 5 // '16'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 83
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 95
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 191
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
+		#define TOPT_SEP 0
+	#endif
+#elif TOPT_GPU == 4 // Radeon 680M
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -214,16 +285,16 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 13
 		#define TOPT_CLASS 4 // '8'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 27
+	#elif TOPT_SIGMA_SCREEN <= 23
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 104
+	#elif TOPT_SIGMA_SCREEN <= 102
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 108
 		#define TOPT_CLASS 6 // '32' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 204
@@ -239,7 +310,7 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 8 // '128' separable
 		#define TOPT_SEP 1
 	#endif
-#elif TOPT_GPU == 4 // RX 5500 XT
+#elif TOPT_GPU == 5 // RX 5500 XT
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -256,28 +327,43 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_CLASS 9 // '4e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 26
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 47
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 104
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
-		#define TOPT_CLASS 6 // '32' separable
+	#elif TOPT_SIGMA_SCREEN <= 101
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
+		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 5 // Arc B580
+#elif TOPT_GPU == 6 // RX 590, GTX 1080
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -299,23 +385,76 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 13
 		#define TOPT_CLASS 4 // '8'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 26
+	#elif TOPT_SIGMA_SCREEN <= 23
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 39
+		#define TOPT_CLASS 5 // '16'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 47
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 95
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 191
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
+		#define TOPT_SEP 0
+	#endif
+#elif TOPT_GPU == 7 // Arc B580
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 7
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 13
+		#define TOPT_CLASS 4 // '8'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 23
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 95
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 191
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
 	#else
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 6 // Iris Xe
+#elif TOPT_GPU == 8 // Iris Xe
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -331,23 +470,23 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 13
 		#define TOPT_CLASS 4 // '8'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 27
+	#elif TOPT_SIGMA_SCREEN <= 23
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 102
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 217
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
 	#else
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 7 // UHD 630
+#elif TOPT_GPU == 9 // UHD 630
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -361,28 +500,43 @@ uniform bool TOPT_ShowBlur <
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 12
-		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_CLASS 9 // '4e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 27
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 58
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 166
+		#define TOPT_CLASS 7 // '64' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 217
 		#define TOPT_CLASS 7 // '64' separable
 		#define TOPT_SEP 1
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128' separable
 		#define TOPT_SEP 1
+	#else
+		#define TOPT_CLASS 14 // '128e' separable
+		#define TOPT_SEP 1
 	#endif
-#elif TOPT_GPU == 8 // GTX 1660, GTX 860M
+#elif TOPT_GPU == 10 // GTX 1660
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -398,29 +552,47 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 6
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
+	#elif TOPT_SIGMA_SCREEN <= 7
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 27
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 54
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 58
-		#define TOPT_CLASS 6 // '32'
-		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 166
+		#define TOPT_CLASS 7 // '64' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e' separable
 		#define TOPT_SEP 1
 	#elif TOPT_SIGMA_SCREEN <= 217
 		#define TOPT_CLASS 7 // '64' separable
 		#define TOPT_SEP 1
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128' separable
 		#define TOPT_SEP 1
+	#else
+		#define TOPT_CLASS 14 // '128e' separable
+		#define TOPT_SEP 1
 	#endif
-#elif TOPT_GPU == 9 // RTX 2070
+#elif TOPT_GPU == 11 // GTX 860M
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -436,26 +608,150 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 6
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
+	#elif TOPT_SIGMA_SCREEN <= 7
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 26
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 23
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
+		#define TOPT_CLASS 6 // '32' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 166
+		#define TOPT_CLASS 7 // '64' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 217
+		#define TOPT_CLASS 7 // '64' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 333
+		#define TOPT_CLASS 8 // '128' separable
+		#define TOPT_SEP 1
+	#else
+		#define TOPT_CLASS 14 // '128e' separable
+		#define TOPT_SEP 1
+	#endif
+#elif TOPT_GPU == 12 // RTX 2070
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 7
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 14
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 5 // '16' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 83
+		#define TOPT_CLASS 6 // '32'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
+		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
+		#define TOPT_SEP 0
+	#endif
+#elif TOPT_GPU == 13 // RTX 3060
+	#if TOPT_SIGMA_SCREEN <= 1
+		#define TOPT_CLASS 0 // '1'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 2
+		#define TOPT_CLASS 1 // '2'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 3
+		#define TOPT_CLASS 1 // '2' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 4
+		#define TOPT_CLASS 2 // '4s'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 6
+		#define TOPT_CLASS 2 // '4s' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 7
+		#define TOPT_CLASS 3 // '4' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 23
+		#define TOPT_CLASS 4 // '8' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 39
+		#define TOPT_CLASS 5 // '16'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 47
 		#define TOPT_CLASS 5 // '16' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 95
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 191
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128'
 		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
+		#define TOPT_SEP 0
 	#endif
-#elif TOPT_GPU == 10 // RTX 3060, RTX 4070, RTX 5070
+#elif TOPT_GPU == 14 // RTX 4070, RTX 5070
 	#if TOPT_SIGMA_SCREEN <= 1
 		#define TOPT_CLASS 0 // '1'
 		#define TOPT_SEP 0
@@ -471,26 +767,44 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 6
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
+	#elif TOPT_SIGMA_SCREEN <= 7
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 26
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
+		#define TOPT_CLASS 5 // '16'
+		#define TOPT_SEP 0
 	#elif TOPT_SIGMA_SCREEN <= 38
-		#define TOPT_CLASS 5 // '16'
+		#define TOPT_CLASS 11 // '16e'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 47
-		#define TOPT_CLASS 5 // '16' separable
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
 		#define TOPT_SEP 0
 	#endif
 #else // unknown GPUs
@@ -509,26 +823,47 @@ uniform bool TOPT_ShowBlur <
 	#elif TOPT_SIGMA_SCREEN <= 6
 		#define TOPT_CLASS 2 // '4s' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 12
+	#elif TOPT_SIGMA_SCREEN <= 7
 		#define TOPT_CLASS 3 // '4' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 27
+	#elif TOPT_SIGMA_SCREEN <= 12
+		#define TOPT_CLASS 9 // '4e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 18
 		#define TOPT_CLASS 4 // '8' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 38
+	#elif TOPT_SIGMA_SCREEN <= 27
+		#define TOPT_CLASS 10 // '8e' separable
+		#define TOPT_SEP 1
+	#elif TOPT_SIGMA_SCREEN <= 35
 		#define TOPT_CLASS 5 // '16'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 47
-		#define TOPT_CLASS 5 // '16' separable
+	#elif TOPT_SIGMA_SCREEN <= 38
+		#define TOPT_CLASS 11 // '16e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 54
+		#define TOPT_CLASS 11 // '16e' separable
 		#define TOPT_SEP 1
-	#elif TOPT_SIGMA_SCREEN <= 107
+	#elif TOPT_SIGMA_SCREEN <= 83
 		#define TOPT_CLASS 6 // '32'
 		#define TOPT_SEP 0
-	#elif TOPT_SIGMA_SCREEN <= 214
+	#elif TOPT_SIGMA_SCREEN <= 108
+		#define TOPT_CLASS 12 // '32e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 166
 		#define TOPT_CLASS 7 // '64'
 		#define TOPT_SEP 0
-	#else
+	#elif TOPT_SIGMA_SCREEN <= 216
+		#define TOPT_CLASS 13 // '64e'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 217
+		#define TOPT_CLASS 7 // '64'
+		#define TOPT_SEP 0
+	#elif TOPT_SIGMA_SCREEN <= 333
 		#define TOPT_CLASS 8 // '128'
+		#define TOPT_SEP 0
+	#else
+		#define TOPT_CLASS 14 // '128e'
 		#define TOPT_SEP 0
 	#endif
 #endif
@@ -699,291 +1034,50 @@ uniform bool TOPT_ShowBlur <
 		float3(-0.0803454039, -0.27318983, 0.25),
 		float3(0.27318983, -0.0803454039, 0.25)
 	};
-#elif TOPT_CLASS == 5 // '16': sigma 26.9..54.2 px
-	#define TOPT_SMALL 0
-	#define TOPT_STEPS 1
-	#define TOPT_F1 16
-	#define TOPT_F2 1
-	#define TOPT_UPSTEPS 1
-	static const float TOPT_C = 93.5548804;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float TOPT_B = 245.709652;
-	static const float TOPT_SL_MIN = 1.6;
-	static const float TOPT_SL_MAX = 3.4;
-	#define TOPT_ND1 81
-	static const float3 TOPT_DOWN1[81] = {
-		float3(-7.75, -7.75, 0.00390625),
-		float3(-7.75, -6.0, 0.0078125),
-		float3(-7.75, -4.0, 0.0078125),
-		float3(-7.75, -2.0, 0.0078125),
-		float3(-7.75, 0.0, 0.0078125),
-		float3(-7.75, 2.0, 0.0078125),
-		float3(-7.75, 4.0, 0.0078125),
-		float3(-7.75, 6.0, 0.0078125),
-		float3(-7.75, 7.75, 0.00390625),
-		float3(-6.0, -7.75, 0.0078125),
-		float3(-6.0, -6.0, 0.015625),
-		float3(-6.0, -4.0, 0.015625),
-		float3(-6.0, -2.0, 0.015625),
-		float3(-6.0, 0.0, 0.015625),
-		float3(-6.0, 2.0, 0.015625),
-		float3(-6.0, 4.0, 0.015625),
-		float3(-6.0, 6.0, 0.015625),
-		float3(-6.0, 7.75, 0.0078125),
-		float3(-4.0, -7.75, 0.0078125),
-		float3(-4.0, -6.0, 0.015625),
-		float3(-4.0, -4.0, 0.015625),
-		float3(-4.0, -2.0, 0.015625),
-		float3(-4.0, 0.0, 0.015625),
-		float3(-4.0, 2.0, 0.015625),
-		float3(-4.0, 4.0, 0.015625),
-		float3(-4.0, 6.0, 0.015625),
-		float3(-4.0, 7.75, 0.0078125),
-		float3(-2.0, -7.75, 0.0078125),
-		float3(-2.0, -6.0, 0.015625),
-		float3(-2.0, -4.0, 0.015625),
-		float3(-2.0, -2.0, 0.015625),
-		float3(-2.0, 0.0, 0.015625),
-		float3(-2.0, 2.0, 0.015625),
-		float3(-2.0, 4.0, 0.015625),
-		float3(-2.0, 6.0, 0.015625),
-		float3(-2.0, 7.75, 0.0078125),
-		float3(0.0, -7.75, 0.0078125),
-		float3(0.0, -6.0, 0.015625),
-		float3(0.0, -4.0, 0.015625),
-		float3(0.0, -2.0, 0.015625),
-		float3(0.0, 0.0, 0.015625),
-		float3(0.0, 2.0, 0.015625),
-		float3(0.0, 4.0, 0.015625),
-		float3(0.0, 6.0, 0.015625),
-		float3(0.0, 7.75, 0.0078125),
-		float3(2.0, -7.75, 0.0078125),
-		float3(2.0, -6.0, 0.015625),
-		float3(2.0, -4.0, 0.015625),
-		float3(2.0, -2.0, 0.015625),
-		float3(2.0, 0.0, 0.015625),
-		float3(2.0, 2.0, 0.015625),
-		float3(2.0, 4.0, 0.015625),
-		float3(2.0, 6.0, 0.015625),
-		float3(2.0, 7.75, 0.0078125),
-		float3(4.0, -7.75, 0.0078125),
-		float3(4.0, -6.0, 0.015625),
-		float3(4.0, -4.0, 0.015625),
-		float3(4.0, -2.0, 0.015625),
-		float3(4.0, 0.0, 0.015625),
-		float3(4.0, 2.0, 0.015625),
-		float3(4.0, 4.0, 0.015625),
-		float3(4.0, 6.0, 0.015625),
-		float3(4.0, 7.75, 0.0078125),
-		float3(6.0, -7.75, 0.0078125),
-		float3(6.0, -6.0, 0.015625),
-		float3(6.0, -4.0, 0.015625),
-		float3(6.0, -2.0, 0.015625),
-		float3(6.0, 0.0, 0.015625),
-		float3(6.0, 2.0, 0.015625),
-		float3(6.0, 4.0, 0.015625),
-		float3(6.0, 6.0, 0.015625),
-		float3(6.0, 7.75, 0.0078125),
-		float3(7.75, -7.75, 0.00390625),
-		float3(7.75, -6.0, 0.0078125),
-		float3(7.75, -4.0, 0.0078125),
-		float3(7.75, -2.0, 0.0078125),
-		float3(7.75, 0.0, 0.0078125),
-		float3(7.75, 2.0, 0.0078125),
-		float3(7.75, 4.0, 0.0078125),
-		float3(7.75, 6.0, 0.0078125),
-		float3(7.75, 7.75, 0.00390625)
-	};
-	#define TOPT_NUP 4
-	static const float3 TOPT_UP[4] = {
-		float3(0.0803454039, 0.27318983, 0.25),
-		float3(-0.27318983, 0.0803454039, 0.25),
-		float3(-0.0803454039, -0.27318983, 0.25),
-		float3(0.27318983, -0.0803454039, 0.25)
-	};
-#elif TOPT_CLASS == 6 // '32': sigma 47.6..110.5 px
+#elif TOPT_CLASS == 5 // '16': sigma 24.4..54.4 px
 	#define TOPT_SMALL 0
 	#define TOPT_STEPS 2
-	#define TOPT_F1 16
+	#define TOPT_F1 8
 	#define TOPT_F2 2
 	#define TOPT_UPSTEPS 1
-	static const float TOPT_C = 851.139854;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float TOPT_B = 982.838606;
-	static const float TOPT_SL_MIN = 1.2;
+	static const float TOPT_C = 115.332658;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 245.709652;
+	static const float TOPT_SL_MIN = 1.4;
 	static const float TOPT_SL_MAX = 3.4;
-	#define TOPT_ND1 144
-	static const float3 TOPT_DOWN1[144] = {
-		float3(-10.6, -10.6, 5.96046448e-06),
-		float3(-10.6, -8.78461538, 7.74860382e-05),
-		float3(-10.6, -6.92670157, 0.000227689743),
-		float3(-10.6, -4.99203187, 0.000299215317),
-		float3(-10.6, -3.0, 0.000305175781),
-		float3(-10.6, -1.0, 0.000305175781),
-		float3(-10.6, 1.0, 0.000305175781),
-		float3(-10.6, 3.0, 0.000305175781),
-		float3(-10.6, 4.99203187, 0.000299215317),
-		float3(-10.6, 6.92670157, 0.000227689743),
-		float3(-10.6, 8.78461538, 7.74860382e-05),
-		float3(-10.6, 10.6, 5.96046448e-06),
-		float3(-8.78461538, -10.6, 7.74860382e-05),
-		float3(-8.78461538, -8.78461538, 0.0010073185),
-		float3(-8.78461538, -6.92670157, 0.00295996666),
-		float3(-8.78461538, -4.99203187, 0.00388979912),
-		float3(-8.78461538, -3.0, 0.00396728516),
-		float3(-8.78461538, -1.0, 0.00396728516),
-		float3(-8.78461538, 1.0, 0.00396728516),
-		float3(-8.78461538, 3.0, 0.00396728516),
-		float3(-8.78461538, 4.99203187, 0.00388979912),
-		float3(-8.78461538, 6.92670157, 0.00295996666),
-		float3(-8.78461538, 8.78461538, 0.0010073185),
-		float3(-8.78461538, 10.6, 7.74860382e-05),
-		float3(-6.92670157, -10.6, 0.000227689743),
-		float3(-6.92670157, -8.78461538, 0.00295996666),
-		float3(-6.92670157, -6.92670157, 0.00869774818),
-		float3(-6.92670157, -4.99203187, 0.0114300251),
-		float3(-6.92670157, -3.0, 0.0116577148),
-		float3(-6.92670157, -1.0, 0.0116577148),
-		float3(-6.92670157, 1.0, 0.0116577148),
-		float3(-6.92670157, 3.0, 0.0116577148),
-		float3(-6.92670157, 4.99203187, 0.0114300251),
-		float3(-6.92670157, 6.92670157, 0.00869774818),
-		float3(-6.92670157, 8.78461538, 0.00295996666),
-		float3(-6.92670157, 10.6, 0.000227689743),
-		float3(-4.99203187, -10.6, 0.000299215317),
-		float3(-4.99203187, -8.78461538, 0.00388979912),
-		float3(-4.99203187, -6.92670157, 0.0114300251),
-		float3(-4.99203187, -4.99203187, 0.0150206089),
-		float3(-4.99203187, -3.0, 0.0153198242),
-		float3(-4.99203187, -1.0, 0.0153198242),
-		float3(-4.99203187, 1.0, 0.0153198242),
-		float3(-4.99203187, 3.0, 0.0153198242),
-		float3(-4.99203187, 4.99203187, 0.0150206089),
-		float3(-4.99203187, 6.92670157, 0.0114300251),
-		float3(-4.99203187, 8.78461538, 0.00388979912),
-		float3(-4.99203187, 10.6, 0.000299215317),
-		float3(-3.0, -10.6, 0.000305175781),
-		float3(-3.0, -8.78461538, 0.00396728516),
-		float3(-3.0, -6.92670157, 0.0116577148),
-		float3(-3.0, -4.99203187, 0.0153198242),
-		float3(-3.0, -3.0, 0.015625),
-		float3(-3.0, -1.0, 0.015625),
-		float3(-3.0, 1.0, 0.015625),
-		float3(-3.0, 3.0, 0.015625),
-		float3(-3.0, 4.99203187, 0.0153198242),
-		float3(-3.0, 6.92670157, 0.0116577148),
-		float3(-3.0, 8.78461538, 0.00396728516),
-		float3(-3.0, 10.6, 0.000305175781),
-		float3(-1.0, -10.6, 0.000305175781),
-		float3(-1.0, -8.78461538, 0.00396728516),
-		float3(-1.0, -6.92670157, 0.0116577148),
-		float3(-1.0, -4.99203187, 0.0153198242),
-		float3(-1.0, -3.0, 0.015625),
-		float3(-1.0, -1.0, 0.015625),
-		float3(-1.0, 1.0, 0.015625),
-		float3(-1.0, 3.0, 0.015625),
-		float3(-1.0, 4.99203187, 0.0153198242),
-		float3(-1.0, 6.92670157, 0.0116577148),
-		float3(-1.0, 8.78461538, 0.00396728516),
-		float3(-1.0, 10.6, 0.000305175781),
-		float3(1.0, -10.6, 0.000305175781),
-		float3(1.0, -8.78461538, 0.00396728516),
-		float3(1.0, -6.92670157, 0.0116577148),
-		float3(1.0, -4.99203187, 0.0153198242),
-		float3(1.0, -3.0, 0.015625),
-		float3(1.0, -1.0, 0.015625),
-		float3(1.0, 1.0, 0.015625),
-		float3(1.0, 3.0, 0.015625),
-		float3(1.0, 4.99203187, 0.0153198242),
-		float3(1.0, 6.92670157, 0.0116577148),
-		float3(1.0, 8.78461538, 0.00396728516),
-		float3(1.0, 10.6, 0.000305175781),
-		float3(3.0, -10.6, 0.000305175781),
-		float3(3.0, -8.78461538, 0.00396728516),
-		float3(3.0, -6.92670157, 0.0116577148),
-		float3(3.0, -4.99203187, 0.0153198242),
-		float3(3.0, -3.0, 0.015625),
-		float3(3.0, -1.0, 0.015625),
-		float3(3.0, 1.0, 0.015625),
-		float3(3.0, 3.0, 0.015625),
-		float3(3.0, 4.99203187, 0.0153198242),
-		float3(3.0, 6.92670157, 0.0116577148),
-		float3(3.0, 8.78461538, 0.00396728516),
-		float3(3.0, 10.6, 0.000305175781),
-		float3(4.99203187, -10.6, 0.000299215317),
-		float3(4.99203187, -8.78461538, 0.00388979912),
-		float3(4.99203187, -6.92670157, 0.0114300251),
-		float3(4.99203187, -4.99203187, 0.0150206089),
-		float3(4.99203187, -3.0, 0.0153198242),
-		float3(4.99203187, -1.0, 0.0153198242),
-		float3(4.99203187, 1.0, 0.0153198242),
-		float3(4.99203187, 3.0, 0.0153198242),
-		float3(4.99203187, 4.99203187, 0.0150206089),
-		float3(4.99203187, 6.92670157, 0.0114300251),
-		float3(4.99203187, 8.78461538, 0.00388979912),
-		float3(4.99203187, 10.6, 0.000299215317),
-		float3(6.92670157, -10.6, 0.000227689743),
-		float3(6.92670157, -8.78461538, 0.00295996666),
-		float3(6.92670157, -6.92670157, 0.00869774818),
-		float3(6.92670157, -4.99203187, 0.0114300251),
-		float3(6.92670157, -3.0, 0.0116577148),
-		float3(6.92670157, -1.0, 0.0116577148),
-		float3(6.92670157, 1.0, 0.0116577148),
-		float3(6.92670157, 3.0, 0.0116577148),
-		float3(6.92670157, 4.99203187, 0.0114300251),
-		float3(6.92670157, 6.92670157, 0.00869774818),
-		float3(6.92670157, 8.78461538, 0.00295996666),
-		float3(6.92670157, 10.6, 0.000227689743),
-		float3(8.78461538, -10.6, 7.74860382e-05),
-		float3(8.78461538, -8.78461538, 0.0010073185),
-		float3(8.78461538, -6.92670157, 0.00295996666),
-		float3(8.78461538, -4.99203187, 0.00388979912),
-		float3(8.78461538, -3.0, 0.00396728516),
-		float3(8.78461538, -1.0, 0.00396728516),
-		float3(8.78461538, 1.0, 0.00396728516),
-		float3(8.78461538, 3.0, 0.00396728516),
-		float3(8.78461538, 4.99203187, 0.00388979912),
-		float3(8.78461538, 6.92670157, 0.00295996666),
-		float3(8.78461538, 8.78461538, 0.0010073185),
-		float3(8.78461538, 10.6, 7.74860382e-05),
-		float3(10.6, -10.6, 5.96046448e-06),
-		float3(10.6, -8.78461538, 7.74860382e-05),
-		float3(10.6, -6.92670157, 0.000227689743),
-		float3(10.6, -4.99203187, 0.000299215317),
-		float3(10.6, -3.0, 0.000305175781),
-		float3(10.6, -1.0, 0.000305175781),
-		float3(10.6, 1.0, 0.000305175781),
-		float3(10.6, 3.0, 0.000305175781),
-		float3(10.6, 4.99203187, 0.000299215317),
-		float3(10.6, 6.92670157, 0.000227689743),
-		float3(10.6, 8.78461538, 7.74860382e-05),
-		float3(10.6, 10.6, 5.96046448e-06)
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
 	};
-	#define TOPT_ND2 25
-	static const float3 TOPT_DOWN2[25] = {
-		float3(-3.6, -3.6, 0.000381469727),
-		float3(-3.6, -1.8, 0.00457763672),
-		float3(-3.6, 0.0, 0.00961303711),
-		float3(-3.6, 1.8, 0.00457763672),
-		float3(-3.6, 3.6, 0.000381469727),
-		float3(-1.8, -3.6, 0.00457763672),
-		float3(-1.8, -1.8, 0.0549316406),
-		float3(-1.8, 0.0, 0.115356445),
-		float3(-1.8, 1.8, 0.0549316406),
-		float3(-1.8, 3.6, 0.00457763672),
-		float3(0.0, -3.6, 0.00961303711),
-		float3(0.0, -1.8, 0.115356445),
-		float3(0.0, 0.0, 0.242248535),
-		float3(0.0, 1.8, 0.115356445),
-		float3(0.0, 3.6, 0.00961303711),
-		float3(1.8, -3.6, 0.00457763672),
-		float3(1.8, -1.8, 0.0549316406),
-		float3(1.8, 0.0, 0.115356445),
-		float3(1.8, 1.8, 0.0549316406),
-		float3(1.8, 3.6, 0.00457763672),
-		float3(3.6, -3.6, 0.000381469727),
-		float3(3.6, -1.8, 0.00457763672),
-		float3(3.6, 0.0, 0.00961303711),
-		float3(3.6, 1.8, 0.00457763672),
-		float3(3.6, 3.6, 0.000381469727)
+	#define TOPT_ND2 4
+	static const float3 TOPT_DOWN2[4] = {
+		float3(-0.75, -0.75, 0.25),
+		float3(-0.75, 0.75, 0.25),
+		float3(0.75, -0.75, 0.25),
+		float3(0.75, 0.75, 0.25)
 	};
 	#define TOPT_NUP 4
 	static const float3 TOPT_UP[4] = {
@@ -992,99 +1086,43 @@ uniform bool TOPT_ShowBlur <
 		float3(-0.0803454039, -0.27318983, 0.25),
 		float3(0.27318983, -0.0803454039, 0.25)
 	};
-#elif TOPT_CLASS == 7 // '64': sigma 107.7..216.7 px
+#elif TOPT_CLASS == 6 // '32': sigma 48.0..108.4 px
 	#define TOPT_SMALL 0
 	#define TOPT_STEPS 2
-	#define TOPT_F1 16
+	#define TOPT_F1 8
 	#define TOPT_F2 4
 	#define TOPT_UPSTEPS 1
-	static const float TOPT_C = 1531.25434;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float TOPT_B = 3931.35442;
-	static const float TOPT_SL_MIN = 1.6;
+	static const float TOPT_C = 381.615982;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 982.838606;
+	static const float TOPT_SL_MIN = 1.4;
 	static const float TOPT_SL_MAX = 3.4;
-	#define TOPT_ND1 81
-	static const float3 TOPT_DOWN1[81] = {
-		float3(-7.75, -7.75, 0.00390625),
-		float3(-7.75, -6.0, 0.0078125),
-		float3(-7.75, -4.0, 0.0078125),
-		float3(-7.75, -2.0, 0.0078125),
-		float3(-7.75, 0.0, 0.0078125),
-		float3(-7.75, 2.0, 0.0078125),
-		float3(-7.75, 4.0, 0.0078125),
-		float3(-7.75, 6.0, 0.0078125),
-		float3(-7.75, 7.75, 0.00390625),
-		float3(-6.0, -7.75, 0.0078125),
-		float3(-6.0, -6.0, 0.015625),
-		float3(-6.0, -4.0, 0.015625),
-		float3(-6.0, -2.0, 0.015625),
-		float3(-6.0, 0.0, 0.015625),
-		float3(-6.0, 2.0, 0.015625),
-		float3(-6.0, 4.0, 0.015625),
-		float3(-6.0, 6.0, 0.015625),
-		float3(-6.0, 7.75, 0.0078125),
-		float3(-4.0, -7.75, 0.0078125),
-		float3(-4.0, -6.0, 0.015625),
-		float3(-4.0, -4.0, 0.015625),
-		float3(-4.0, -2.0, 0.015625),
-		float3(-4.0, 0.0, 0.015625),
-		float3(-4.0, 2.0, 0.015625),
-		float3(-4.0, 4.0, 0.015625),
-		float3(-4.0, 6.0, 0.015625),
-		float3(-4.0, 7.75, 0.0078125),
-		float3(-2.0, -7.75, 0.0078125),
-		float3(-2.0, -6.0, 0.015625),
-		float3(-2.0, -4.0, 0.015625),
-		float3(-2.0, -2.0, 0.015625),
-		float3(-2.0, 0.0, 0.015625),
-		float3(-2.0, 2.0, 0.015625),
-		float3(-2.0, 4.0, 0.015625),
-		float3(-2.0, 6.0, 0.015625),
-		float3(-2.0, 7.75, 0.0078125),
-		float3(0.0, -7.75, 0.0078125),
-		float3(0.0, -6.0, 0.015625),
-		float3(0.0, -4.0, 0.015625),
-		float3(0.0, -2.0, 0.015625),
-		float3(0.0, 0.0, 0.015625),
-		float3(0.0, 2.0, 0.015625),
-		float3(0.0, 4.0, 0.015625),
-		float3(0.0, 6.0, 0.015625),
-		float3(0.0, 7.75, 0.0078125),
-		float3(2.0, -7.75, 0.0078125),
-		float3(2.0, -6.0, 0.015625),
-		float3(2.0, -4.0, 0.015625),
-		float3(2.0, -2.0, 0.015625),
-		float3(2.0, 0.0, 0.015625),
-		float3(2.0, 2.0, 0.015625),
-		float3(2.0, 4.0, 0.015625),
-		float3(2.0, 6.0, 0.015625),
-		float3(2.0, 7.75, 0.0078125),
-		float3(4.0, -7.75, 0.0078125),
-		float3(4.0, -6.0, 0.015625),
-		float3(4.0, -4.0, 0.015625),
-		float3(4.0, -2.0, 0.015625),
-		float3(4.0, 0.0, 0.015625),
-		float3(4.0, 2.0, 0.015625),
-		float3(4.0, 4.0, 0.015625),
-		float3(4.0, 6.0, 0.015625),
-		float3(4.0, 7.75, 0.0078125),
-		float3(6.0, -7.75, 0.0078125),
-		float3(6.0, -6.0, 0.015625),
-		float3(6.0, -4.0, 0.015625),
-		float3(6.0, -2.0, 0.015625),
-		float3(6.0, 0.0, 0.015625),
-		float3(6.0, 2.0, 0.015625),
-		float3(6.0, 4.0, 0.015625),
-		float3(6.0, 6.0, 0.015625),
-		float3(6.0, 7.75, 0.0078125),
-		float3(7.75, -7.75, 0.00390625),
-		float3(7.75, -6.0, 0.0078125),
-		float3(7.75, -4.0, 0.0078125),
-		float3(7.75, -2.0, 0.0078125),
-		float3(7.75, 0.0, 0.0078125),
-		float3(7.75, 2.0, 0.0078125),
-		float3(7.75, 4.0, 0.0078125),
-		float3(7.75, 6.0, 0.0078125),
-		float3(7.75, 7.75, 0.00390625)
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
 	};
 	#define TOPT_ND2 9
 	static const float3 TOPT_DOWN2[9] = {
@@ -1105,99 +1143,43 @@ uniform bool TOPT_ShowBlur <
 		float3(-0.0803454039, -0.27318983, 0.25),
 		float3(0.27318983, -0.0803454039, 0.25)
 	};
-#elif TOPT_CLASS == 8 // '128': sigma 215.4..433.5 px
+#elif TOPT_CLASS == 7 // '64': sigma 96.1..216.7 px
 	#define TOPT_SMALL 0
 	#define TOPT_STEPS 2
-	#define TOPT_F1 16
+	#define TOPT_F1 8
 	#define TOPT_F2 8
 	#define TOPT_UPSTEPS 1
-	static const float TOPT_C = 6135.23566;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float TOPT_B = 15725.4177;
-	static const float TOPT_SL_MIN = 1.6;
+	static const float TOPT_C = 1531.25434;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 3931.35442;
+	static const float TOPT_SL_MIN = 1.4;
 	static const float TOPT_SL_MAX = 3.4;
-	#define TOPT_ND1 81
-	static const float3 TOPT_DOWN1[81] = {
-		float3(-7.75, -7.75, 0.00390625),
-		float3(-7.75, -6.0, 0.0078125),
-		float3(-7.75, -4.0, 0.0078125),
-		float3(-7.75, -2.0, 0.0078125),
-		float3(-7.75, 0.0, 0.0078125),
-		float3(-7.75, 2.0, 0.0078125),
-		float3(-7.75, 4.0, 0.0078125),
-		float3(-7.75, 6.0, 0.0078125),
-		float3(-7.75, 7.75, 0.00390625),
-		float3(-6.0, -7.75, 0.0078125),
-		float3(-6.0, -6.0, 0.015625),
-		float3(-6.0, -4.0, 0.015625),
-		float3(-6.0, -2.0, 0.015625),
-		float3(-6.0, 0.0, 0.015625),
-		float3(-6.0, 2.0, 0.015625),
-		float3(-6.0, 4.0, 0.015625),
-		float3(-6.0, 6.0, 0.015625),
-		float3(-6.0, 7.75, 0.0078125),
-		float3(-4.0, -7.75, 0.0078125),
-		float3(-4.0, -6.0, 0.015625),
-		float3(-4.0, -4.0, 0.015625),
-		float3(-4.0, -2.0, 0.015625),
-		float3(-4.0, 0.0, 0.015625),
-		float3(-4.0, 2.0, 0.015625),
-		float3(-4.0, 4.0, 0.015625),
-		float3(-4.0, 6.0, 0.015625),
-		float3(-4.0, 7.75, 0.0078125),
-		float3(-2.0, -7.75, 0.0078125),
-		float3(-2.0, -6.0, 0.015625),
-		float3(-2.0, -4.0, 0.015625),
-		float3(-2.0, -2.0, 0.015625),
-		float3(-2.0, 0.0, 0.015625),
-		float3(-2.0, 2.0, 0.015625),
-		float3(-2.0, 4.0, 0.015625),
-		float3(-2.0, 6.0, 0.015625),
-		float3(-2.0, 7.75, 0.0078125),
-		float3(0.0, -7.75, 0.0078125),
-		float3(0.0, -6.0, 0.015625),
-		float3(0.0, -4.0, 0.015625),
-		float3(0.0, -2.0, 0.015625),
-		float3(0.0, 0.0, 0.015625),
-		float3(0.0, 2.0, 0.015625),
-		float3(0.0, 4.0, 0.015625),
-		float3(0.0, 6.0, 0.015625),
-		float3(0.0, 7.75, 0.0078125),
-		float3(2.0, -7.75, 0.0078125),
-		float3(2.0, -6.0, 0.015625),
-		float3(2.0, -4.0, 0.015625),
-		float3(2.0, -2.0, 0.015625),
-		float3(2.0, 0.0, 0.015625),
-		float3(2.0, 2.0, 0.015625),
-		float3(2.0, 4.0, 0.015625),
-		float3(2.0, 6.0, 0.015625),
-		float3(2.0, 7.75, 0.0078125),
-		float3(4.0, -7.75, 0.0078125),
-		float3(4.0, -6.0, 0.015625),
-		float3(4.0, -4.0, 0.015625),
-		float3(4.0, -2.0, 0.015625),
-		float3(4.0, 0.0, 0.015625),
-		float3(4.0, 2.0, 0.015625),
-		float3(4.0, 4.0, 0.015625),
-		float3(4.0, 6.0, 0.015625),
-		float3(4.0, 7.75, 0.0078125),
-		float3(6.0, -7.75, 0.0078125),
-		float3(6.0, -6.0, 0.015625),
-		float3(6.0, -4.0, 0.015625),
-		float3(6.0, -2.0, 0.015625),
-		float3(6.0, 0.0, 0.015625),
-		float3(6.0, 2.0, 0.015625),
-		float3(6.0, 4.0, 0.015625),
-		float3(6.0, 6.0, 0.015625),
-		float3(6.0, 7.75, 0.0078125),
-		float3(7.75, -7.75, 0.00390625),
-		float3(7.75, -6.0, 0.0078125),
-		float3(7.75, -4.0, 0.0078125),
-		float3(7.75, -2.0, 0.0078125),
-		float3(7.75, 0.0, 0.0078125),
-		float3(7.75, 2.0, 0.0078125),
-		float3(7.75, 4.0, 0.0078125),
-		float3(7.75, 6.0, 0.0078125),
-		float3(7.75, 7.75, 0.00390625)
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
 	};
 	#define TOPT_ND2 25
 	static const float3 TOPT_DOWN2[25] = {
@@ -1233,6 +1215,444 @@ uniform bool TOPT_ShowBlur <
 		float3(-0.27318983, 0.0803454039, 0.25),
 		float3(-0.0803454039, -0.27318983, 0.25),
 		float3(0.27318983, -0.0803454039, 0.25)
+	};
+#elif TOPT_CLASS == 8 // '128': sigma 192.2..433.5 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 16
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 6135.23566;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 15725.4177;
+	static const float TOPT_SL_MIN = 1.4;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
+	};
+	#define TOPT_ND2 81
+	static const float3 TOPT_DOWN2[81] = {
+		float3(-7.75, -7.75, 0.00390625),
+		float3(-7.75, -6.0, 0.0078125),
+		float3(-7.75, -4.0, 0.0078125),
+		float3(-7.75, -2.0, 0.0078125),
+		float3(-7.75, 0.0, 0.0078125),
+		float3(-7.75, 2.0, 0.0078125),
+		float3(-7.75, 4.0, 0.0078125),
+		float3(-7.75, 6.0, 0.0078125),
+		float3(-7.75, 7.75, 0.00390625),
+		float3(-6.0, -7.75, 0.0078125),
+		float3(-6.0, -6.0, 0.015625),
+		float3(-6.0, -4.0, 0.015625),
+		float3(-6.0, -2.0, 0.015625),
+		float3(-6.0, 0.0, 0.015625),
+		float3(-6.0, 2.0, 0.015625),
+		float3(-6.0, 4.0, 0.015625),
+		float3(-6.0, 6.0, 0.015625),
+		float3(-6.0, 7.75, 0.0078125),
+		float3(-4.0, -7.75, 0.0078125),
+		float3(-4.0, -6.0, 0.015625),
+		float3(-4.0, -4.0, 0.015625),
+		float3(-4.0, -2.0, 0.015625),
+		float3(-4.0, 0.0, 0.015625),
+		float3(-4.0, 2.0, 0.015625),
+		float3(-4.0, 4.0, 0.015625),
+		float3(-4.0, 6.0, 0.015625),
+		float3(-4.0, 7.75, 0.0078125),
+		float3(-2.0, -7.75, 0.0078125),
+		float3(-2.0, -6.0, 0.015625),
+		float3(-2.0, -4.0, 0.015625),
+		float3(-2.0, -2.0, 0.015625),
+		float3(-2.0, 0.0, 0.015625),
+		float3(-2.0, 2.0, 0.015625),
+		float3(-2.0, 4.0, 0.015625),
+		float3(-2.0, 6.0, 0.015625),
+		float3(-2.0, 7.75, 0.0078125),
+		float3(0.0, -7.75, 0.0078125),
+		float3(0.0, -6.0, 0.015625),
+		float3(0.0, -4.0, 0.015625),
+		float3(0.0, -2.0, 0.015625),
+		float3(0.0, 0.0, 0.015625),
+		float3(0.0, 2.0, 0.015625),
+		float3(0.0, 4.0, 0.015625),
+		float3(0.0, 6.0, 0.015625),
+		float3(0.0, 7.75, 0.0078125),
+		float3(2.0, -7.75, 0.0078125),
+		float3(2.0, -6.0, 0.015625),
+		float3(2.0, -4.0, 0.015625),
+		float3(2.0, -2.0, 0.015625),
+		float3(2.0, 0.0, 0.015625),
+		float3(2.0, 2.0, 0.015625),
+		float3(2.0, 4.0, 0.015625),
+		float3(2.0, 6.0, 0.015625),
+		float3(2.0, 7.75, 0.0078125),
+		float3(4.0, -7.75, 0.0078125),
+		float3(4.0, -6.0, 0.015625),
+		float3(4.0, -4.0, 0.015625),
+		float3(4.0, -2.0, 0.015625),
+		float3(4.0, 0.0, 0.015625),
+		float3(4.0, 2.0, 0.015625),
+		float3(4.0, 4.0, 0.015625),
+		float3(4.0, 6.0, 0.015625),
+		float3(4.0, 7.75, 0.0078125),
+		float3(6.0, -7.75, 0.0078125),
+		float3(6.0, -6.0, 0.015625),
+		float3(6.0, -4.0, 0.015625),
+		float3(6.0, -2.0, 0.015625),
+		float3(6.0, 0.0, 0.015625),
+		float3(6.0, 2.0, 0.015625),
+		float3(6.0, 4.0, 0.015625),
+		float3(6.0, 6.0, 0.015625),
+		float3(6.0, 7.75, 0.0078125),
+		float3(7.75, -7.75, 0.00390625),
+		float3(7.75, -6.0, 0.0078125),
+		float3(7.75, -4.0, 0.0078125),
+		float3(7.75, -2.0, 0.0078125),
+		float3(7.75, 0.0, 0.0078125),
+		float3(7.75, 2.0, 0.0078125),
+		float3(7.75, 4.0, 0.0078125),
+		float3(7.75, 6.0, 0.0078125),
+		float3(7.75, 7.75, 0.00390625)
+	};
+	#define TOPT_NUP 4
+	static const float3 TOPT_UP[4] = {
+		float3(0.0803454039, 0.27318983, 0.25),
+		float3(-0.27318983, 0.0803454039, 0.25),
+		float3(-0.0803454039, -0.27318983, 0.25),
+		float3(0.27318983, -0.0803454039, 0.25)
+	};
+#elif TOPT_CLASS == 9 // '4e': sigma 8.1..13.5 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 1
+	#define TOPT_F1 4
+	#define TOPT_F2 1
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 4.99178363;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 15.3568532;
+	static const float TOPT_SL_MIN = 2.0;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 9
+	static const float3 TOPT_DOWN1[9] = {
+		float3(-1.75, -1.75, 0.0625),
+		float3(-1.75, 0.0, 0.125),
+		float3(-1.75, 1.75, 0.0625),
+		float3(0.0, -1.75, 0.125),
+		float3(0.0, 0.0, 0.25),
+		float3(0.0, 1.75, 0.125),
+		float3(1.75, -1.75, 0.0625),
+		float3(1.75, 0.0, 0.125),
+		float3(1.75, 1.75, 0.0625)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 10 // '8e': sigma 19.3..27.0 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 1
+	#define TOPT_F1 8
+	#define TOPT_F2 1
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 20.3838012;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 61.4274129;
+	static const float TOPT_SL_MIN = 2.4;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 11 // '16e': sigma 36.0..54.3 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 2
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 105.062983;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 245.709652;
+	static const float TOPT_SL_MIN = 2.2;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 25
+	static const float3 TOPT_DOWN1[25] = {
+		float3(-3.75, -3.75, 0.015625),
+		float3(-3.75, -2.0, 0.03125),
+		float3(-3.75, 0.0, 0.03125),
+		float3(-3.75, 2.0, 0.03125),
+		float3(-3.75, 3.75, 0.015625),
+		float3(-2.0, -3.75, 0.03125),
+		float3(-2.0, -2.0, 0.0625),
+		float3(-2.0, 0.0, 0.0625),
+		float3(-2.0, 2.0, 0.0625),
+		float3(-2.0, 3.75, 0.03125),
+		float3(0.0, -3.75, 0.03125),
+		float3(0.0, -2.0, 0.0625),
+		float3(0.0, 0.0, 0.0625),
+		float3(0.0, 2.0, 0.0625),
+		float3(0.0, 3.75, 0.03125),
+		float3(2.0, -3.75, 0.03125),
+		float3(2.0, -2.0, 0.0625),
+		float3(2.0, 0.0, 0.0625),
+		float3(2.0, 2.0, 0.0625),
+		float3(2.0, 3.75, 0.03125),
+		float3(3.75, -3.75, 0.015625),
+		float3(3.75, -2.0, 0.03125),
+		float3(3.75, 0.0, 0.03125),
+		float3(3.75, 2.0, 0.03125),
+		float3(3.75, 3.75, 0.015625)
+	};
+	#define TOPT_ND2 4
+	static const float3 TOPT_DOWN2[4] = {
+		float3(-0.75, -0.75, 0.25),
+		float3(-0.75, 0.75, 0.25),
+		float3(0.75, -0.75, 0.25),
+		float3(0.75, 0.75, 0.25)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 12 // '32e': sigma 83.5..108.1 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 4
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 332.224153;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 982.838606;
+	static const float TOPT_SL_MIN = 2.6;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 16
+	static const float3 TOPT_DOWN1[16] = {
+		float3(-3.0, -3.0, 0.0625),
+		float3(-3.0, -1.0, 0.0625),
+		float3(-3.0, 1.0, 0.0625),
+		float3(-3.0, 3.0, 0.0625),
+		float3(-1.0, -3.0, 0.0625),
+		float3(-1.0, -1.0, 0.0625),
+		float3(-1.0, 1.0, 0.0625),
+		float3(-1.0, 3.0, 0.0625),
+		float3(1.0, -3.0, 0.0625),
+		float3(1.0, -1.0, 0.0625),
+		float3(1.0, 1.0, 0.0625),
+		float3(1.0, 3.0, 0.0625),
+		float3(3.0, -3.0, 0.0625),
+		float3(3.0, -1.0, 0.0625),
+		float3(3.0, 1.0, 0.0625),
+		float3(3.0, 3.0, 0.0625)
+	};
+	#define TOPT_ND2 4
+	static const float3 TOPT_DOWN2[4] = {
+		float3(-1.0, -1.0, 0.25),
+		float3(-1.0, 1.0, 0.25),
+		float3(1.0, -1.0, 0.25),
+		float3(1.0, 1.0, 0.25)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 13 // '64e': sigma 167.1..216.3 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 8
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 1349.31328;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 3931.35442;
+	static const float TOPT_SL_MIN = 2.6;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 16
+	static const float3 TOPT_DOWN1[16] = {
+		float3(-3.0, -3.0, 0.0625),
+		float3(-3.0, -1.0, 0.0625),
+		float3(-3.0, 1.0, 0.0625),
+		float3(-3.0, 3.0, 0.0625),
+		float3(-1.0, -3.0, 0.0625),
+		float3(-1.0, -1.0, 0.0625),
+		float3(-1.0, 1.0, 0.0625),
+		float3(-1.0, 3.0, 0.0625),
+		float3(1.0, -3.0, 0.0625),
+		float3(1.0, -1.0, 0.0625),
+		float3(1.0, 1.0, 0.0625),
+		float3(1.0, 3.0, 0.0625),
+		float3(3.0, -3.0, 0.0625),
+		float3(3.0, -1.0, 0.0625),
+		float3(3.0, 1.0, 0.0625),
+		float3(3.0, 3.0, 0.0625)
+	};
+	#define TOPT_ND2 16
+	static const float3 TOPT_DOWN2[16] = {
+		float3(-3.0, -3.0, 0.0625),
+		float3(-3.0, -1.0, 0.0625),
+		float3(-3.0, 1.0, 0.0625),
+		float3(-3.0, 3.0, 0.0625),
+		float3(-1.0, -3.0, 0.0625),
+		float3(-1.0, -1.0, 0.0625),
+		float3(-1.0, 1.0, 0.0625),
+		float3(-1.0, 3.0, 0.0625),
+		float3(1.0, -3.0, 0.0625),
+		float3(1.0, -1.0, 0.0625),
+		float3(1.0, 1.0, 0.0625),
+		float3(1.0, 3.0, 0.0625),
+		float3(3.0, -3.0, 0.0625),
+		float3(3.0, -1.0, 0.0625),
+		float3(3.0, 1.0, 0.0625),
+		float3(3.0, 3.0, 0.0625)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
+	};
+#elif TOPT_CLASS == 14 // '128e': sigma 334.3..432.7 px
+	#define TOPT_SMALL 0
+	#define TOPT_STEPS 2
+	#define TOPT_F1 8
+	#define TOPT_F2 16
+	#define TOPT_UPSTEPS 1
+	static const float TOPT_C = 5439.00311;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float TOPT_B = 15725.4177;
+	static const float TOPT_SL_MIN = 2.6;
+	static const float TOPT_SL_MAX = 3.4;
+	#define TOPT_ND1 16
+	static const float3 TOPT_DOWN1[16] = {
+		float3(-3.0, -3.0, 0.0625),
+		float3(-3.0, -1.0, 0.0625),
+		float3(-3.0, 1.0, 0.0625),
+		float3(-3.0, 3.0, 0.0625),
+		float3(-1.0, -3.0, 0.0625),
+		float3(-1.0, -1.0, 0.0625),
+		float3(-1.0, 1.0, 0.0625),
+		float3(-1.0, 3.0, 0.0625),
+		float3(1.0, -3.0, 0.0625),
+		float3(1.0, -1.0, 0.0625),
+		float3(1.0, 1.0, 0.0625),
+		float3(1.0, 3.0, 0.0625),
+		float3(3.0, -3.0, 0.0625),
+		float3(3.0, -1.0, 0.0625),
+		float3(3.0, 1.0, 0.0625),
+		float3(3.0, 3.0, 0.0625)
+	};
+	#define TOPT_ND2 64
+	static const float3 TOPT_DOWN2[64] = {
+		float3(-7.0, -7.0, 0.015625),
+		float3(-7.0, -5.0, 0.015625),
+		float3(-7.0, -3.0, 0.015625),
+		float3(-7.0, -1.0, 0.015625),
+		float3(-7.0, 1.0, 0.015625),
+		float3(-7.0, 3.0, 0.015625),
+		float3(-7.0, 5.0, 0.015625),
+		float3(-7.0, 7.0, 0.015625),
+		float3(-5.0, -7.0, 0.015625),
+		float3(-5.0, -5.0, 0.015625),
+		float3(-5.0, -3.0, 0.015625),
+		float3(-5.0, -1.0, 0.015625),
+		float3(-5.0, 1.0, 0.015625),
+		float3(-5.0, 3.0, 0.015625),
+		float3(-5.0, 5.0, 0.015625),
+		float3(-5.0, 7.0, 0.015625),
+		float3(-3.0, -7.0, 0.015625),
+		float3(-3.0, -5.0, 0.015625),
+		float3(-3.0, -3.0, 0.015625),
+		float3(-3.0, -1.0, 0.015625),
+		float3(-3.0, 1.0, 0.015625),
+		float3(-3.0, 3.0, 0.015625),
+		float3(-3.0, 5.0, 0.015625),
+		float3(-3.0, 7.0, 0.015625),
+		float3(-1.0, -7.0, 0.015625),
+		float3(-1.0, -5.0, 0.015625),
+		float3(-1.0, -3.0, 0.015625),
+		float3(-1.0, -1.0, 0.015625),
+		float3(-1.0, 1.0, 0.015625),
+		float3(-1.0, 3.0, 0.015625),
+		float3(-1.0, 5.0, 0.015625),
+		float3(-1.0, 7.0, 0.015625),
+		float3(1.0, -7.0, 0.015625),
+		float3(1.0, -5.0, 0.015625),
+		float3(1.0, -3.0, 0.015625),
+		float3(1.0, -1.0, 0.015625),
+		float3(1.0, 1.0, 0.015625),
+		float3(1.0, 3.0, 0.015625),
+		float3(1.0, 5.0, 0.015625),
+		float3(1.0, 7.0, 0.015625),
+		float3(3.0, -7.0, 0.015625),
+		float3(3.0, -5.0, 0.015625),
+		float3(3.0, -3.0, 0.015625),
+		float3(3.0, -1.0, 0.015625),
+		float3(3.0, 1.0, 0.015625),
+		float3(3.0, 3.0, 0.015625),
+		float3(3.0, 5.0, 0.015625),
+		float3(3.0, 7.0, 0.015625),
+		float3(5.0, -7.0, 0.015625),
+		float3(5.0, -5.0, 0.015625),
+		float3(5.0, -3.0, 0.015625),
+		float3(5.0, -1.0, 0.015625),
+		float3(5.0, 1.0, 0.015625),
+		float3(5.0, 3.0, 0.015625),
+		float3(5.0, 5.0, 0.015625),
+		float3(5.0, 7.0, 0.015625),
+		float3(7.0, -7.0, 0.015625),
+		float3(7.0, -5.0, 0.015625),
+		float3(7.0, -3.0, 0.015625),
+		float3(7.0, -1.0, 0.015625),
+		float3(7.0, 1.0, 0.015625),
+		float3(7.0, 3.0, 0.015625),
+		float3(7.0, 5.0, 0.015625),
+		float3(7.0, 7.0, 0.015625)
+	};
+	#define TOPT_NUP 1
+	static const float3 TOPT_UP[1] = {
+		float3(0.0, 0.0, 1.0)
 	};
 #endif
 

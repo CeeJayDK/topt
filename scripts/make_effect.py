@@ -38,7 +38,6 @@ CLASSES = {
     "128": ((8, 16), 3, (128,), "p4", 1.4),
     # one bilinear read to upsample (e1): medium quality from a wider low-res Gaussian (sl >= 2.0..2.6),
     # so a narrower sigma range, but 3 fewer full-resolution reads
-    "4e": ((4,), 3, (4,), "e1", 2.0),
     "8e": ((8,), 3, (8,), "e1", 2.4),
     "16e": ((8, 2), 3, (16,), "e1", 2.2),
     "32e": ((8, 4), 1, (32,), "e1", 2.6),

@@ -12,16 +12,16 @@ GPU's plain composite pass; gain = (TOPT_Blur - hybrid) in % of the composite pa
 | 3 | +5.8 % | RTX 2070 (2 sep): +67.1 % | 103 | 71 | down 2 e5 / sep 2s / up 2 e1 |
 | 4 | +3.5 % | RTX 2070 (4s): +8.4 % | 82 | 78 | down 2 e1 / sep 2.5s / up 2 e1 |
 | 6 | +23.7 % | RTX 2070 (4s sep): +71.1 % | 83 | 50 | down 4 e5 / sep 2s / up 2x2 e1 |
-| 8 | +18.0 % | RTX 2070 (4 sep): +75.8 % | 75 | 39 | down 4 e3 / sep 2.5s / up 4 e1 |
-| 12 | +35.2 % | RTX 2070 (4 sep): +87.0 % | 77 | 36 | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 8 | +4.1 % | GTX 860M (4e sep): +6.7 % | 171 | 155 | down 4x2 e3 / direct 2s / up 2x4 e2 |
+| 12 | +16.1 % | RX 9070 XT (4e sep): +28.5 % | 15 | 10 | down 8 e3 / direct 2s / up 8 p4 |
 | 16 | +2.8 % | RTX 2070 (8 sep): +54.6 % | 60 | 34 | down 8 e3 / sep 2.5s / up 8 e1 |
-| 24 | +9.1 % | RTX 2070 (8 sep): +57.4 % | 61 | 33 | down 16 e3 / direct 2s / up 2x8 e1 |
-| 32 | +6.8 % | GTX 1660 (16 sep): +107.7 % | 180 | 64 | down 8x2 e9 / direct 2s / up 16 e1 |
-| 48 | +11.9 % | GTX 1660 (16 sep): +110.8 % | 180 | 62 | down 8x2 e1 / sep 2.5s / up 16 e1 |
-| 64 | +11.8 % | GTX 1660 (32 sep): +113.5 % | 184 | 63 | down 8x2 e1 / sep 3s / up 16 e1 |
-| 100 | +12.5 % | GTX 1660 (32 sep): +112.9 % | 185 | 64 | down 8x4 e1 / sep 2.5s / up 32 e1 |
-| 150 | +12.0 % | GTX 1660 (64 sep): +110.8 % | 184 | 66 | down 8x4 e1 / sep 3s / up 32 e1 |
-| 200 | +12.4 % | GTX 1660 (64 sep): +111.0 % | 185 | 66 | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
+| 24 | +3.0 % | RX 9070 XT (16): +10.6 % | 11 | 10 | down 16 e3 / direct 2s / up 16 p4 |
+| 32 | +7.0 % | RTX 2070 (16 sep): +54.6 % | 60 | 34 | down 16 e3 / direct 2.5s / up 2x8 e1 |
+| 48 | +1.3 % | RX 7900 XTX (16e): +13.2 % | 10 | 8 | down 16 e1 / direct 2.5s / up 16 e1 |
+| 64 | +3.3 % | RTX 2070 (32): +53.7 % | 59 | 33 | down 8x4 e5 / direct 2.5s / up 32 e1 |
+| 100 | +0.9 % | RX 7900 XTX (32e): +1.4 % | 9 | 9 | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 150 | +6.4 % | RTX 2070 (64): +54.4 % | 59 | 33 | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 200 | +1.3 % | GTX 1660 (64e sep): +8.0 % | 75 | 66 | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
 
 ## 4k
 
@@ -31,16 +31,16 @@ GPU's plain composite pass; gain = (TOPT_Blur - hybrid) in % of the composite pa
 | 3 | +5.2 % | RTX 2070 (2 sep): +68.2 % | 404 | 277 | down 2 e5 / sep 2s / up 2 e1 |
 | 4 | +4.0 % | RTX 2070 (4s): +13.6 % | 328 | 302 | down 2 e1 / sep 2.5s / up 2 e1 |
 | 6 | +19.4 % | RTX 2070 (4s sep): +72.5 % | 340 | 205 | down 4 e5 / sep 2s / up 2x2 e1 |
-| 8 | +18.9 % | RTX 2070 (4 sep): +77.0 % | 310 | 167 | down 4 e3 / sep 2.5s / up 4 e1 |
-| 12 | +37.1 % | RTX 2070 (4 sep): +96.2 % | 318 | 139 | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 8 | +5.6 % | Radeon 680M (4 sep): +8.4 % | 1032 | 908 | down 8 e9 / sep 3s / up 2x4 p5 |
+| 12 | +17.0 % | RTX 2070 (4e sep): +23.7 % | 183 | 139 | down 8 e3 / sep 2.5s / up 2x4 e1 |
 | 16 | +3.0 % | RTX 2070 (8 sep): +55.5 % | 231 | 128 | down 8 e3 / sep 2.5s / up 8 e1 |
-| 24 | +7.7 % | RTX 2070 (8 sep): +58.3 % | 233 | 125 | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | +2.6 % | RTX 2070 (16 sep): +53.6 % | 225 | 125 | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 48 | +4.0 % | RTX 2070 (32): +54.2 % | 224 | 124 | down 16x2 e3 / direct 2s / up 2x16 e1 |
-| 64 | +2.3 % | RTX 2070 (32): +54.2 % | 225 | 124 | down 16x2 e3 / direct 2.5s / up 2x16 e1 |
-| 100 | +3.1 % | RTX 2070 (32): +55.4 % | 226 | 123 | down 16x4 e3 / direct 2.5s / up 2x32 e1 |
-| 150 | +2.2 % | RTX 2070 (64): +54.4 % | 223 | 122 | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 200 | +2.3 % | RTX 2070 (64): +54.4 % | 224 | 122 | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 24 | +2.9 % | UHD 630 (8e sep): +5.4 % | 1449 | 1314 | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | +4.4 % | RTX 2070 (16 sep): +55.2 % | 228 | 125 | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 48 | +1.3 % | RX 7900 XTX (16e): +7.2 % | 27 | 24 | down 16 e1 / sep 2.5s / up 16 e1 |
+| 64 | +3.1 % | RTX 2070 (32): +54.8 % | 226 | 124 | down 16x2 e3 / direct 2.5s / up 2x16 e1 |
+| 100 | +1.2 % | RX 5500 XT (32e): +2.4 % | 178 | 170 | down 16x4 e9 / direct 2s / up 2x32 e1 |
+| 150 | +4.2 % | RTX 2070 (64): +55.2 % | 225 | 122 | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 200 | +1.1 % | GTX 1660 (64e sep): +3.0 % | 236 | 223 | down 16x4 e1 / sep 2.5s / up 64 e1 |
 
 ## Every GPU
 
@@ -176,68 +176,68 @@ GPU's plain composite pass; gain = (TOPT_Blur - hybrid) in % of the composite pa
 | 6 | 4k | RTX 5070 | 4s sep | 124 | 110 | +11.8 % | down 4 e5 / sep 2s / up 2x2 e1 |
 | 8 | 1080p | RX 6600 | 4 sep | 56 | 53 | +3.9 % | down 8 e9 / sep 3s / up 2x4 p5 |
 | 8 | 4k | RX 6600 | 4 sep | 236 | 209 | +7.9 % | down 8 e9 / sep 3s / up 2x4 p5 |
-| 8 | 1080p | RX 7900 XTX | 4 sep | 15 | 11 | +37.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | RX 7900 XTX | 4 sep | 49 | 32 | +41.1 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 1080p | RX 9070 XT | 4 sep | 16 | 13 | +17.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | RX 9070 XT | 4 sep | 52 | 42 | +18.7 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | RX 7900 XTX | 4e sep | 11 | 11 | +5.2 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | RX 7900 XTX | 4e sep | 34 | 32 | +5.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | RX 9070 XT | 4e sep | 14 | 13 | +4.3 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | RX 9070 XT | 4e sep | 44 | 42 | +4.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
 | 8 | 1080p | Radeon 680M | 4 sep | 240 | 230 | +2.7 % | down 8 e9 / sep 3s / up 2x4 p5 |
 | 8 | 4k | Radeon 680M | 4 sep | 1032 | 908 | +8.4 % | down 8 e9 / sep 3s / up 2x4 p5 |
-| 8 | 1080p | RX 5500 XT | 4 sep | 90 | 61 | +35.2 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | RX 5500 XT | 4 sep | 350 | 233 | +35.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | RX 5500 XT | 4e sep | 66 | 61 | +5.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | RX 5500 XT | 4e sep | 251 | 233 | +5.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
 | 8 | 1080p | RX 590 | 4 sep | 60 | 55 | +6.0 % | down 8 e9 / sep 3s / up 2x4 p5 |
 | 8 | 4k | RX 590 | 4 sep | 229 | 205 | +7.3 % | down 8 e9 / sep 3s / up 2x4 p5 |
-| 8 | 1080p | Arc B580 | 4 sep | 32 | 31 | +2.3 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | Arc B580 | 4 sep | 126 | 124 | +1.7 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | Arc B580 | 4e sep | 32 | 31 | +2.2 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | Arc B580 | 4e sep | 126 | 124 | +1.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
 | 8 | 1080p | Iris Xe | 4 sep | 729 | 690 | +3.1 % | down 8 e9 / sep 3s / up 2x4 p5 |
 | 8 | 4k | Iris Xe | 4 sep | 3407 | 2995 | +8.3 % | down 8 e9 / sep 3s / up 2x4 p5 |
-| 8 | 1080p | UHD 630 | 4 sep | 694 | 448 | +39.3 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | UHD 630 | 4 sep | 2760 | 1774 | +39.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | UHD 630 | 4e sep | 481 | 448 | +5.4 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | UHD 630 | 4e sep | 1909 | 1774 | +5.4 % | down 4 e3 / sep 2.5s / up 4 e1 |
 | 8 | 1080p | GTX 1080 | 4 sep | 44 | 41 | +5.5 % | down 8 e9 / sep 3s / up 2x4 p5 |
 | 8 | 4k | GTX 1080 | 4 sep | 164 | 147 | +7.2 % | down 8 e9 / sep 3s / up 2x4 p5 |
-| 8 | 1080p | GTX 1660 | 4 sep | 98 | 71 | +25.4 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | GTX 1660 | 4 sep | 411 | 302 | +25.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 1080p | GTX 860M | 4 sep | 216 | 155 | +26.0 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
-| 8 | 4k | GTX 860M | 4 sep | 872 | 635 | +25.4 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
-| 8 | 1080p | RTX 2070 | 4 sep | 75 | 39 | +75.8 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | RTX 2070 | 4 sep | 310 | 167 | +77.0 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 1080p | RTX 3060 | 4 sep | 46 | 38 | +16.8 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
-| 8 | 4k | RTX 3060 | 4 sep | 172 | 135 | +19.1 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
-| 8 | 1080p | RTX 4070 | 4 sep | 32 | 25 | +18.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | RTX 4070 | 4 sep | 130 | 103 | +18.7 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 1080p | RTX 5070 | 4 sep | 29 | 21 | +27.0 % | down 4 e3 / sep 2.5s / up 4 e1 |
-| 8 | 4k | RTX 5070 | 4 sep | 114 | 83 | +27.4 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | GTX 1660 | 4e sep | 74 | 71 | +2.9 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | GTX 1660 | 4e sep | 314 | 302 | +2.9 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | GTX 860M | 4e sep | 171 | 155 | +6.7 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
+| 8 | 4k | GTX 860M | 4e sep | 692 | 635 | +6.1 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
+| 8 | 1080p | RTX 2070 | 4e sep | 41 | 39 | +4.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | RTX 2070 | 4e sep | 175 | 167 | +4.5 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | RTX 3060 | 4e sep | 39 | 38 | +3.9 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
+| 8 | 4k | RTX 3060 | 4e sep | 146 | 135 | +6.0 % | down 4x2 e3 / direct 2s / up 2x4 e2 |
+| 8 | 1080p | RTX 4070 | 4e sep | 26 | 25 | +2.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | RTX 4070 | 4e sep | 106 | 103 | +2.6 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 1080p | RTX 5070 | 4e sep | 22 | 21 | +3.4 % | down 4 e3 / sep 2.5s / up 4 e1 |
+| 8 | 4k | RTX 5070 | 4e sep | 87 | 83 | +3.4 % | down 4 e3 / sep 2.5s / up 4 e1 |
 | 12 | 1080p | RX 6600 | 4 sep | 58 | 47 | +12.9 % | down 8 e3 / direct 2s / up 8 p4 |
 | 12 | 4k | RX 6600 | 4 sep | 243 | 182 | +18.2 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 1080p | RX 7900 XTX | 4 sep | 16 | 10 | +52.2 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 4k | RX 7900 XTX | 4 sep | 51 | 30 | +51.9 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 1080p | RX 9070 XT | 4 sep | 17 | 10 | +41.8 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 4k | RX 9070 XT | 4 sep | 55 | 34 | +37.8 % | down 8 e3 / direct 2s / up 8 p4 |
+| 12 | 1080p | RX 7900 XTX | 4e sep | 12 | 10 | +19.8 % | down 8 e3 / direct 2s / up 8 p4 |
+| 12 | 4k | RX 7900 XTX | 4e sep | 37 | 30 | +16.4 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | RX 9070 XT | 4e sep | 15 | 10 | +28.5 % | down 8 e3 / direct 2s / up 8 p4 |
+| 12 | 4k | RX 9070 XT | 4e sep | 47 | 34 | +23.6 % | down 8 e3 / direct 2s / up 8 p4 |
 | 12 | 1080p | Radeon 680M | 4 sep | 245 | 206 | +10.3 % | down 8 e3 / direct 2s / up 8 p4 |
 | 12 | 4k | Radeon 680M | 4 sep | 1038 | 790 | +16.7 % | down 8 e5 / sep 2.5s / up 8 p5 |
-| 12 | 1080p | RX 5500 XT | 4 sep | 95 | 57 | +46.1 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 4k | RX 5500 XT | 4 sep | 368 | 211 | +47.8 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | RX 5500 XT | 4e sep | 70 | 57 | +16.4 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 4k | RX 5500 XT | 4e sep | 269 | 211 | +17.8 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
 | 12 | 1080p | RX 590 | 4 sep | 62 | 47 | +17.3 % | down 8 e3 / direct 2s / up 8 p4 |
 | 12 | 4k | RX 590 | 4 sep | 235 | 182 | +16.3 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 1080p | Arc B580 | 4 sep | 33 | 26 | +15.9 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 4k | Arc B580 | 4 sep | 130 | 109 | +12.5 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | Arc B580 | 4e sep | 33 | 26 | +15.8 % | down 8 e3 / direct 2s / up 8 p4 |
+| 12 | 4k | Arc B580 | 4e sep | 130 | 109 | +12.4 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
 | 12 | 1080p | Iris Xe | 4 sep | 736 | 649 | +7.0 % | down 8 e5 / sep 2s / up 8 p9 |
 | 12 | 4k | Iris Xe | 4 sep | 3407 | 2568 | +17.0 % | down 8 e5 / sep 2s / up 8 p9 |
-| 12 | 1080p | UHD 630 | 4 sep | 728 | 380 | +55.4 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 4k | UHD 630 | 4 sep | 2894 | 1525 | +54.9 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | UHD 630 | 4e sep | 515 | 380 | +21.5 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 4k | UHD 630 | 4e sep | 2044 | 1525 | +20.8 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
 | 12 | 1080p | GTX 1080 | 4 sep | 44 | 34 | +16.5 % | down 8 e3 / direct 2s / up 8 p4 |
 | 12 | 4k | GTX 1080 | 4 sep | 164 | 129 | +15.1 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 1080p | GTX 1660 | 4 sep | 101 | 64 | +34.1 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 4k | GTX 1660 | 4 sep | 423 | 257 | +39.1 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 1080p | GTX 860M | 4 sep | 227 | 137 | +38.2 % | down 8 e5 / sep 3s / up 8 p4 |
-| 12 | 4k | GTX 860M | 4 sep | 914 | 542 | +39.9 % | down 8 e5 / sep 3s / up 8 p4 |
-| 12 | 1080p | RTX 2070 | 4 sep | 77 | 36 | +87.0 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 4k | RTX 2070 | 4 sep | 318 | 139 | +96.2 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 1080p | RTX 3060 | 4 sep | 48 | 30 | +36.6 % | down 8 e3 / direct 2s / up 8 p4 |
-| 12 | 4k | RTX 3060 | 4 sep | 182 | 110 | +36.4 % | down 8 e5 / sep 3s / up 8 p4 |
-| 12 | 1080p | RTX 4070 | 4 sep | 32 | 23 | +25.7 % | down 8 e3 / direct 2s / up 2x4 e1 |
-| 12 | 4k | RTX 4070 | 4 sep | 133 | 88 | +31.2 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
-| 12 | 1080p | RTX 5070 | 4 sep | 30 | 19 | +36.4 % | down 8 e3 / direct 2s / up 2x4 e1 |
-| 12 | 4k | RTX 5070 | 4 sep | 118 | 71 | +41.1 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | GTX 1660 | 4e sep | 77 | 64 | +11.6 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 4k | GTX 1660 | 4e sep | 327 | 257 | +16.4 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | GTX 860M | 4e sep | 182 | 137 | +19.0 % | down 8 e5 / sep 3s / up 8 p4 |
+| 12 | 4k | GTX 860M | 4e sep | 734 | 542 | +20.6 % | down 8 e5 / sep 3s / up 8 p4 |
+| 12 | 1080p | RTX 2070 | 4e sep | 43 | 36 | +15.6 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 4k | RTX 2070 | 4e sep | 183 | 139 | +23.7 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | RTX 3060 | 4e sep | 42 | 30 | +23.7 % | down 8 e3 / direct 2s / up 8 p4 |
+| 12 | 4k | RTX 3060 | 4e sep | 156 | 110 | +23.2 % | down 8 e5 / sep 3s / up 8 p4 |
+| 12 | 1080p | RTX 4070 | 4e sep | 27 | 23 | +9.8 % | down 8 e3 / direct 2s / up 2x4 e1 |
+| 12 | 4k | RTX 4070 | 4e sep | 110 | 88 | +15.1 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
+| 12 | 1080p | RTX 5070 | 4e sep | 23 | 19 | +12.8 % | down 8 e3 / direct 2s / up 2x4 e1 |
+| 12 | 4k | RTX 5070 | 4e sep | 91 | 71 | +17.1 % | down 8 e3 / sep 2.5s / up 2x4 e1 |
 | 16 | 1080p | RX 6600 | 8 sep | 48 | 48 | +0.1 % | down 16 e9 / sep 2s / up 2x8 p5 |
 | 16 | 4k | RX 6600 | 8 sep | 182 | 178 | +1.0 % | down 16 e9 / sep 2s / up 2x8 p5 |
 | 16 | 1080p | RX 7900 XTX | 8 sep | 11 | 9 | +15.2 % | down 8 e3 / sep 2.5s / up 8 e1 |
@@ -270,227 +270,227 @@ GPU's plain composite pass; gain = (TOPT_Blur - hybrid) in % of the composite pa
 | 16 | 4k | RTX 4070 | 8 sep | 91 | 79 | +8.7 % | down 8 e3 / sep 2.5s / up 8 e1 |
 | 16 | 1080p | RTX 5070 | 8 sep | 21 | 17 | +13.2 % | down 8 e3 / sep 2.5s / up 8 e1 |
 | 16 | 4k | RTX 5070 | 8 sep | 79 | 64 | +13.4 % | down 8 e3 / sep 2.5s / up 8 e1 |
-| 24 | 1080p | RX 6600 | 8 sep | 48 | 45 | +4.1 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | RX 6600 | 8 sep | 183 | 172 | +3.2 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 1080p | RX 7900 XTX | 8 sep | 11 | 9 | +17.7 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 4k | RX 7900 XTX | 8 sep | 33 | 25 | +19.4 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 1080p | RX 9070 XT | 8 sep | 12 | 10 | +13.5 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | RX 9070 XT | 8 sep | 35 | 31 | +7.6 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 1080p | Radeon 680M | 8 sep | 213 | 209 | +1.0 % | down 8x2 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | Radeon 680M | 8 sep | 798 | 760 | +2.6 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 1080p | RX 5500 XT | 8 sep | 59 | 48 | +14.1 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 4k | RX 5500 XT | 8 sep | 226 | 179 | +14.4 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 24 | 1080p | RX 590 | 8 sep | 49 | 44 | +5.5 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | RX 590 | 8 sep | 185 | 170 | +4.4 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 1080p | Arc B580 | 8 sep | 28 | 27 | +2.1 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 4k | Arc B580 | 8 sep | 98 | 95 | +2.2 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 1080p | Iris Xe | 8 sep | 654 | 643 | +0.9 % | down 8x2 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | Iris Xe | 8 sep | 2589 | 2503 | +1.7 % | down 16 e5 / sep 2.5s / up 16 p4 |
-| 24 | 1080p | UHD 630 | 8 sep | 465 | 356 | +17.4 % | down 8x2 e3 / sep 2s / up 2x8 e1 |
-| 24 | 4k | UHD 630 | 8 sep | 1819 | 1314 | +20.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 24 | 1080p | GTX 1080 | 8 sep | 36 | 32 | +5.8 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | GTX 1080 | 8 sep | 131 | 121 | +4.2 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 1080p | GTX 1660 | 8 sep | 76 | 61 | +13.7 % | down 8 e1 / sep 2.5s / up 8 e1 |
-| 24 | 4k | GTX 1660 | 8 sep | 293 | 223 | +16.3 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 24 | 1080p | GTX 860M | 8 sep | 143 | 129 | +5.7 % | down 8x2 e3 / sep 2s / up 2x8 e1 |
-| 24 | 4k | GTX 860M | 8 sep | 563 | 490 | +7.8 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 24 | 1080p | RTX 2070 | 8 sep | 61 | 33 | +57.4 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 4k | RTX 2070 | 8 sep | 233 | 125 | +58.3 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 24 | 1080p | RTX 3060 | 8 sep | 32 | 28 | +7.9 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 4k | RTX 3060 | 8 sep | 115 | 103 | +6.0 % | down 16 e3 / direct 2s / up 16 p4 |
-| 24 | 1080p | RTX 4070 | 8 sep | 25 | 21 | +10.4 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 4k | RTX 4070 | 8 sep | 92 | 77 | +10.5 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 1080p | RTX 5070 | 8 sep | 22 | 17 | +15.6 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 24 | 4k | RTX 5070 | 8 sep | 80 | 62 | +15.8 % | down 16 e3 / direct 2s / up 2x8 e1 |
-| 32 | 1080p | RX 6600 | 16 | 45 | 45 | +0.4 % | down 16 e3 / direct 2.5s / up 16 p4 |
-| 32 | 4k | RX 6600 | 16 | 176 | 173 | +0.8 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | RX 7900 XTX | 16 | 10 | 9 | +2.4 % | down 8x2 e9 / direct 2s / up 16 e1 |
-| 32 | 4k | RX 7900 XTX | 16 | 31 | 26 | +12.0 % | down 8x2 e9 / direct 2s / up 16 e1 |
-| 32 | 1080p | RX 9070 XT | 16 | 10 | 10 | +0.9 % | down 16 e3 / direct 2.5s / up 16 p4 |
-| 32 | 4k | RX 9070 XT | 16 | 32 | 32 | +0.6 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | Radeon 680M | 16 | 350 | 211 | +37.0 % | down 8x2 e3 / direct 2.5s / up 16 p4 |
-| 32 | 4k | Radeon 680M | 16 | 769 | 764 | +0.3 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | RX 5500 XT | 16 sep | 55 | 49 | +7.5 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 4k | RX 5500 XT | 16 sep | 208 | 179 | +8.7 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | RX 590 | 16 | 46 | 45 | +0.6 % | down 16 e3 / direct 2.5s / up 16 p4 |
-| 32 | 4k | RX 590 | 16 | 176 | 171 | +1.3 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | Arc B580 | 16 | 26 | 27 | -4.0 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
-| 32 | 4k | Arc B580 | 16 | 93 | 96 | -1.4 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | Iris Xe | 16 | 992 | 645 | +28.0 % | down 8x2 e3 / sep 2.5s / up 16 p4 |
-| 32 | 4k | Iris Xe | 16 | 2518 | 2504 | +0.3 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | UHD 630 | 16 sep | 683 | 360 | +51.5 % | down 8x2 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 4k | UHD 630 | 16 sep | 1682 | 1318 | +14.6 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | GTX 1080 | 16 | 33 | 33 | +0.6 % | down 16 e3 / direct 2.5s / up 16 p4 |
-| 32 | 4k | GTX 1080 | 16 | 125 | 123 | +0.8 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | GTX 1660 | 16 sep | 180 | 64 | +107.7 % | down 8x2 e9 / direct 2s / up 16 e1 |
-| 32 | 4k | GTX 1660 | 16 sep | 279 | 224 | +13.0 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | GTX 860M | 16 sep | 185 | 130 | +23.6 % | down 8x2 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 4k | GTX 860M | 16 sep | 519 | 491 | +3.0 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | RTX 2070 | 16 sep | 58 | 34 | +51.4 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
-| 32 | 4k | RTX 2070 | 16 sep | 225 | 125 | +53.6 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | RTX 3060 | 16 | 29 | 28 | +1.0 % | down 16 e3 / direct 2.5s / up 16 p4 |
-| 32 | 4k | RTX 3060 | 16 | 108 | 103 | +2.3 % | down 16 e3 / sep 2.5s / up 16 p4 |
-| 32 | 1080p | RTX 4070 | 16 | 23 | 21 | +6.1 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
-| 32 | 4k | RTX 4070 | 16 | 89 | 77 | +8.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 32 | 1080p | RTX 5070 | 16 | 20 | 17 | +10.5 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
-| 32 | 4k | RTX 5070 | 16 | 77 | 62 | +13.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
-| 48 | 1080p | RX 6600 | 32 | 45 | 45 | +0.1 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 4k | RX 6600 | 32 | 173 | 172 | +0.1 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | RX 7900 XTX | 16 | 10 | 8 | +14.7 % | down 16 e1 / direct 2.5s / up 16 e1 |
-| 48 | 4k | RX 7900 XTX | 16 | 32 | 24 | +18.3 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 1080p | RX 9070 XT | 16 | 10 | 10 | +0.3 % | down 16 e1 / direct 2.5s / up 16 e1 |
-| 48 | 4k | RX 9070 XT | 16 | 34 | 32 | +3.4 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | Radeon 680M | 32 | 356 | 212 | +38.2 % | down 8x4 e3 / direct 2s / up 32 p4 |
-| 48 | 4k | Radeon 680M | 32 | 765 | 763 | +0.2 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | RX 5500 XT | 32 | 55 | 46 | +10.8 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | RX 5500 XT | 32 | 208 | 173 | +10.6 % | down 16x2 e3 / direct 2s / up 2x16 e1 |
-| 48 | 1080p | RX 590 | 32 | 45 | 45 | +0.2 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 4k | RX 590 | 32 | 170 | 170 | +0.2 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | Arc B580 | 32 | 27 | 26 | +0.9 % | down 16 e1 / direct 2.5s / up 16 e1 |
-| 48 | 4k | Arc B580 | 32 | 92 | 93 | -0.3 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 1080p | Iris Xe | 32 | 993 | 644 | +28.2 % | down 8x4 e3 / direct 2s / up 32 p4 |
-| 48 | 4k | Iris Xe | 32 | 2501 | 2497 | +0.1 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | UHD 630 | 16 sep | 686 | 355 | +52.9 % | down 8x2 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | UHD 630 | 16 sep | 1691 | 1290 | +16.1 % | down 16x2 e3 / sep 2s / up 2x16 e1 |
-| 48 | 1080p | GTX 1080 | 32 | 33 | 33 | +0.1 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 4k | GTX 1080 | 32 | 122 | 122 | +0.1 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | GTX 1660 | 16 sep | 180 | 62 | +110.8 % | down 8x2 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | GTX 1660 | 16 sep | 280 | 220 | +14.1 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 1080p | GTX 860M | 16 sep | 186 | 128 | +24.9 % | down 8x2 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | GTX 860M | 16 sep | 521 | 479 | +4.5 % | down 16x2 e3 / sep 2s / up 2x16 e1 |
-| 48 | 1080p | RTX 2070 | 32 | 58 | 33 | +53.2 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | RTX 2070 | 32 | 224 | 124 | +54.2 % | down 16x2 e3 / direct 2s / up 2x16 e1 |
-| 48 | 1080p | RTX 3060 | 32 | 29 | 29 | +0.4 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 4k | RTX 3060 | 32 | 104 | 103 | +0.4 % | down 16x2 e3 / direct 2s / up 32 p4 |
-| 48 | 1080p | RTX 4070 | 32 | 24 | 21 | +8.3 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | RTX 4070 | 32 | 88 | 75 | +8.5 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 1080p | RTX 5070 | 32 | 20 | 17 | +13.1 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 48 | 4k | RTX 5070 | 32 | 76 | 61 | +12.9 % | down 16 e1 / sep 2.5s / up 16 e1 |
-| 64 | 1080p | RX 6600 | 32 | 46 | 45 | +0.2 % | down 16x2 e9 / direct 2s / up 32 p4 |
-| 64 | 4k | RX 6600 | 32 | 173 | 173 | +0.2 % | down 16x2 e9 / direct 2s / up 32 p4 |
-| 64 | 1080p | RX 7900 XTX | 32 | 11 | 9 | +17.9 % | down 16 e1 / direct 2.5s / up 16 e1 |
-| 64 | 4k | RX 7900 XTX | 32 | 31 | 25 | +15.3 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
-| 64 | 1080p | RX 9070 XT | 32 | 11 | 11 | +0.4 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
-| 64 | 4k | RX 9070 XT | 32 | 32 | 32 | +0.5 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
-| 64 | 1080p | Radeon 680M | 32 | 358 | 215 | +38.3 % | down 8x4 e3 / direct 2.5s / up 32 p4 |
-| 64 | 4k | Radeon 680M | 32 | 768 | 765 | +0.2 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
-| 64 | 1080p | RX 5500 XT | 32 | 55 | 46 | +10.6 % | down 16 e1 / sep 3s / up 16 e1 |
-| 64 | 4k | RX 5500 XT | 32 | 209 | 174 | +10.8 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
-| 64 | 1080p | RX 590 | 32 | 46 | 45 | +0.3 % | down 16x2 e9 / direct 2s / up 32 p4 |
-| 64 | 4k | RX 590 | 32 | 171 | 171 | +0.2 % | down 16x4 e5 / direct 2s / up 2x32 p4 |
-| 64 | 1080p | Arc B580 | 32 | 27 | 27 | -0.6 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
-| 64 | 4k | Arc B580 | 32 | 93 | 94 | -0.6 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
-| 64 | 1080p | Iris Xe | 32 | 998 | 646 | +28.4 % | down 8x4 e5 / direct 2s / up 32 e3 |
-| 64 | 4k | Iris Xe | 32 | 2505 | 2499 | +0.1 % | down 16x2 e3 / sep 2.5s / up 32 p4 |
-| 64 | 1080p | UHD 630 | 32 sep | 711 | 357 | +56.4 % | down 8x2x2 e3 / sep 2.5s / up 32 e1 |
-| 64 | 4k | UHD 630 | 32 sep | 1694 | 1293 | +16.0 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
-| 64 | 1080p | GTX 1080 | 32 | 34 | 33 | +0.3 % | down 16x2 e9 / direct 2s / up 32 p4 |
-| 64 | 4k | GTX 1080 | 32 | 123 | 122 | +0.3 % | down 16x2 e9 / direct 2s / up 32 p4 |
-| 64 | 1080p | GTX 1660 | 32 sep | 184 | 63 | +113.5 % | down 8x2 e1 / sep 3s / up 16 e1 |
-| 64 | 4k | GTX 1660 | 32 sep | 283 | 222 | +14.4 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
-| 64 | 1080p | GTX 860M | 32 sep | 192 | 129 | +27.0 % | down 8x2x2 e3 / sep 2.5s / up 32 e1 |
-| 64 | 4k | GTX 860M | 32 sep | 520 | 480 | +4.2 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
-| 64 | 1080p | RTX 2070 | 32 | 59 | 33 | +53.2 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
-| 64 | 4k | RTX 2070 | 32 | 225 | 124 | +54.2 % | down 16x2 e3 / direct 2.5s / up 2x16 e1 |
-| 64 | 1080p | RTX 3060 | 32 | 29 | 29 | +0.5 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
-| 64 | 4k | RTX 3060 | 32 | 104 | 104 | +0.4 % | down 16x4 e5 / direct 2s / up 2x32 p4 |
-| 64 | 1080p | RTX 4070 | 32 | 24 | 21 | +8.3 % | down 16 e1 / sep 3s / up 16 e1 |
-| 64 | 4k | RTX 4070 | 32 | 88 | 76 | +8.4 % | down 16 e1 / sep 3s / up 16 e1 |
-| 64 | 1080p | RTX 5070 | 32 | 21 | 17 | +13.0 % | down 16 e1 / sep 3s / up 16 e1 |
-| 64 | 4k | RTX 5070 | 32 | 76 | 61 | +12.9 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
-| 100 | 1080p | RX 6600 | 32 | 46 | 45 | +0.7 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 4k | RX 6600 | 32 | 174 | 172 | +0.7 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 1080p | RX 7900 XTX | 32 | 11 | 9 | +15.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 4k | RX 7900 XTX | 32 | 31 | 25 | +16.2 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 1080p | RX 9070 XT | 32 | 11 | 11 | +1.6 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 4k | RX 9070 XT | 32 | 33 | 32 | +1.7 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 1080p | Radeon 680M | 32 | 362 | 217 | +38.7 % | down 8x2 e1 / sep 3s / up 16 e1 |
-| 100 | 4k | Radeon 680M | 32 | 772 | 766 | +0.4 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 1080p | RX 5500 XT | 32 | 56 | 46 | +11.3 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
-| 100 | 4k | RX 5500 XT | 32 | 211 | 170 | +12.5 % | down 16x4 e9 / direct 2s / up 2x32 e1 |
-| 100 | 1080p | RX 590 | 32 | 46 | 45 | +1.1 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 4k | RX 590 | 32 | 173 | 169 | +1.1 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 1080p | Arc B580 | 32 | 27 | 27 | +0.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 4k | Arc B580 | 32 | 93 | 93 | +0.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 1080p | Iris Xe | 32 | 1003 | 647 | +28.7 % | down 8x4 e1 / sep 2.5s / up 32 e1 |
-| 100 | 4k | Iris Xe | 32 | 2511 | 2497 | +0.3 % | down 16x4 e3 / direct 2s / up 64 p8 |
-| 100 | 1080p | UHD 630 | 32 sep | 714 | 363 | +56.1 % | down 8x2x2 e1 / sep 2.5s / up 32 e1 |
-| 100 | 4k | UHD 630 | 32 sep | 1697 | 1288 | +16.4 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
-| 100 | 1080p | GTX 1080 | 32 | 34 | 33 | +0.9 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 4k | GTX 1080 | 32 | 123 | 121 | +1.0 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 1080p | GTX 1660 | 32 sep | 185 | 64 | +112.9 % | down 8x4 e1 / sep 2.5s / up 32 e1 |
-| 100 | 4k | GTX 1660 | 32 sep | 283 | 220 | +14.8 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
-| 100 | 1080p | GTX 860M | 32 sep | 193 | 131 | +26.8 % | down 8x2x2 e1 / sep 2.5s / up 32 e1 |
-| 100 | 4k | GTX 860M | 32 sep | 521 | 478 | +4.6 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
-| 100 | 1080p | RTX 2070 | 32 | 59 | 33 | +53.8 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 4k | RTX 2070 | 32 | 226 | 123 | +55.4 % | down 16x4 e3 / direct 2.5s / up 2x32 e1 |
-| 100 | 1080p | RTX 3060 | 32 | 29 | 28 | +1.7 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 4k | RTX 3060 | 32 | 106 | 102 | +1.7 % | down 16x4 e9 / direct 2s / up 64 p4 |
-| 100 | 1080p | RTX 4070 | 32 | 24 | 21 | +8.8 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 4k | RTX 4070 | 32 | 89 | 75 | +9.2 % | down 16x4 e9 / direct 2s / up 2x32 e1 |
-| 100 | 1080p | RTX 5070 | 32 | 21 | 17 | +13.7 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
-| 100 | 4k | RTX 5070 | 32 | 77 | 61 | +14.0 % | down 16x4 e3 / direct 2.5s / up 2x32 e1 |
-| 150 | 1080p | RX 6600 | 64 | 45 | 45 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 4k | RX 6600 | 64 | 172 | 172 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 1080p | RX 7900 XTX | 64 | 11 | 9 | +14.6 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 4k | RX 7900 XTX | 64 | 30 | 24 | +15.9 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 1080p | RX 9070 XT | 64 | 11 | 11 | +0.3 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 4k | RX 9070 XT | 64 | 32 | 32 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 1080p | Radeon 680M | 64 | 361 | 220 | +37.7 % | down 8x4 e1 / sep 3s / up 32 e1 |
-| 150 | 4k | Radeon 680M | 64 | 770 | 769 | +0.0 % | down 16x2 e3 / sep 2.5s / up 32 e2 |
-| 150 | 1080p | RX 5500 XT | 64 | 54 | 45 | +10.9 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 4k | RX 5500 XT | 64 | 206 | 169 | +11.0 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 1080p | RX 590 | 64 | 45 | 45 | +0.4 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 4k | RX 590 | 64 | 169 | 169 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 1080p | Arc B580 | 64 | 26 | 26 | +0.0 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 4k | Arc B580 | 64 | 92 | 92 | +0.0 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 1080p | Iris Xe | 64 | 997 | 649 | +28.1 % | down 8x4 e1 / sep 2.5s / up 32 e3 |
-| 150 | 4k | Iris Xe | 64 | 2503 | 2500 | +0.1 % | down 16x4 e1 / sep 2.5s / up 64 e1 |
-| 150 | 1080p | UHD 630 | 64 sep | 703 | 370 | +53.1 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
-| 150 | 4k | UHD 630 | 64 sep | 1686 | 1293 | +15.8 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
-| 150 | 1080p | GTX 1080 | 64 | 33 | 33 | +0.4 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 4k | GTX 1080 | 64 | 121 | 121 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 1080p | GTX 1660 | 64 sep | 184 | 66 | +110.8 % | down 8x4 e1 / sep 3s / up 32 e1 |
-| 150 | 4k | GTX 1660 | 64 sep | 283 | 222 | +14.3 % | down 16x2 e1 / sep 3s / up 32 e1 |
-| 150 | 1080p | GTX 860M | 64 sep | 193 | 133 | +25.3 % | down 8x2x2 e1 / sep 3s / up 32 e1 |
-| 150 | 4k | GTX 860M | 64 sep | 520 | 479 | +4.3 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
-| 150 | 1080p | RTX 2070 | 64 | 58 | 33 | +53.5 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 4k | RTX 2070 | 64 | 223 | 122 | +54.4 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 1080p | RTX 3060 | 64 | 28 | 28 | +0.4 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 4k | RTX 3060 | 64 | 102 | 102 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
-| 150 | 1080p | RTX 4070 | 64 | 23 | 20 | +8.7 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 4k | RTX 4070 | 64 | 87 | 75 | +8.8 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 1080p | RTX 5070 | 64 | 20 | 16 | +13.1 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 150 | 4k | RTX 5070 | 64 | 75 | 60 | +13.3 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
-| 200 | 1080p | RX 6600 | 64 | 45 | 45 | +0.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
-| 200 | 4k | RX 6600 | 64 | 172 | 172 | +0.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
-| 200 | 1080p | RX 7900 XTX | 64 | 11 | 9 | +14.9 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RX 7900 XTX | 64 | 31 | 24 | +15.9 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 1080p | RX 9070 XT | 64 | 11 | 11 | +0.3 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RX 9070 XT | 64 | 32 | 32 | +0.4 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
-| 200 | 1080p | Radeon 680M | 64 | 365 | 221 | +38.4 % | down 8x4 e1 / sep 3s / up 32 e1 |
-| 200 | 4k | Radeon 680M | 64 | 774 | 771 | +0.2 % | down 16x2 e1 / sep 3s / up 32 e1 |
-| 200 | 1080p | RX 5500 XT | 64 | 54 | 45 | +11.3 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RX 5500 XT | 64 | 206 | 170 | +11.0 % | down 16x8 e3 / direct 2.5s / up 2x64 e1 |
-| 200 | 1080p | RX 590 | 64 | 45 | 45 | +0.4 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RX 590 | 64 | 170 | 169 | +0.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
-| 200 | 1080p | Arc B580 | 64 | 26 | 26 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | Arc B580 | 64 | 92 | 92 | +0.0 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 1080p | Iris Xe | 64 | 1002 | 650 | +28.4 % | down 8x4x4 e3 / direct 2s / up 128 p8 |
-| 200 | 4k | Iris Xe | 64 | 2509 | 2501 | +0.2 % | down 16x4 e1 / sep 2.5s / up 64 e1 |
-| 200 | 1080p | UHD 630 | 64 sep | 707 | 373 | +53.1 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
-| 200 | 4k | UHD 630 | 64 sep | 1689 | 1296 | +15.8 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
-| 200 | 1080p | GTX 1080 | 64 | 33 | 33 | +0.4 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | GTX 1080 | 64 | 122 | 121 | +0.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
-| 200 | 1080p | GTX 1660 | 64 sep | 185 | 66 | +111.0 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
-| 200 | 4k | GTX 1660 | 64 sep | 283 | 223 | +14.3 % | down 16x4 e1 / sep 2.5s / up 64 e1 |
-| 200 | 1080p | GTX 860M | 64 sep | 194 | 135 | +25.1 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
-| 200 | 4k | GTX 860M | 64 sep | 521 | 480 | +4.3 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
-| 200 | 1080p | RTX 2070 | 64 | 58 | 33 | +53.5 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RTX 2070 | 64 | 224 | 122 | +54.4 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 1080p | RTX 3060 | 64 | 29 | 28 | +0.4 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RTX 3060 | 64 | 103 | 102 | +0.4 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
-| 200 | 1080p | RTX 4070 | 64 | 23 | 20 | +8.7 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RTX 4070 | 64 | 87 | 75 | +8.8 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 1080p | RTX 5070 | 64 | 20 | 16 | +13.5 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
-| 200 | 4k | RTX 5070 | 64 | 75 | 60 | +13.3 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 24 | 1080p | RX 6600 | 16 | 47 | 45 | +2.6 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | RX 6600 | 16 | 178 | 172 | +1.7 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 1080p | RX 7900 XTX | 8e sep | 10 | 9 | +3.9 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 4k | RX 7900 XTX | 8e sep | 27 | 25 | +4.2 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 1080p | RX 9070 XT | 16 | 11 | 10 | +10.6 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | RX 9070 XT | 16 | 34 | 31 | +4.5 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 1080p | Radeon 680M | 16 | 210 | 209 | +0.3 % | down 8x2 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | Radeon 680M | 16 | 780 | 760 | +1.4 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 1080p | RX 5500 XT | 8e sep | 51 | 48 | +3.9 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 4k | RX 5500 XT | 8e sep | 193 | 179 | +4.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 24 | 1080p | RX 590 | 16 | 47 | 44 | +3.5 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | RX 590 | 16 | 178 | 170 | +2.4 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 1080p | Arc B580 | 16 | 27 | 27 | +0.3 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 4k | Arc B580 | 16 | 95 | 95 | +0.3 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 1080p | Iris Xe | 16 | 645 | 643 | +0.1 % | down 8x2 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | Iris Xe | 16 | 2543 | 2503 | +0.8 % | down 16 e5 / sep 2.5s / up 16 p4 |
+| 24 | 1080p | UHD 630 | 8e sep | 372 | 356 | +2.6 % | down 8x2 e3 / sep 2s / up 2x8 e1 |
+| 24 | 4k | UHD 630 | 8e sep | 1449 | 1314 | +5.4 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 24 | 1080p | GTX 1080 | 16 | 35 | 32 | +4.1 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | GTX 1080 | 16 | 127 | 121 | +2.5 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 1080p | GTX 1660 | 8e sep | 61 | 61 | +0.4 % | down 8 e1 / sep 2.5s / up 8 e1 |
+| 24 | 4k | GTX 1660 | 8e sep | 236 | 223 | +2.9 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 24 | 1080p | GTX 860M | 16 sep | 136 | 129 | +2.8 % | down 8x2 e3 / sep 2s / up 2x8 e1 |
+| 24 | 4k | GTX 860M | 16 sep | 527 | 490 | +4.1 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 24 | 1080p | RTX 2070 | 8e sep | 35 | 33 | +3.9 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 4k | RTX 2070 | 8e sep | 132 | 125 | +4.0 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 24 | 1080p | RTX 3060 | 16 | 30 | 28 | +4.7 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 4k | RTX 3060 | 16 | 109 | 103 | +2.9 % | down 16 e3 / direct 2s / up 16 p4 |
+| 24 | 1080p | RTX 4070 | 8e sep | 22 | 21 | +2.5 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 4k | RTX 4070 | 8e sep | 80 | 77 | +2.5 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 1080p | RTX 5070 | 8e sep | 18 | 17 | +3.2 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 24 | 4k | RTX 5070 | 8e sep | 66 | 62 | +3.3 % | down 16 e3 / direct 2s / up 2x8 e1 |
+| 32 | 1080p | RX 6600 | 16 | 47 | 45 | +2.7 % | down 16 e3 / direct 2.5s / up 16 p4 |
+| 32 | 4k | RX 6600 | 16 | 181 | 173 | +2.3 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | RX 7900 XTX | 16 | 11 | 9 | +15.2 % | down 8x2 e9 / direct 2s / up 16 e1 |
+| 32 | 4k | RX 7900 XTX | 16 | 33 | 26 | +16.6 % | down 8x2 e9 / direct 2s / up 16 e1 |
+| 32 | 1080p | RX 9070 XT | 16 | 12 | 10 | +10.8 % | down 16 e3 / direct 2.5s / up 16 p4 |
+| 32 | 4k | RX 9070 XT | 16 | 35 | 32 | +4.4 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | Radeon 680M | 16 | 213 | 211 | +0.4 % | down 8x2 e3 / direct 2.5s / up 16 p4 |
+| 32 | 4k | Radeon 680M | 16 | 787 | 764 | +1.5 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | RX 5500 XT | 16 sep | 57 | 49 | +10.6 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 4k | RX 5500 XT | 16 sep | 214 | 179 | +10.7 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | RX 590 | 16 | 48 | 45 | +3.7 % | down 16 e3 / direct 2.5s / up 16 p4 |
+| 32 | 4k | RX 590 | 16 | 182 | 171 | +3.2 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | Arc B580 | 16 | 28 | 27 | +0.5 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
+| 32 | 4k | Arc B580 | 16 | 97 | 96 | +0.5 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | Iris Xe | 16 | 649 | 645 | +0.3 % | down 8x2 e3 / sep 2.5s / up 16 p4 |
+| 32 | 4k | Iris Xe | 16 | 2553 | 2504 | +1.0 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | UHD 630 | 16 sep | 449 | 360 | +14.2 % | down 8x2 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 4k | UHD 630 | 16 sep | 1711 | 1318 | +15.8 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | GTX 1080 | 16 | 35 | 33 | +4.3 % | down 16 e3 / direct 2.5s / up 16 p4 |
+| 32 | 4k | GTX 1080 | 16 | 130 | 123 | +3.0 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | GTX 1660 | 16 sep | 76 | 64 | +11.1 % | down 8x2 e9 / direct 2s / up 16 e1 |
+| 32 | 4k | GTX 1660 | 16 sep | 284 | 224 | +14.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | GTX 860M | 16 sep | 137 | 130 | +2.8 % | down 8x2 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 4k | GTX 860M | 16 sep | 530 | 491 | +4.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | RTX 2070 | 16 sep | 60 | 34 | +54.6 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
+| 32 | 4k | RTX 2070 | 16 sep | 228 | 125 | +55.2 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | RTX 3060 | 16 | 31 | 28 | +5.0 % | down 16 e3 / direct 2.5s / up 16 p4 |
+| 32 | 4k | RTX 3060 | 16 | 112 | 103 | +4.5 % | down 16 e3 / sep 2.5s / up 16 p4 |
+| 32 | 1080p | RTX 4070 | 16 | 24 | 21 | +9.0 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
+| 32 | 4k | RTX 4070 | 16 | 91 | 77 | +9.7 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 32 | 1080p | RTX 5070 | 16 | 21 | 17 | +13.6 % | down 16 e3 / direct 2.5s / up 2x8 e1 |
+| 32 | 4k | RTX 5070 | 16 | 79 | 62 | +14.7 % | down 16 e3 / sep 2.5s / up 2x8 e1 |
+| 48 | 1080p | RX 6600 | 32 | 46 | 45 | +1.0 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 4k | RX 6600 | 32 | 175 | 172 | +1.0 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | RX 7900 XTX | 16e | 10 | 8 | +13.2 % | down 16 e1 / direct 2.5s / up 16 e1 |
+| 48 | 4k | RX 7900 XTX | 16e | 27 | 24 | +7.2 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 1080p | RX 9070 XT | 32 | 11 | 10 | +4.8 % | down 16 e1 / direct 2.5s / up 16 e1 |
+| 48 | 4k | RX 9070 XT | 32 | 33 | 32 | +1.3 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | Radeon 680M | 32 | 213 | 212 | +0.3 % | down 8x4 e3 / direct 2s / up 32 p4 |
+| 48 | 4k | Radeon 680M | 32 | 776 | 763 | +0.9 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | RX 5500 XT | 16e sep | 49 | 46 | +3.6 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | RX 5500 XT | 16e sep | 180 | 173 | +2.2 % | down 16x2 e3 / direct 2s / up 2x16 e1 |
+| 48 | 1080p | RX 590 | 32 | 46 | 45 | +1.3 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 4k | RX 590 | 32 | 174 | 170 | +1.3 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | Arc B580 | 32 | 27 | 26 | +1.6 % | down 16 e1 / direct 2.5s / up 16 e1 |
+| 48 | 4k | Arc B580 | 32 | 94 | 93 | +0.4 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 1080p | Iris Xe | 32 | 646 | 644 | +0.1 % | down 8x4 e3 / direct 2s / up 32 p4 |
+| 48 | 4k | Iris Xe | 32 | 2530 | 2497 | +0.7 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | UHD 630 | 16e sep | 356 | 355 | +0.3 % | down 8x2 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | UHD 630 | 16e sep | 1335 | 1290 | +1.8 % | down 16x2 e3 / sep 2s / up 2x16 e1 |
+| 48 | 1080p | GTX 1080 | 32 | 34 | 33 | +1.2 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 4k | GTX 1080 | 32 | 125 | 122 | +1.3 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | GTX 1660 | 16e sep | 62 | 62 | +0.3 % | down 8x2 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | GTX 1660 | 16e sep | 225 | 220 | +1.3 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 1080p | GTX 860M | 16e sep | 129 | 128 | +0.2 % | down 8x2 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | GTX 860M | 16e sep | 496 | 479 | +1.8 % | down 16x2 e3 / sep 2s / up 2x16 e1 |
+| 48 | 1080p | RTX 2070 | 16e sep | 35 | 33 | +3.3 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | RTX 2070 | 16e sep | 127 | 124 | +1.8 % | down 16x2 e3 / direct 2s / up 2x16 e1 |
+| 48 | 1080p | RTX 3060 | 32 | 29 | 29 | +1.3 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 4k | RTX 3060 | 32 | 105 | 103 | +1.3 % | down 16x2 e3 / direct 2s / up 32 p4 |
+| 48 | 1080p | RTX 4070 | 16e sep | 22 | 21 | +3.0 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | RTX 4070 | 16e sep | 78 | 75 | +1.6 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 1080p | RTX 5070 | 16e sep | 18 | 17 | +3.6 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 48 | 4k | RTX 5070 | 16e sep | 63 | 61 | +1.6 % | down 16 e1 / sep 2.5s / up 16 e1 |
+| 64 | 1080p | RX 6600 | 32 | 46 | 45 | +1.0 % | down 16x2 e9 / direct 2s / up 32 p4 |
+| 64 | 4k | RX 6600 | 32 | 176 | 173 | +1.0 % | down 16x2 e9 / direct 2s / up 32 p4 |
+| 64 | 1080p | RX 7900 XTX | 32 | 11 | 9 | +18.7 % | down 16 e1 / direct 2.5s / up 16 e1 |
+| 64 | 4k | RX 7900 XTX | 32 | 31 | 25 | +16.2 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
+| 64 | 1080p | RX 9070 XT | 32 | 11 | 11 | +1.3 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
+| 64 | 4k | RX 9070 XT | 32 | 33 | 32 | +1.4 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
+| 64 | 1080p | Radeon 680M | 32 | 216 | 215 | +0.4 % | down 8x4 e3 / direct 2.5s / up 32 p4 |
+| 64 | 4k | Radeon 680M | 32 | 779 | 765 | +0.9 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
+| 64 | 1080p | RX 5500 XT | 32 | 56 | 46 | +11.5 % | down 16 e1 / sep 3s / up 16 e1 |
+| 64 | 4k | RX 5500 XT | 32 | 212 | 174 | +11.7 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
+| 64 | 1080p | RX 590 | 32 | 47 | 45 | +1.4 % | down 16x2 e9 / direct 2s / up 32 p4 |
+| 64 | 4k | RX 590 | 32 | 175 | 171 | +1.3 % | down 16x4 e5 / direct 2s / up 2x32 p4 |
+| 64 | 1080p | Arc B580 | 32 | 27 | 27 | +0.1 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
+| 64 | 4k | Arc B580 | 32 | 94 | 94 | +0.1 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
+| 64 | 1080p | Iris Xe | 32 | 650 | 646 | +0.3 % | down 8x4 e5 / direct 2s / up 32 e3 |
+| 64 | 4k | Iris Xe | 32 | 2534 | 2499 | +0.7 % | down 16x2 e3 / sep 2.5s / up 32 p4 |
+| 64 | 1080p | UHD 630 | 32 sep | 460 | 357 | +16.4 % | down 8x2x2 e3 / sep 2.5s / up 32 e1 |
+| 64 | 4k | UHD 630 | 32 sep | 1700 | 1293 | +16.3 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
+| 64 | 1080p | GTX 1080 | 32 | 34 | 33 | +1.4 % | down 16x2 e9 / direct 2s / up 32 p4 |
+| 64 | 4k | GTX 1080 | 32 | 125 | 122 | +1.4 % | down 16x2 e9 / direct 2s / up 32 p4 |
+| 64 | 1080p | GTX 1660 | 32 sep | 79 | 63 | +14.9 % | down 8x2 e1 / sep 3s / up 16 e1 |
+| 64 | 4k | GTX 1660 | 32 sep | 285 | 222 | +15.0 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
+| 64 | 1080p | GTX 860M | 32 sep | 141 | 129 | +5.2 % | down 8x2x2 e3 / sep 2.5s / up 32 e1 |
+| 64 | 4k | GTX 860M | 32 sep | 525 | 480 | +4.8 % | down 16x2 e3 / sep 2.5s / up 2x16 e1 |
+| 64 | 1080p | RTX 2070 | 32 | 59 | 33 | +53.7 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
+| 64 | 4k | RTX 2070 | 32 | 226 | 124 | +54.8 % | down 16x2 e3 / direct 2.5s / up 2x16 e1 |
+| 64 | 1080p | RTX 3060 | 32 | 29 | 29 | +1.4 % | down 16x2 e3 / direct 2.5s / up 32 p4 |
+| 64 | 4k | RTX 3060 | 32 | 106 | 104 | +1.3 % | down 16x4 e5 / direct 2s / up 2x32 p4 |
+| 64 | 1080p | RTX 4070 | 32 | 24 | 21 | +8.9 % | down 16 e1 / sep 3s / up 16 e1 |
+| 64 | 4k | RTX 4070 | 32 | 89 | 76 | +9.0 % | down 16 e1 / sep 3s / up 16 e1 |
+| 64 | 1080p | RTX 5070 | 32 | 21 | 17 | +13.5 % | down 16 e1 / sep 3s / up 16 e1 |
+| 64 | 4k | RTX 5070 | 32 | 77 | 61 | +13.5 % | down 8x4 e5 / direct 2.5s / up 32 e1 |
+| 100 | 1080p | RX 6600 | 64 | 46 | 45 | +0.9 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 4k | RX 6600 | 64 | 175 | 172 | +0.9 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 1080p | RX 7900 XTX | 32e | 9 | 9 | +1.4 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 4k | RX 7900 XTX | 32e | 25 | 25 | +1.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 1080p | RX 9070 XT | 64 | 11 | 11 | +1.1 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 4k | RX 9070 XT | 64 | 32 | 32 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 1080p | Radeon 680M | 32 | 220 | 217 | +0.8 % | down 8x2 e1 / sep 3s / up 16 e1 |
+| 100 | 4k | Radeon 680M | 32 | 783 | 766 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 1080p | RX 5500 XT | 32e | 47 | 46 | +1.3 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
+| 100 | 4k | RX 5500 XT | 32e | 178 | 170 | +2.4 % | down 16x4 e9 / direct 2s / up 2x32 e1 |
+| 100 | 1080p | RX 590 | 64 | 46 | 45 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 4k | RX 590 | 64 | 173 | 169 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 1080p | Arc B580 | 64 | 27 | 27 | +0.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 4k | Arc B580 | 64 | 93 | 93 | +0.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 1080p | Iris Xe | 32 | 655 | 647 | +0.6 % | down 8x4 e1 / sep 2.5s / up 32 e1 |
+| 100 | 4k | Iris Xe | 32 | 2539 | 2497 | +0.8 % | down 16x4 e3 / direct 2s / up 64 p8 |
+| 100 | 1080p | UHD 630 | 32e sep | 366 | 363 | +0.6 % | down 8x2x2 e1 / sep 2.5s / up 32 e1 |
+| 100 | 4k | UHD 630 | 32e sep | 1316 | 1288 | +1.1 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
+| 100 | 1080p | GTX 1080 | 64 | 34 | 33 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 4k | GTX 1080 | 64 | 124 | 121 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 1080p | GTX 1660 | 32e sep | 64 | 64 | +0.3 % | down 8x4 e1 / sep 2.5s / up 32 e1 |
+| 100 | 4k | GTX 1660 | 32e sep | 226 | 220 | +1.2 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
+| 100 | 1080p | GTX 860M | 32e sep | 133 | 131 | +0.9 % | down 8x2x2 e1 / sep 2.5s / up 32 e1 |
+| 100 | 4k | GTX 860M | 32e sep | 488 | 478 | +1.1 % | down 16x2 e1 / sep 2.5s / up 32 e1 |
+| 100 | 1080p | RTX 2070 | 32e | 34 | 33 | +0.8 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 4k | RTX 2070 | 32e | 126 | 123 | +1.6 % | down 16x4 e3 / direct 2.5s / up 2x32 e1 |
+| 100 | 1080p | RTX 3060 | 64 | 29 | 28 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 4k | RTX 3060 | 64 | 105 | 102 | +1.2 % | down 16x4 e9 / direct 2s / up 64 p4 |
+| 100 | 1080p | RTX 4070 | 32e | 21 | 21 | +0.8 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 4k | RTX 4070 | 32e | 77 | 75 | +1.1 % | down 16x4 e9 / direct 2s / up 2x32 e1 |
+| 100 | 1080p | RTX 5070 | 32e | 17 | 17 | +1.1 % | down 16x2 e1 / direct 2.5s / up 32 e1 |
+| 100 | 4k | RTX 5070 | 32e | 62 | 61 | +1.2 % | down 16x4 e3 / direct 2.5s / up 2x32 e1 |
+| 150 | 1080p | RX 6600 | 64 | 46 | 45 | +0.9 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 4k | RX 6600 | 64 | 175 | 172 | +0.9 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 1080p | RX 7900 XTX | 64 | 11 | 9 | +15.6 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 4k | RX 7900 XTX | 64 | 31 | 24 | +17.1 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 1080p | RX 9070 XT | 64 | 11 | 11 | +1.4 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 4k | RX 9070 XT | 64 | 32 | 32 | +1.1 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 1080p | Radeon 680M | 64 | 232 | 220 | +3.4 % | down 8x4 e1 / sep 3s / up 32 e1 |
+| 150 | 4k | Radeon 680M | 64 | 794 | 769 | +1.7 % | down 16x2 e3 / sep 2.5s / up 32 e2 |
+| 150 | 1080p | RX 5500 XT | 64 | 55 | 45 | +12.1 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 4k | RX 5500 XT | 64 | 209 | 169 | +12.2 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 1080p | RX 590 | 64 | 46 | 45 | +1.5 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 4k | RX 590 | 64 | 173 | 169 | +1.2 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 1080p | Arc B580 | 64 | 27 | 26 | +0.8 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 4k | Arc B580 | 64 | 93 | 92 | +0.8 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 1080p | Iris Xe | 64 | 660 | 649 | +1.0 % | down 8x4 e1 / sep 2.5s / up 32 e3 |
+| 150 | 4k | Iris Xe | 64 | 2543 | 2500 | +0.9 % | down 16x4 e1 / sep 2.5s / up 64 e1 |
+| 150 | 1080p | UHD 630 | 64 sep | 505 | 370 | +21.6 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
+| 150 | 4k | UHD 630 | 64 sep | 1744 | 1293 | +18.1 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
+| 150 | 1080p | GTX 1080 | 64 | 34 | 33 | +1.5 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 4k | GTX 1080 | 64 | 124 | 121 | +1.2 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 1080p | GTX 1660 | 64 sep | 89 | 66 | +21.9 % | down 8x4 e1 / sep 3s / up 32 e1 |
+| 150 | 4k | GTX 1660 | 64 sep | 295 | 222 | +17.2 % | down 16x2 e1 / sep 3s / up 32 e1 |
+| 150 | 1080p | GTX 860M | 64 sep | 160 | 133 | +11.3 % | down 8x2x2 e1 / sep 3s / up 32 e1 |
+| 150 | 4k | GTX 860M | 64 sep | 543 | 479 | +6.8 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
+| 150 | 1080p | RTX 2070 | 64 | 59 | 33 | +54.4 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 4k | RTX 2070 | 64 | 225 | 122 | +55.2 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 1080p | RTX 3060 | 64 | 29 | 28 | +1.5 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 4k | RTX 3060 | 64 | 105 | 102 | +1.2 % | down 16x4 e1 / direct 2.5s / up 64 p4 |
+| 150 | 1080p | RTX 4070 | 64 | 24 | 20 | +9.5 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 4k | RTX 4070 | 64 | 88 | 75 | +9.6 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 1080p | RTX 5070 | 64 | 21 | 16 | +13.9 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 150 | 4k | RTX 5070 | 64 | 76 | 60 | +14.1 % | down 16x4 e3 / direct 2.5s / up 64 e1 |
+| 200 | 1080p | RX 6600 | 128 | 46 | 45 | +0.9 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
+| 200 | 4k | RX 6600 | 128 | 175 | 172 | +0.9 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
+| 200 | 1080p | RX 7900 XTX | 64e | 9 | 9 | +1.3 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RX 7900 XTX | 64e | 24 | 24 | +1.1 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 1080p | RX 9070 XT | 128 | 11 | 11 | +1.1 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RX 9070 XT | 128 | 32 | 32 | +1.1 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
+| 200 | 1080p | Radeon 680M | 64 | 236 | 221 | +4.1 % | down 8x4 e1 / sep 3s / up 32 e1 |
+| 200 | 4k | Radeon 680M | 64 | 798 | 771 | +1.8 % | down 16x2 e1 / sep 3s / up 32 e1 |
+| 200 | 1080p | RX 5500 XT | 64e | 46 | 45 | +1.5 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RX 5500 XT | 64e | 174 | 170 | +1.1 % | down 16x8 e3 / direct 2.5s / up 2x64 e1 |
+| 200 | 1080p | RX 590 | 128 | 46 | 45 | +1.3 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RX 590 | 128 | 173 | 169 | +1.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
+| 200 | 1080p | Arc B580 | 128 | 27 | 26 | +0.7 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | Arc B580 | 128 | 93 | 92 | +0.7 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 1080p | Iris Xe | 64 | 666 | 650 | +1.2 % | down 8x4x4 e3 / direct 2s / up 128 p8 |
+| 200 | 4k | Iris Xe | 64 | 2548 | 2501 | +1.0 % | down 16x4 e1 / sep 2.5s / up 64 e1 |
+| 200 | 1080p | UHD 630 | 64e sep | 412 | 373 | +6.1 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
+| 200 | 4k | UHD 630 | 64e sep | 1358 | 1296 | +2.5 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
+| 200 | 1080p | GTX 1080 | 128 | 34 | 33 | +1.3 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | GTX 1080 | 128 | 124 | 121 | +1.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
+| 200 | 1080p | GTX 1660 | 64e sep | 75 | 66 | +8.0 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
+| 200 | 4k | GTX 1660 | 64e sep | 236 | 223 | +3.0 % | down 16x4 e1 / sep 2.5s / up 64 e1 |
+| 200 | 1080p | GTX 860M | 64e sep | 151 | 135 | +7.0 % | down 8x4x2 e1 / sep 2.5s / up 64 e1 |
+| 200 | 4k | GTX 860M | 64e sep | 506 | 480 | +2.7 % | down 16x2x2 e1 / sep 2.5s / up 64 e1 |
+| 200 | 1080p | RTX 2070 | 64e | 33 | 33 | +0.8 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RTX 2070 | 64e | 124 | 122 | +0.9 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 1080p | RTX 3060 | 128 | 29 | 28 | +1.2 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RTX 3060 | 128 | 104 | 102 | +1.2 % | down 16x8 e3 / direct 2.5s / up 128 p4 |
+| 200 | 1080p | RTX 4070 | 64e | 21 | 20 | +0.8 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RTX 4070 | 64e | 76 | 75 | +0.8 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 1080p | RTX 5070 | 64e | 17 | 16 | +1.1 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
+| 200 | 4k | RTX 5070 | 64e | 61 | 60 | +0.8 % | down 16x4 e1 / direct 2.5s / up 64 e1 |
