@@ -115,7 +115,10 @@ float2 MN_Inside(float2 uv, float2 px)
 	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
 #endif
 #ifndef TOPT_BLUR_DITHER
-	#define TOPT_BLUR_DITHER 1 // blue-noise dither of the output against banding (0 off)
+	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-6 methods (see the help in the UI)
+#endif
+#ifndef TOPT_DITHER_TEST
+	#define TOPT_DITHER_TEST 0 // 1: show a dark gradient in 7 stripes, dither methods 0-6 from the top
 #endif
 #ifndef TOPT_BLUR_NOISE
 	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
@@ -127,6 +130,9 @@ float2 MN_Inside(float2 uv, float2 px)
 #ifndef TOPT_BLUR_BLEND
 	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
 #endif
+
+#define TOPT_STR2(x) #x
+#define TOPT_STR(x) TOPT_STR2(x) // a definition's value as text (for the help in the UI)
 
 #if TOPT_BLUR_FROST
 	#define TOPT_BLUR_KEEP (100 - TOPT_BLUR_FROST_SHARE) // % of the blur width the blur passes make
@@ -364,39 +370,110 @@ float3 TOPT_BlurResolve(float2 uv)
 }
 #endif // TOPT_SMALL
 
-// Noise for the dither and the frosted glass: four independent values in [0, 1) per pixel.
-#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
+// Noise for the dither and the frosted glass.
+#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || (TOPT_BLUR_FROST && TOPT_BLUR_NOISE == 0))
+#if TOPT_NEED_BN
 texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+// Four independent blue-noise values in (0, 1) (64 x 64 void-and-cluster, one per channel), centred on
+// the 256 levels so they are symmetric about 0.5.
+float4 TOPT_BN(float2 pos) { return tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)) * (255.0 / 256.0) + 0.5 / 256.0; }
 #endif
+// Interleaved gradient noise (Jimenez 2014), four decorrelated copies.
 float TOPT_IGN(float2 p) { return frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))); }
-float4 TOPT_Noise4(float2 pos)
+float4 TOPT_IGN4(float2 pos)
 {
 	const float2 p = floor(pos);
-#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
-	return tex2Dlod(TOPT_sBN, float4((p + 0.5) / 64.0, 0.0, 0.0));
-#else // interleaved gradient noise (Jimenez 2014), four decorrelated copies
 	return float4(TOPT_IGN(p), TOPT_IGN(p + float2(47.0, 17.0)), TOPT_IGN(p + float2(13.0, 61.0)), TOPT_IGN(p + float2(71.0, 29.0)));
+}
+float2 TOPT_Noise2(float2 pos) // frosted glass
+{
+#if TOPT_BLUR_FROST && TOPT_BLUR_NOISE == 0
+	return TOPT_BN(pos).rg;
+#else
+	return TOPT_IGN4(pos).rg;
 #endif
 }
-float2 TOPT_Noise2(float2 pos) { return TOPT_Noise4(pos).rg; }
+
+// Ordered dither: 8 x 8 Bayer threshold in [0, 1) from the pixel position (float-only, works on D3D9).
+float TOPT_Bayer2(float2 p) { p = floor(p); return frac(p.x * 0.5 + p.y * p.y * 0.75); }
+float TOPT_Bayer8(float2 p) { return TOPT_Bayer2(p * 0.25) * 0.0625 + TOPT_Bayer2(p * 0.5) * 0.25 + TOPT_Bayer2(p) + 0.0078125; }
+
+// Uniform (0, 1) -> triangular in (-1, 1) by the inverse distribution: one value per channel keeps the
+// noise's spectrum (blue stays blue).
+float3 TOPT_Tri(float3 u)
+{
+	const float3 v = 2.0 * u - 1.0;
+	return sign(v) * (1.0 - sqrt(1.0 - abs(v)));
+}
 
 #ifndef BUFFER_COLOR_BIT_DEPTH
 	#define BUFFER_COLOR_BIT_DEPTH 8
 #endif
-// Dither: triangular noise of +-1 step of the screen format (the sum of two noise values), independent
-// per channel: a one-step change of one channel is a third of a step in brightness and hard to see as
-// colour, so the output gets ~3 x as many brightness levels. Added before the output is rounded.
+// Dither, added before the output is rounded to the screen format (step = one level). Triangular noise
+// of +-1 step removes the error's dependence on the signal; independent noise per channel: a one-step
+// change of one channel is a third of a step in brightness and hard to see as colour, so the output
+// gets ~3 x as many brightness levels.
+//   1 blue noise, triangular, per channel (one texture read, remapped)
+//   2 blue noise, triangular, per channel (two reads summed)
+//   3 blue noise, rectangular (+-0.5 step), per channel
+//   4 blue noise, triangular, the same in all channels
+//   5 IGN, triangular, per channel (no texture)
+//   6 Bayer 8 x 8 ordered, rectangular, per channel (shifted patterns, no texture)
+float3 TOPT_DitherBy(float3 c, float2 pos, int method)
+{
+	pos += float2(32.0, 17.0); // away from the frosted-glass noise
+	float3 d = 0.0;
+#if TOPT_NEED_BN
+	if (method == 1) d = TOPT_Tri(TOPT_BN(pos).rgb);
+	if (method == 2) d = TOPT_BN(pos).rgb + TOPT_BN(pos + float2(11.0, 45.0)).rgb - 1.0;
+	if (method == 3) d = TOPT_BN(pos).rgb - 0.5;
+	if (method == 4) d = TOPT_Tri(TOPT_BN(pos).rrr);
+#endif
+	if (method == 5) d = TOPT_Tri(TOPT_IGN4(pos).rgb);
+	if (method == 6) d = float3(TOPT_Bayer8(pos), TOPT_Bayer8(pos + float2(3.0, 5.0)), TOPT_Bayer8(pos + float2(6.0, 2.0))) - 0.5;
+	return c + d / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
+}
 float3 TOPT_Dither(float3 c, float2 pos)
 {
 #if TOPT_BLUR_DITHER
-	const float4 a = TOPT_Noise4(pos + float2(32.0, 17.0)); // away from the frosted-glass noise
-	const float4 b = TOPT_Noise4(pos + float2(11.0, 45.0));
-	return c + (a.rgb + b.rgb - 1.0) / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
+	return TOPT_DitherBy(c, pos, TOPT_BLUR_DITHER);
 #else
 	return c;
 #endif
 }
+
+// Dither test: a dark warm gradient (0 to 1/8 across the screen: 32 levels on 8-bit screens, wide
+// bands) in 7 stripes, dither methods 0 (none) to 6 from the top.
+float3 TOPT_DitherTest(float2 uv, float2 pos)
+{
+	const int method = min(6, (int)(uv.y * 7.0));
+	return TOPT_DitherBy(uv.x * 0.125 * float3(1.0, 0.75, 0.5), pos, method);
+}
+
+uniform int MN_Help <
+	ui_type = "radio"; ui_label = " ";
+	ui_category = "Help: preprocessor definitions"; ui_category_closed = true;
+	ui_text =
+		"Set with the preprocessor definitions below the effect's settings (current value after =).\n\n"
+		"MOVIENIGHT_BLUR_SIZE = " TOPT_STR(MOVIENIGHT_BLUR_SIZE) "\n"
+		"  Blur sigma in pixels at 1080p (at least 2 px on screen; scales with the resolution).\n"
+		"MOVIENIGHT_SOFT_GLOW = " TOPT_STR(MOVIENIGHT_SOFT_GLOW) "\n"
+		"  1: a ~3 x wider blur mixed in towards the outer edge of the bars (Soft glow slider).\n"
+		"TOPT_BLUR_DITHER = " TOPT_STR(TOPT_BLUR_DITHER) "\n"
+		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
+		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
+		"  4 blue noise triangular same in all channels, 5 IGN triangular per channel (no texture),\n"
+		"  6 Bayer 8x8 ordered per channel (no texture).\n"
+		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
+		"  1: show a dark gradient in 7 stripes, dither methods 0-6 from the top.\n"
+		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
+		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
+		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
+		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
+		"TOPT_GPU = " TOPT_STR(TOPT_GPU) "\n"
+		"  The size-class table, picked from your GPU (0 = unknown GPU). Set it to force one.";
+>;
 
 #if TOPT_SMALL
 	#error "Movie Night needs a blur of at least 2 px at this resolution: raise MOVIENIGHT_BLUR_SIZE"
@@ -567,6 +644,9 @@ float MN_Depth(float2 uv)
 
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
+#if TOPT_DITHER_TEST
+	return TOPT_DitherTest(texcoord, vpos.xy);
+#else
 	float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
 	if (all(color <= 2.0 / 255.0)) // only the black of the bars (subtitles stay)
 	{
@@ -581,6 +661,7 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 		color = TOPT_Dither(glow * Opacity, vpos.xy);
 	}
 	return saturate(color);
+#endif
 }
 
 technique MovieNight

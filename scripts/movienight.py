@@ -109,6 +109,30 @@ float2 MN_Inside(float2 uv, float2 px)
 """
 
 TAIL = r"""
+uniform int MN_Help <
+	ui_type = "radio"; ui_label = " ";
+	ui_category = "Help: preprocessor definitions"; ui_category_closed = true;
+	ui_text =
+		"Set with the preprocessor definitions below the effect's settings (current value after =).\n\n"
+		"MOVIENIGHT_BLUR_SIZE = " TOPT_STR(MOVIENIGHT_BLUR_SIZE) "\n"
+		"  Blur sigma in pixels at 1080p (at least 2 px on screen; scales with the resolution).\n"
+		"MOVIENIGHT_SOFT_GLOW = " TOPT_STR(MOVIENIGHT_SOFT_GLOW) "\n"
+		"  1: a ~3 x wider blur mixed in towards the outer edge of the bars (Soft glow slider).\n"
+		"TOPT_BLUR_DITHER = " TOPT_STR(TOPT_BLUR_DITHER) "\n"
+		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
+		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
+		"  4 blue noise triangular same in all channels, 5 IGN triangular per channel (no texture),\n"
+		"  6 Bayer 8x8 ordered per channel (no texture).\n"
+		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
+		"  1: show a dark gradient in 7 stripes, dither methods 0-6 from the top.\n"
+		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
+		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
+		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
+		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
+		"TOPT_GPU = " TOPT_STR(TOPT_GPU) "\n"
+		"  The size-class table, picked from your GPU (0 = unknown GPU). Set it to force one.";
+>;
+
 #if TOPT_SMALL
 	#error "Movie Night needs a blur of at least 2 px at this resolution: raise MOVIENIGHT_BLUR_SIZE"
 #endif
@@ -278,6 +302,9 @@ float MN_Depth(float2 uv)
 
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
+#if TOPT_DITHER_TEST
+	return TOPT_DitherTest(texcoord, vpos.xy);
+#else
 	float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
 	if (all(color <= 2.0 / 255.0)) // only the black of the bars (subtitles stay)
 	{
@@ -292,6 +319,7 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 		color = TOPT_Dither(glow * Opacity, vpos.xy);
 	}
 	return saturate(color);
+#endif
 }
 
 technique MovieNight
