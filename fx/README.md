@@ -90,20 +90,33 @@ a 120 x 67 target with 144 reads per pixel, too few pixels to fill the GPU
 
 CeeJay.dk's Movie Night (MIT) on the topt blur: the black bars of letterboxed
 (or pillarboxed) video show a soft, blurred continuation of the picture. Each
-bar pixel shows the picture point CeeJay's mapping gives it (pulled towards the
-centre by the bars' share of the screen, so a bar mirrors the strip next to it);
-only pixels that are black are replaced (subtitles stay).
+bar pixel shows the picture point CeeJay's mapping gives it (the picture zoomed
+towards the centre by the bars' share of the screen). Each bar zooms only
+across itself (top / bottom vertically, left / right horizontally) so the glow
+lines up with the picture next to it; the corners zoom both ways, with a
+smooth change over twice the side bar's width.
 
 * `MOVIENIGHT_BLUR_SIZE`: blur sigma in pixels at 1080p (default 32, at least 2
   px at the running resolution).
 * Top / Bottom / Left / Right: bar sizes in pixels; Opacity; Zoom shrinks the
   bar geometry (for testing).
-* `MOVIENIGHT_SOFT_GLOW` 1: a second blur level, the first one's low-res level
-  4 x coarser and blurred again (about 3 x the sigma), mixed in towards the
-  outer edge of each bar (smoothstep from the picture edge to the screen
-  edge, scaled by the Soft glow setting), like the light of an ambilight
-  spreading on the wall. Costs three small extra passes over the strips, and
-  the strips grow by the wider blur's reach.
+* Bar content (the old "only black" check, now an opacity): black shows the
+  glow; near black lies over it as a shadow, its opacity growing with its
+  brightness up to Shadow level (default 0.06); brighter (subtitles) covers
+  it. So a subtitle shadow set to near black in the player stays visible over
+  the glow. Near the picture edge, compression bleed counts as black up to
+  Edge bleed level (default 0.06), fading out over Edge bleed width (16 px).
+  Fill the whole bars (test): ignore the content, e.g. to see side bars on
+  full-screen video.
+* `MOVIENIGHT_SOFT_GLOW`: the glow gets wider towards the outer edge of the
+  bars (smoothstep from the picture edge to the screen edge, scaled by Soft
+  glow), in the final pass, no extra passes. 1: a ring of 8 bilinear reads
+  of the blur's last level, radius up to 2.5 sigma (it takes over from the
+  smooth upsample once the radius is sigma / 2). 2: the read scattered in a
+  disk (frosted glass), radius up to 3.5 sigma, one blue-noise read. Both
+  about double the sigma at the screen edge, and widen the strips the blur
+  passes draw by their radius. Estimated cost: `results/movienight_cost.md`
+  (frost about +20-30 % of the technique, the ring +35-60 %, more on Intel).
 * The blur works on the picture only: its passes draw only the strips of the
   picture the bars show plus the blur's reach, cut to the picture, and every
   read (screen and low-res levels) is clamped to the pixel / texel centres

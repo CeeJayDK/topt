@@ -405,6 +405,9 @@ BODY = r"""#include "ReShade.fxh"
 #define TOPT_STR2(x) #x
 #define TOPT_STR(x) TOPT_STR2(x) // a definition's value as text (for the help in the UI)
 
+#ifndef TOPT_NEED_NOISE
+	#define TOPT_NEED_NOISE TOPT_BLUR_FROST // the scatter noise (TOPT_Noise2) is used
+#endif
 #if TOPT_BLUR_FROST
 	#define TOPT_BLUR_KEEP (100 - TOPT_BLUR_FROST_SHARE) // % of the blur width the blur passes make
 #else
@@ -642,7 +645,7 @@ float3 TOPT_BlurResolve(float2 uv)
 #endif // TOPT_SMALL
 
 // Noise for the dither and the frosted glass.
-#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || (TOPT_BLUR_FROST && TOPT_BLUR_NOISE == 0))
+#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0))
 #if TOPT_NEED_BN
 texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
@@ -659,7 +662,7 @@ float4 TOPT_IGN4(float2 pos)
 }
 float2 TOPT_Noise2(float2 pos) // frosted glass
 {
-#if TOPT_BLUR_FROST && TOPT_BLUR_NOISE == 0
+#if TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0
 	return TOPT_BN(pos).rg;
 #else
 	return TOPT_IGN4(pos).rg;

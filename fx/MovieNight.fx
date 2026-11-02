@@ -23,8 +23,16 @@
 	Version 0.4 WIP
 	* Real blur (topt) instead of the noise-scattered read; left / right bars
 	  map the picture the same way as top / bottom.
-	* Optional soft glow (MOVIENIGHT_SOFT_GLOW): a second, wider blur level
-	  mixed in towards the outer edge of the bars.
+	* Optional soft glow (MOVIENIGHT_SOFT_GLOW): the glow gets wider towards
+	  the outer edge of the bars, in the final pass (a ring of 8 reads, or a
+	  frosted-glass scatter), no extra passes.
+	* Each bar zooms the picture towards the centre across itself only (top /
+	  bottom vertically, left / right horizontally), both in the corners, with
+	  a smooth change between them.
+	* Bar content: black shows the glow, near black (a subtitle's shadow)
+	  lies over it as a shadow, brighter (subtitles) covers it. Near the
+	  picture edge, compression bleed (almost black) counts as black.
+	* Test option: fill the whole bars (ignore their content).
 	* Blue-noise dither against banding (TOPT_BLUR_DITHER, on by default;
 	  needs Textures/topt_bn64_RGBA8.png, or TOPT_BLUR_NOISE 1 for IGN);
 	  independent noise per colour channel.
@@ -35,8 +43,9 @@
 #endif
 #define TOPT_BLUR_SIZE MOVIENIGHT_BLUR_SIZE
 #ifndef MOVIENIGHT_SOFT_GLOW
-	#define MOVIENIGHT_SOFT_GLOW 0 // 1: a second, ~3 x wider blur level, mixed in towards the outer edge of the bars
+	#define MOVIENIGHT_SOFT_GLOW 0 // wider glow towards the outer edge of the bars: 0 off, 1 ring of 8 reads, 2 frosted-glass scatter
 #endif
+#define TOPT_NEED_NOISE (MOVIENIGHT_SOFT_GLOW == 2) // the scatter's noise
 
 uniform float Top <
 	ui_type = "drag"; ui_min = 0.0; ui_max = 1000.0; ui_step = 1.0;
@@ -67,9 +76,37 @@ uniform float Opacity <
 uniform float SoftGlow <
 	ui_type = "drag"; ui_min = 0.0; ui_max = 1.0; ui_step = 0.01;
 	ui_label = "Soft glow";
-	ui_tooltip = "How much of the wider blur the bars use at their outer edge (none at the picture edge).";
+	ui_tooltip = "How much wider the glow gets towards the outer edge of the bars (none at the picture edge).\n"
+	             "At 1 its sigma is about 2 x the blur's at the screen edge.";
 > = 1.0;
 #endif
+
+uniform float ShadowLevel <
+	ui_type = "drag"; ui_min = 0.01; ui_max = 0.25; ui_step = 0.005;
+	ui_label = "Shadow level";
+	ui_tooltip = "Bar pixels are laid over the glow with an opacity that grows with their brightness:\n"
+	             "black shows the glow, this level and brighter (subtitles) cover it, in between is a shadow.\n"
+	             "Set the player's subtitle shadow to near black (below this level) to keep it over the glow.";
+> = 0.06;
+
+uniform float EdgeBleed <
+	ui_type = "drag"; ui_min = 0.0; ui_max = 0.25; ui_step = 0.005;
+	ui_label = "Edge bleed level";
+	ui_tooltip = "Video compression can leave the bars almost black next to the picture (edge bleed).\n"
+	             "Near the picture edge, bar pixels up to this level count as black.";
+> = 0.06;
+
+uniform float EdgeWidth <
+	ui_type = "drag"; ui_min = 1.0; ui_max = 64.0; ui_step = 1.0;
+	ui_label = "Edge bleed width (px)";
+	ui_tooltip = "How far into the bars the edge bleed level applies (it fades out over this distance).";
+> = 16.0;
+
+uniform bool FillAll <
+	ui_label = "Fill the whole bars (test)";
+	ui_tooltip = "Ignore the bars' content (subtitles, shadows) and show the glow everywhere in them,\n"
+	             "e.g. to see side bars on full-screen video.";
+> = false;
 
 uniform float Zoom <
 	ui_type = "drag"; ui_min = 1.0; ui_max = 10.0; ui_step = 0.1;
@@ -134,6 +171,9 @@ float2 MN_Inside(float2 uv, float2 px)
 #define TOPT_STR2(x) #x
 #define TOPT_STR(x) TOPT_STR2(x) // a definition's value as text (for the help in the UI)
 
+#ifndef TOPT_NEED_NOISE
+	#define TOPT_NEED_NOISE TOPT_BLUR_FROST // the scatter noise (TOPT_Noise2) is used
+#endif
 #if TOPT_BLUR_FROST
 	#define TOPT_BLUR_KEEP (100 - TOPT_BLUR_FROST_SHARE) // % of the blur width the blur passes make
 #else
@@ -371,7 +411,7 @@ float3 TOPT_BlurResolve(float2 uv)
 #endif // TOPT_SMALL
 
 // Noise for the dither and the frosted glass.
-#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || (TOPT_BLUR_FROST && TOPT_BLUR_NOISE == 0))
+#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0))
 #if TOPT_NEED_BN
 texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
@@ -388,7 +428,7 @@ float4 TOPT_IGN4(float2 pos)
 }
 float2 TOPT_Noise2(float2 pos) // frosted glass
 {
-#if TOPT_BLUR_FROST && TOPT_BLUR_NOISE == 0
+#if TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0
 	return TOPT_BN(pos).rg;
 #else
 	return TOPT_IGN4(pos).rg;
@@ -459,7 +499,8 @@ uniform int MN_Help <
 		"MOVIENIGHT_BLUR_SIZE = " TOPT_STR(MOVIENIGHT_BLUR_SIZE) "\n"
 		"  Blur sigma in pixels at 1080p (at least 2 px on screen; scales with the resolution).\n"
 		"MOVIENIGHT_SOFT_GLOW = " TOPT_STR(MOVIENIGHT_SOFT_GLOW) "\n"
-		"  1: a ~3 x wider blur mixed in towards the outer edge of the bars (Soft glow slider).\n"
+		"  Wider glow towards the outer edge of the bars (Soft glow slider), in the final pass:\n"
+		"  0 off, 1 a ring of 8 reads, 2 a frosted-glass scatter (one noise read).\n"
 		"TOPT_BLUR_DITHER = " TOPT_STR(TOPT_BLUR_DITHER) "\n"
 		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
 		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
@@ -468,7 +509,7 @@ uniform int MN_Help <
 		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
 		"  1: show a dark gradient in 7 stripes, dither methods 0-6 from the top.\n"
 		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
-		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
+		"  Soft glow 2's noise: 0 blue-noise texture, 1 IGN.\n"
 		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
 		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
 		"TOPT_GPU = " TOPT_STR(TOPT_GPU) "\n"
@@ -479,39 +520,48 @@ uniform int MN_Help <
 	#error "Movie Night needs a blur of at least 2 px at this resolution: raise MOVIENIGHT_BLUR_SIZE"
 #endif
 
-// The picture point a bar pixel shows (CeeJay's mapping): pulled towards the centre by the bars'
-// share of the screen, so a bar shows the picture strip next to it, mirrored.
+// 1 inside a bar's column (or row) along one axis, falling smoothly to 0 within twice the bar's width
+// beyond it (t, lo, hi: the coordinate and the picture's edges on that axis).
+float MN_Near(float t, float lo, float hi)
+{
+	const float a = lo > 0.0 ? (t - lo) / (2.0 * lo) : 1.0;
+	const float b = hi < 1.0 ? (hi - t) / (2.0 * (1.0 - hi)) : 1.0;
+	return 1.0 - smoothstep(0.0, 1.0, min(a, b));
+}
+
+// The picture point a bar pixel shows (CeeJay's mapping): pulled towards the centre by the bars' share of
+// the screen, i.e. the picture zoomed to fill the screen behind it. Each bar zooms only across itself
+// (top / bottom vertically, left / right horizontally), so the glow lines up with the picture next to it;
+// the corners zoom both ways, with a smooth change between them (MN_Near).
 float2 MN_Map(float2 uv)
 {
 	const float2 d = float2(Left + Right, Top + Bottom) * MN_PX;
-	return uv + (0.5 - uv) * d;
+	const float2 lo = MN_PicMin(), hi = MN_PicMax();
+	float2 w = 0.0;
+	if (d.x > 0.0) w.x = MN_Near(uv.x, lo.x, hi.x); // no side bars: no horizontal zoom
+	if (d.y > 0.0) w.y = MN_Near(uv.y, lo.y, hi.y);
+	return uv + (0.5 - uv) * d * w;
 }
 
+// The blur's sigma on screen (pixels).
+float MN_Sigma() { return TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0; }
+
 #if MOVIENIGHT_SOFT_GLOW
-// The soft level: the blur's low-res level made 4 x coarser (a 4 x 4 box) and blurred again with a
-// Gaussian of MN_SOFT_SL of its texels (wide enough for a one-read upsample): ~3 x the blur's sigma.
-	#define MN_SOFT_DIV (TOPT_DIVL * 4)
-	#define MN_SOFT_SL 2.5
-	#define MN_SOFT_R 7 // ceil(2.5 * MN_SOFT_SL)
-texture MN_tSoftDown { Width = BUFFER_WIDTH / MN_SOFT_DIV; Height = BUFFER_HEIGHT / MN_SOFT_DIV; Format = TOPT_FMT; };
-sampler MN_sSoftDown { Texture = MN_tSoftDown; AddressU = MIRROR; AddressV = MIRROR; };
-texture MN_tSoftH { Width = BUFFER_WIDTH / MN_SOFT_DIV; Height = BUFFER_HEIGHT / MN_SOFT_DIV; Format = TOPT_FMT; };
-sampler MN_sSoftH { Texture = MN_tSoftH; AddressU = MIRROR; AddressV = MIRROR; };
-texture MN_tSoft { Width = BUFFER_WIDTH / MN_SOFT_DIV; Height = BUFFER_HEIGHT / MN_SOFT_DIV; Format = TOPT_FMT; };
-sampler MN_sSoft { Texture = MN_tSoft; AddressU = MIRROR; AddressV = MIRROR; };
+// The soft glow's largest radius at Soft glow 1 (pixels): a ring of radius rho widens the glow by rho / sqrt(2)
+// per axis, a uniform disk of radius R by R / 2; both make the sigma ~2 x at the screen edge.
+	#define MN_SOFT_R (MOVIENIGHT_SOFT_GLOW == 1 ? 2.5 : 3.5)
+float MN_SoftMax() { return SoftGlow * MN_SOFT_R * MN_Sigma(); }
 #endif
 
 // How far (uv) beyond the picture strip a bar shows the blur passes must draw, inside the picture:
-// 3 sigma of the widest level plus its downsample footprint.
+// 3 sigma plus the downsample footprint, plus the soft glow's radius.
 float2 MN_Reach()
 {
-	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
+	float r = 3.0 * MN_Sigma() + 2.0 * TOPT_DIVL;
 #if MOVIENIGHT_SOFT_GLOW
-	const float soft = sqrt(sigma * sigma + MN_SOFT_DIV * MN_SOFT_SL * MN_SOFT_DIV * MN_SOFT_SL);
-	return (3.0 * soft + 2.0 * MN_SOFT_DIV) * MN_PX;
-#else
-	return (3.0 * sigma + 2.0 * TOPT_DIVL) * MN_PX;
+	r += MN_SoftMax();
 #endif
+	return r * MN_PX;
 }
 
 /*
@@ -593,42 +643,6 @@ void MN_BarsVS(in uint id : SV_VertexID, out float4 position : SV_Position, out 
 }
 
 #if MOVIENIGHT_SOFT_GLOW
-float4 MN_SoftDownPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
-{
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
-	return TOPT_OUT(0.25 * (tex2Dlod(TOPT_sBlur, float4(MN_Inside(uv + float2(-1.0, -1.0) * px, px), 0.0, 0.0)).TOPT_CH
-	                      + tex2Dlod(TOPT_sBlur, float4(MN_Inside(uv + float2( 1.0, -1.0) * px, px), 0.0, 0.0)).TOPT_CH
-	                      + tex2Dlod(TOPT_sBlur, float4(MN_Inside(uv + float2(-1.0,  1.0) * px, px), 0.0, 0.0)).TOPT_CH
-	                      + tex2Dlod(TOPT_sBlur, float4(MN_Inside(uv + float2( 1.0,  1.0) * px, px), 0.0, 0.0)).TOPT_CH));
-}
-
-TOPT_T MN_Soft1D(sampler s, float2 uv, float2 dir)
-{
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / MN_SOFT_DIV, BUFFER_HEIGHT / MN_SOFT_DIV);
-	const float2 d = dir * px;
-	const float k = -0.5 / (MN_SOFT_SL * MN_SOFT_SL);
-	TOPT_T c = tex2Dlod(s, float4(MN_Inside(uv, px), 0.0, 0.0)).TOPT_CH;
-	float wsum = 1.0;
-	[unroll] for (int m = 1; m <= (MN_SOFT_R + 1) / 2; m++)
-	{
-		const float2 p = TOPT_Pair(m, k, MN_SOFT_R);
-		c += p.y * (tex2Dlod(s, float4(MN_Inside(uv + p.x * d, px), 0.0, 0.0)).TOPT_CH
-		          + tex2Dlod(s, float4(MN_Inside(uv - p.x * d, px), 0.0, 0.0)).TOPT_CH);
-		wsum += 2.0 * p.y;
-	}
-	return c / wsum;
-}
-
-float4 MN_SoftHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
-{
-	return TOPT_OUT(MN_Soft1D(MN_sSoftDown, uv, float2(1.0, 0.0)));
-}
-
-float4 MN_SoftVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
-{
-	return TOPT_OUT(MN_Soft1D(MN_sSoftH, uv, float2(0.0, 1.0)));
-}
-
 // How far into its bar a pixel is: 0 at the picture edge, 1 at the screen edge.
 float MN_Depth(float2 uv)
 {
@@ -642,25 +656,67 @@ float MN_Depth(float2 uv)
 }
 #endif
 
+#if MOVIENIGHT_SOFT_GLOW == 1
+static const float2 MN_RING[8] = { float2(1.0, 0.0), float2(0.7071068, 0.7071068), float2(0.0, 1.0), float2(-0.7071068, 0.7071068),
+                                   float2(-1.0, 0.0), float2(-0.7071068, -0.7071068), float2(0.0, -1.0), float2(0.7071068, -0.7071068) };
+#endif
+
+// The glow a bar pixel shows: the blur at its picture point, wider towards the outer edge of the bar with
+// the soft glow, like the light of an ambilight spreading on the wall.
+float3 MN_Glow(float2 uv, float2 pos)
+{
+	const float2 p = MN_Map(uv);
+#if MOVIENIGHT_SOFT_GLOW == 1
+	// a ring of 8 bilinear reads of the blur's last level around p; it takes over from the smooth
+	// upsample (TOPT_BlurResolve) while the radius grows to half the sigma
+	const float rho = smoothstep(0.0, 1.0, MN_Depth(uv)) * MN_SoftMax();
+	const float w = saturate(2.0 * rho / MN_Sigma());
+	float3 c = 0.0;
+	[branch] if (w < 1.0)
+		c = (1.0 - w) * TOPT_BlurResolve(p);
+	[branch] if (w > 0.0)
+	{
+		const float2 fpx = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVF, BUFFER_HEIGHT / TOPT_DIVF);
+		TOPT_T r = 0.0;
+		[unroll] for (int i = 0; i < 8; i++)
+			r += tex2Dlod(TOPT_sFinal, float4(MN_Inside(p + MN_RING[i] * rho * MN_PX, fpx), 0.0, 0.0)).TOPT_CH;
+		c += (0.125 * w) * r;
+	}
+	return c;
+#elif MOVIENIGHT_SOFT_GLOW == 2
+	// the read scattered uniformly inside a disk (frosted glass), its radius growing into the bar
+	const float2 n = TOPT_Noise2(pos);
+	float2 o;
+	sincos(6.2831853 * n.y, o.y, o.x);
+	const float r = sqrt(n.x) * smoothstep(0.0, 1.0, MN_Depth(uv)) * MN_SoftMax();
+	return TOPT_BlurResolve(p + o * r * MN_PX);
+#else
+	return TOPT_BlurResolve(p);
+#endif
+}
+
+// How much a bar pixel covers the glow: black shows it, near black (a subtitle's shadow) lies over it with an
+// opacity growing with its brightness up to ShadowLevel, brighter (subtitles) covers it. Near the picture
+// edge, compression bleed counts as black up to EdgeBleed, fading out over EdgeWidth pixels.
+float MN_Cover(float3 c, float2 uv)
+{
+	const float black = 2.0 / 255.0;
+	const float2 o = max(MN_PicMin() - uv, uv - MN_PicMax()) / MN_PX; // pixels into the bar
+	const float edge = max(black, lerp(EdgeBleed, black, smoothstep(0.0, EdgeWidth, max(o.x, o.y))));
+	return saturate((max(c.r, max(c.g, c.b)) - edge) / (ShadowLevel - black));
+}
+
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
 #if TOPT_DITHER_TEST
 	return TOPT_DitherTest(texcoord, vpos.xy);
 #else
-	float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
-	if (all(color <= 2.0 / 255.0)) // only the black of the bars (subtitles stay)
-	{
-		const float2 p = MN_Map(texcoord);
-		float3 glow = TOPT_BlurResolve(p);
-#if MOVIENIGHT_SOFT_GLOW
-		// softer further from the picture, like the light of an ambilight on the wall
-		const float2 spx = 1.0 / float2(BUFFER_WIDTH / MN_SOFT_DIV, BUFFER_HEIGHT / MN_SOFT_DIV);
-		const float3 soft = tex2Dlod(MN_sSoft, float4(MN_Inside(p, spx), 0.0, 0.0)).TOPT_CH;
-		glow = lerp(glow, soft, smoothstep(0.0, 1.0, MN_Depth(texcoord)) * SoftGlow);
-#endif
-		color = TOPT_Dither(glow * Opacity, vpos.xy);
-	}
-	return saturate(color);
+	const float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
+	const float a = FillAll ? 0.0 : MN_Cover(color, texcoord);
+	float3 o = color;
+	[branch] if (a < 1.0) // subtitles skip the glow
+		o = lerp(TOPT_Dither(MN_Glow(texcoord, vpos.xy) * Opacity, vpos.xy), color, a);
+	return saturate(o);
 #endif
 }
 
@@ -678,11 +734,6 @@ technique MovieNight
 #endif
 #if TOPT_UPSTEPS > 1
 	pass Up { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_UpPS; RenderTarget = TOPT_tUp; }
-#endif
-#if MOVIENIGHT_SOFT_GLOW
-	pass SoftDown { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = MN_SoftDownPS; RenderTarget = MN_tSoftDown; }
-	pass SoftH { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = MN_SoftHPS; RenderTarget = MN_tSoftH; }
-	pass SoftV { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = MN_SoftVPS; RenderTarget = MN_tSoft; }
 #endif
 	pass Bars { PrimitiveTopology = TRIANGLELIST; VertexCount = 12; VertexShader = MN_BarsVS; PixelShader = MN_BarsPS; }
 }
