@@ -35,8 +35,15 @@
 #ifndef TOPT_BLUR_FROST_SHARE
 	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
 #endif
-#ifndef TOPT_BLUR_FROST_NOISE
-	#define TOPT_BLUR_FROST_NOISE 0 // frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
+#ifndef TOPT_BLUR_DITHER
+	#define TOPT_BLUR_DITHER 1 // blue-noise dither of the output against banding (0 off)
+#endif
+#ifndef TOPT_BLUR_NOISE
+	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
+		#define TOPT_BLUR_NOISE TOPT_BLUR_FROST_NOISE
+	#else
+		#define TOPT_BLUR_NOISE 0 // dither / frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
+	#endif
 #endif
 #ifndef TOPT_BLUR_BLEND
 	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
@@ -278,6 +285,37 @@ float3 TOPT_BlurResolve(float2 uv)
 }
 #endif // TOPT_SMALL
 
+// Noise for the dither and the frosted glass: two values in [0, 1) per pixel.
+#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
+texture TOPT_tBN < source = "topt_bn64_RG8.png"; > { Width = 64; Height = 64; Format = RG8; };
+sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+#endif
+float2 TOPT_Noise2(float2 pos)
+{
+#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
+	return tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)).rg;
+#else // interleaved gradient noise (Jimenez 2014), two decorrelated copies
+	const float2 p = floor(pos);
+	return float2(frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))),
+	              frac(52.9829189 * frac(dot(p + float2(47.0, 17.0), float2(0.06711056, 0.00583715)))));
+#endif
+}
+
+#ifndef BUFFER_COLOR_BIT_DEPTH
+	#define BUFFER_COLOR_BIT_DEPTH 8
+#endif
+// Dither: triangular noise of +-1 step of the screen format (the sum of two noise values), the same in
+// all three channels, added before the output is rounded.
+float3 TOPT_Dither(float3 c, float2 pos)
+{
+#if TOPT_BLUR_DITHER
+	const float2 u = TOPT_Noise2(pos + float2(32.0, 17.0)); // away from the frosted-glass noise
+	return c + (u.x + u.y - 1.0) / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
+#else
+	return c;
+#endif
+}
+
 uniform float TOPT_Strength <
 	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
 	ui_label = "Strength";
@@ -297,10 +335,6 @@ uniform bool TOPT_ShowBlur <
 
 
 #if TOPT_BLUR_FROST
-	#if TOPT_BLUR_FROST_NOISE == 0
-texture TOPT_tBN < source = "topt_bn64_RG8.png"; > { Width = 64; Height = 64; Format = RG8; };
-sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
-	#endif
 // Frosted glass: move the final read to a random point in a disk. The blur passes make the blur
 // TOPT_BLUR_FROST_SHARE % narrower; a disk of radius R adds (R / 2)^2 to the variance on each axis, so
 // R = 2 sqrt(sigma^2 - sigma_blur^2) gives the full width back (plus TOPT_FrostRadius).
@@ -309,13 +343,7 @@ float2 TOPT_Frost(float2 pos, float2 uv)
 	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
 	const float keep = TOPT_BLUR_KEEP / 100.0;
 	const float radius = 2.0 * sigma * sqrt(1.0 - keep * keep) + TOPT_FrostRadius;
-	#if TOPT_BLUR_FROST_NOISE == 0
-	const float2 u = tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)).rg;
-	#else // interleaved gradient noise (Jimenez 2014), two decorrelated copies
-	const float2 p = floor(pos);
-	const float2 u = float2(frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))),
-	                        frac(52.9829189 * frac(dot(p + float2(47.0, 17.0), float2(0.06711056, 0.00583715)))));
-	#endif
+	const float2 u = TOPT_Noise2(pos);
 	float2 cs; sincos(6.2831853 * u.x, cs.y, cs.x);
 	return uv + cs * (sqrt(u.y) * radius) * BUFFER_PIXEL_SIZE;
 }
@@ -329,9 +357,9 @@ float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 {
 	const float yb = dot(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), TOPT_LUMA);
 	if (TOPT_ShowBlur)
-		return float4(yb.xxx, 1.0);
+		return float4(TOPT_Dither(yb.xxx, pos.xy), 1.0);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
-	return float4(o + TOPT_Strength * (yb - dot(o, TOPT_LUMA)), 1.0);
+	return float4(TOPT_Dither(o + TOPT_Strength * (yb - dot(o, TOPT_LUMA)), pos.xy), 1.0);
 }
 #elif TOPT_BLUR_BLEND
 // The pass blends: screen = blur * a + screen * (1 - a). The shader neither reads
@@ -339,16 +367,16 @@ float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 // shader lerp below does, so the result is the same.
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
+	return float4(TOPT_Dither(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), pos.xy), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
 }
 #else
 float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float3 blur = TOPT_BlurResolve(TOPT_Frost(pos.xy, uv));
 	if (TOPT_ShowBlur)
-		return float4(blur, 1.0);
+		return float4(TOPT_Dither(blur, pos.xy), 1.0);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
-	return float4(lerp(o, blur, TOPT_Strength), 1.0);
+	return float4(TOPT_Dither(lerp(o, blur, TOPT_Strength), pos.xy), 1.0);
 }
 #endif
 

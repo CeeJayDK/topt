@@ -25,6 +25,8 @@
 	  map the picture the same way as top / bottom.
 	* Optional soft glow (MOVIENIGHT_SOFT_GLOW): a second, wider blur level
 	  mixed in towards the outer edge of the bars.
+	* Blue-noise dither against banding (TOPT_BLUR_DITHER, on by default;
+	  needs Textures/topt_bn64_RG8.png, or TOPT_BLUR_NOISE 1 for IGN).
 */
 
 #ifndef MOVIENIGHT_BLUR_SIZE
@@ -111,8 +113,15 @@ float2 MN_Inside(float2 uv, float2 px)
 #ifndef TOPT_BLUR_FROST_SHARE
 	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
 #endif
-#ifndef TOPT_BLUR_FROST_NOISE
-	#define TOPT_BLUR_FROST_NOISE 0 // frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
+#ifndef TOPT_BLUR_DITHER
+	#define TOPT_BLUR_DITHER 1 // blue-noise dither of the output against banding (0 off)
+#endif
+#ifndef TOPT_BLUR_NOISE
+	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
+		#define TOPT_BLUR_NOISE TOPT_BLUR_FROST_NOISE
+	#else
+		#define TOPT_BLUR_NOISE 0 // dither / frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
+	#endif
 #endif
 #ifndef TOPT_BLUR_BLEND
 	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
@@ -354,6 +363,37 @@ float3 TOPT_BlurResolve(float2 uv)
 }
 #endif // TOPT_SMALL
 
+// Noise for the dither and the frosted glass: two values in [0, 1) per pixel.
+#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
+texture TOPT_tBN < source = "topt_bn64_RG8.png"; > { Width = 64; Height = 64; Format = RG8; };
+sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+#endif
+float2 TOPT_Noise2(float2 pos)
+{
+#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
+	return tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)).rg;
+#else // interleaved gradient noise (Jimenez 2014), two decorrelated copies
+	const float2 p = floor(pos);
+	return float2(frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))),
+	              frac(52.9829189 * frac(dot(p + float2(47.0, 17.0), float2(0.06711056, 0.00583715)))));
+#endif
+}
+
+#ifndef BUFFER_COLOR_BIT_DEPTH
+	#define BUFFER_COLOR_BIT_DEPTH 8
+#endif
+// Dither: triangular noise of +-1 step of the screen format (the sum of two noise values), the same in
+// all three channels, added before the output is rounded.
+float3 TOPT_Dither(float3 c, float2 pos)
+{
+#if TOPT_BLUR_DITHER
+	const float2 u = TOPT_Noise2(pos + float2(32.0, 17.0)); // away from the frosted-glass noise
+	return c + (u.x + u.y - 1.0) / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
+#else
+	return c;
+#endif
+}
+
 #if TOPT_SMALL
 	#error "Movie Night needs a blur of at least 2 px at this resolution: raise MOVIENIGHT_BLUR_SIZE"
 #endif
@@ -534,7 +574,7 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 		const float3 soft = tex2Dlod(MN_sSoft, float4(MN_Inside(p, spx), 0.0, 0.0)).TOPT_CH;
 		glow = lerp(glow, soft, smoothstep(0.0, 1.0, MN_Depth(texcoord)) * SoftGlow);
 #endif
-		color = glow * Opacity;
+		color = TOPT_Dither(glow * Opacity, vpos.xy);
 	}
 	return saturate(color);
 }

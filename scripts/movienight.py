@@ -37,6 +37,8 @@ HEAD = r"""/*------------------.
 	  map the picture the same way as top / bottom.
 	* Optional soft glow (MOVIENIGHT_SOFT_GLOW): a second, wider blur level
 	  mixed in towards the outer edge of the bars.
+	* Blue-noise dither against banding (TOPT_BLUR_DITHER, on by default;
+	  needs Textures/topt_bn64_RG8.png, or TOPT_BLUR_NOISE 1 for IGN).
 */
 
 #ifndef MOVIENIGHT_BLUR_SIZE
@@ -286,7 +288,7 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 		const float3 soft = tex2Dlod(MN_sSoft, float4(MN_Inside(p, spx), 0.0, 0.0)).TOPT_CH;
 		glow = lerp(glow, soft, smoothstep(0.0, 1.0, MN_Depth(texcoord)) * SoftGlow);
 #endif
-		color = glow * Opacity;
+		color = TOPT_Dither(glow * Opacity, vpos.xy);
 	}
 	return saturate(color);
 }
