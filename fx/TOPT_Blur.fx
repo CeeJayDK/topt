@@ -42,7 +42,7 @@
 	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
 		#define TOPT_BLUR_NOISE TOPT_BLUR_FROST_NOISE
 	#else
-		#define TOPT_BLUR_NOISE 0 // dither / frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
+		#define TOPT_BLUR_NOISE 0 // dither / frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RGBA8.png), 1 IGN
 	#endif
 #endif
 #ifndef TOPT_BLUR_BLEND
@@ -285,32 +285,35 @@ float3 TOPT_BlurResolve(float2 uv)
 }
 #endif // TOPT_SMALL
 
-// Noise for the dither and the frosted glass: two values in [0, 1) per pixel.
+// Noise for the dither and the frosted glass: four independent values in [0, 1) per pixel.
 #if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
-texture TOPT_tBN < source = "topt_bn64_RG8.png"; > { Width = 64; Height = 64; Format = RG8; };
+texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 #endif
-float2 TOPT_Noise2(float2 pos)
+float TOPT_IGN(float2 p) { return frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))); }
+float4 TOPT_Noise4(float2 pos)
 {
-#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
-	return tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)).rg;
-#else // interleaved gradient noise (Jimenez 2014), two decorrelated copies
 	const float2 p = floor(pos);
-	return float2(frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))),
-	              frac(52.9829189 * frac(dot(p + float2(47.0, 17.0), float2(0.06711056, 0.00583715)))));
+#if (TOPT_BLUR_DITHER || TOPT_BLUR_FROST) && TOPT_BLUR_NOISE == 0
+	return tex2Dlod(TOPT_sBN, float4((p + 0.5) / 64.0, 0.0, 0.0));
+#else // interleaved gradient noise (Jimenez 2014), four decorrelated copies
+	return float4(TOPT_IGN(p), TOPT_IGN(p + float2(47.0, 17.0)), TOPT_IGN(p + float2(13.0, 61.0)), TOPT_IGN(p + float2(71.0, 29.0)));
 #endif
 }
+float2 TOPT_Noise2(float2 pos) { return TOPT_Noise4(pos).rg; }
 
 #ifndef BUFFER_COLOR_BIT_DEPTH
 	#define BUFFER_COLOR_BIT_DEPTH 8
 #endif
-// Dither: triangular noise of +-1 step of the screen format (the sum of two noise values), the same in
-// all three channels, added before the output is rounded.
+// Dither: triangular noise of +-1 step of the screen format (the sum of two noise values), independent
+// per channel: a one-step change of one channel is a third of a step in brightness and hard to see as
+// colour, so the output gets ~3 x as many brightness levels. Added before the output is rounded.
 float3 TOPT_Dither(float3 c, float2 pos)
 {
 #if TOPT_BLUR_DITHER
-	const float2 u = TOPT_Noise2(pos + float2(32.0, 17.0)); // away from the frosted-glass noise
-	return c + (u.x + u.y - 1.0) / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
+	const float4 a = TOPT_Noise4(pos + float2(32.0, 17.0)); // away from the frosted-glass noise
+	const float4 b = TOPT_Noise4(pos + float2(11.0, 45.0));
+	return c + (a.rgb + b.rgb - 1.0) / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
 #else
 	return c;
 #endif

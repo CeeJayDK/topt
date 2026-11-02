@@ -38,7 +38,8 @@ HEAD = r"""/*------------------.
 	* Optional soft glow (MOVIENIGHT_SOFT_GLOW): a second, wider blur level
 	  mixed in towards the outer edge of the bars.
 	* Blue-noise dither against banding (TOPT_BLUR_DITHER, on by default;
-	  needs Textures/topt_bn64_RG8.png, or TOPT_BLUR_NOISE 1 for IGN).
+	  needs Textures/topt_bn64_RGBA8.png, or TOPT_BLUR_NOISE 1 for IGN);
+	  independent noise per colour channel.
 */
 
 #ifndef MOVIENIGHT_BLUR_SIZE
