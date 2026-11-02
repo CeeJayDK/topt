@@ -382,6 +382,9 @@ BODY = r"""#include "ReShade.fxh"
 #ifndef TOPT_BLUR_FROST
 	#define TOPT_BLUR_FROST 0 // 1: scatter the final read inside a disk (frosted glass)
 #endif
+#ifndef TOPT_BLUR_FROST_SHARE
+	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
+#endif
 #ifndef TOPT_BLUR_FROST_NOISE
 	#define TOPT_BLUR_FROST_NOISE 0 // frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RG8.png), 1 IGN
 #endif
@@ -389,7 +392,12 @@ BODY = r"""#include "ReShade.fxh"
 	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
 #endif
 
-#define TOPT_SIGMA_SCREEN (TOPT_BLUR_SIZE * BUFFER_HEIGHT / 1080)
+#if TOPT_BLUR_FROST
+	#define TOPT_BLUR_KEEP (100 - TOPT_BLUR_FROST_SHARE) // % of the blur width the blur passes make
+#else
+	#define TOPT_BLUR_KEEP 100
+#endif
+#define TOPT_SIGMA_SCREEN (TOPT_BLUR_SIZE * TOPT_BLUR_KEEP * BUFFER_HEIGHT / 108000)
 
 uniform float TOPT_SizeTune <
 	ui_type = "slider"; ui_min = 0.7; ui_max = 1.33;
@@ -404,6 +412,9 @@ uniform float TOPT_SizeTune <
 sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
 #ifndef TOPT_SRC_UV
 	#define TOPT_SRC_UV(uv) (uv) // where the first downsample reads the screen (an effect can clamp it to a region)
+#endif
+#ifndef TOPT_LOW_UV
+	#define TOPT_LOW_UV(uv, px) (uv) // where the later passes read a low-res level of texel size px (likewise)
 #endif
 
 static const float3 TOPT_LUMA = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
@@ -426,7 +437,7 @@ static const float3 TOPT_LUMA = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weig
 // Gaussian weights reproduced exactly by one bilinear fetch.
 float3 TOPT_BlurResolve(float2 uv)
 {
-	const float sigma = clamp(TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0, 0.7, 1.3);
+	const float sigma = clamp(TOPT_BLUR_SIZE * TOPT_BLUR_KEEP * TOPT_SizeTune * BUFFER_HEIGHT / 108000.0, 0.7, 1.3);
 	const float k = -0.5 / (sigma * sigma);
 	const int n = TOPT_ARM_BLOCKS(sigma); // blocks per arm: the same for every pixel
 	float3 c = tex2Dlod(TOPT_sBackBuffer, float4(uv, 0.0, 0.0)).rgb;
@@ -498,7 +509,7 @@ float4 TOPT_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIV1, BUFFER_HEIGHT / TOPT_DIV1);
 	TOPT_T c = 0.0;
 	[unroll] for (int i = 0; i < TOPT_ND2; i++)
-		c += TOPT_DOWN2[i].z * tex2Dlod(TOPT_sDown1, float4(uv + TOPT_DOWN2[i].xy * px, 0.0, 0.0)).TOPT_CH;
+		c += TOPT_DOWN2[i].z * tex2Dlod(TOPT_sDown1, float4(TOPT_LOW_UV(uv + TOPT_DOWN2[i].xy * px, px), 0.0, 0.0)).TOPT_CH;
 	return TOPT_OUT(c);
 }
 #endif
@@ -507,7 +518,7 @@ float4 TOPT_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 // into one bilinear fetch; one 2D pass (outer product) or H then V passes.
 float TOPT_LowSigma()
 {
-	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
+	const float sigma = TOPT_BLUR_SIZE * TOPT_BLUR_KEEP * TOPT_SizeTune * BUFFER_HEIGHT / 108000.0;
 	return clamp(sqrt(max(sigma * sigma - TOPT_C, 0.0) / TOPT_B), TOPT_SL_MIN, TOPT_SL_MAX);
 }
 
@@ -550,7 +561,7 @@ float4 TOPT_BlurPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 				{
 					const float2 tx = t[abs(x)];
 					const float2 o = float2(x < 0 ? -tx.x : tx.x, y < 0 ? -ty.x : ty.x);
-					c += tx.y * ty.y * tex2Dlod(TOPT_sLow, float4(uv + o * px, 0.0, 0.0)).TOPT_CH;
+					c += tx.y * ty.y * tex2Dlod(TOPT_sLow, float4(TOPT_LOW_UV(uv + o * px, px), 0.0, 0.0)).TOPT_CH;
 				}
 			}
 		}
@@ -567,14 +578,16 @@ TOPT_T TOPT_Blur1D(sampler s, float2 uv, float2 dir)
 	const int np = (r + 1) / 2;
 	const float k = -0.5 / (sl * sl);
 
-	TOPT_T c = tex2Dlod(s, float4(uv, 0.0, 0.0)).TOPT_CH;
+	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
+	TOPT_T c = tex2Dlod(s, float4(TOPT_LOW_UV(uv, px), 0.0, 0.0)).TOPT_CH;
 	float wsum = 1.0;
 	[unroll] for (int m = 1; m <= TOPT_NP; m++)
 	{
 		[branch] if (m <= np)
 		{
 			const float2 p = TOPT_Pair(m, k, r);
-			c += p.y * (tex2Dlod(s, float4(uv + p.x * d, 0.0, 0.0)).TOPT_CH + tex2Dlod(s, float4(uv - p.x * d, 0.0, 0.0)).TOPT_CH);
+			c += p.y * (tex2Dlod(s, float4(TOPT_LOW_UV(uv + p.x * d, px), 0.0, 0.0)).TOPT_CH
+			          + tex2Dlod(s, float4(TOPT_LOW_UV(uv - p.x * d, px), 0.0, 0.0)).TOPT_CH);
 			wsum += 2.0 * p.y;
 		}
 	}
@@ -598,7 +611,7 @@ float4 TOPT_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
 	TOPT_T c = 0.0;
 	[unroll] for (int i = 0; i < TOPT_NUP; i++)
-		c += TOPT_UP[i].z * tex2Dlod(TOPT_sBlur, float4(uv + TOPT_UP[i].xy * px, 0.0, 0.0)).TOPT_CH;
+		c += TOPT_UP[i].z * tex2Dlod(TOPT_sBlur, float4(TOPT_LOW_UV(uv + TOPT_UP[i].xy * px, px), 0.0, 0.0)).TOPT_CH;
 	return TOPT_OUT(c);
 }
 #endif
@@ -610,7 +623,7 @@ float3 TOPT_BlurResolve(float2 uv)
 	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVF, BUFFER_HEIGHT / TOPT_DIVF);
 	TOPT_T c = 0.0;
 	[unroll] for (int i = 0; i < TOPT_NUP; i++)
-		c += TOPT_UP[i].z * tex2Dlod(TOPT_sFinal, float4(uv + TOPT_UP[i].xy * px, 0.0, 0.0)).TOPT_CH;
+		c += TOPT_UP[i].z * tex2Dlod(TOPT_sFinal, float4(TOPT_LOW_UV(uv + TOPT_UP[i].xy * px, px), 0.0, 0.0)).TOPT_CH;
 	return c; // brightness-only: the blurred luma in all three channels
 }
 #endif // TOPT_SMALL
@@ -625,8 +638,9 @@ uniform float TOPT_Strength <
 #if TOPT_BLUR_FROST
 uniform float TOPT_FrostRadius <
 	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
-	ui_label = "Frosted glass radius (px)";
-> = 6.0;
+	ui_label = "Extra frosted glass radius (px)";
+	ui_tooltip = "Added to the radius that makes up the blur width TOPT_BLUR_FROST_SHARE takes from the blur.";
+> = 0.0;
 #endif
 
 uniform bool TOPT_ShowBlur <
@@ -639,9 +653,14 @@ uniform bool TOPT_ShowBlur <
 texture TOPT_tBN < source = "topt_bn64_RG8.png"; > { Width = 64; Height = 64; Format = RG8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 	#endif
-// Frosted glass: move the final read to a random point in a disk of TOPT_FrostRadius pixels.
+// Frosted glass: move the final read to a random point in a disk. The blur passes make the blur
+// TOPT_BLUR_FROST_SHARE % narrower; a disk of radius R adds (R / 2)^2 to the variance on each axis, so
+// R = 2 sqrt(sigma^2 - sigma_blur^2) gives the full width back (plus TOPT_FrostRadius).
 float2 TOPT_Frost(float2 pos, float2 uv)
 {
+	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
+	const float keep = TOPT_BLUR_KEEP / 100.0;
+	const float radius = 2.0 * sigma * sqrt(1.0 - keep * keep) + TOPT_FrostRadius;
 	#if TOPT_BLUR_FROST_NOISE == 0
 	const float2 u = tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)).rg;
 	#else // interleaved gradient noise (Jimenez 2014), two decorrelated copies
@@ -650,7 +669,7 @@ float2 TOPT_Frost(float2 pos, float2 uv)
 	                        frac(52.9829189 * frac(dot(p + float2(47.0, 17.0), float2(0.06711056, 0.00583715)))));
 	#endif
 	float2 cs; sincos(6.2831853 * u.x, cs.y, cs.x);
-	return uv + cs * (sqrt(u.y) * TOPT_FrostRadius) * BUFFER_PIXEL_SIZE;
+	return uv + cs * (sqrt(u.y) * radius) * BUFFER_PIXEL_SIZE;
 }
 #else
 	#define TOPT_Frost(pos, uv) (uv)
