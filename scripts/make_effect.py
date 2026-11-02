@@ -1,5 +1,5 @@
 """Generate the research blur effect fx/TOPT_Blur.fx from the optimizer's designs (and fx/MovieNight.fx,
-which uses the same blur: scripts/movienight.py).
+which uses the same blur: scripts/movienight.py; both include fx/TOPT_BlurTables.fxh, the size classes).
 
 Structure per size class (downsample factor D): one wide box*binomial
 downsample pass (x8 then the rest for D >= 16), one single-pass 2D Gaussian at
@@ -8,10 +8,12 @@ in the "e" classes, one bilinear read) fused into the composite pass; the low-re
 is clearly cheaper. Size 1 (sigma 0.7..1.3) is a single pinwheel pass. The
 runtime kernels are emulated here to verify quality over each class's range.
 
-    python -m scripts.make_effect
+    python -m scripts.make_effect             (class checks, per-GPU tables, all files; ~25 min)
+    python -m scripts.make_effect --render    (re-render the files from results/topt_blur_tables.json)
 """
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
@@ -249,46 +251,62 @@ def main():
         small.append((round(q["sigma"], 2), "/".join(ok) or "FAIL", round(pipeline_cost(small_pipeline(sig))["us"])))
     print(f"   1: single pass {small}", flush=True)
     tables, default = gpu_tables(info, rmax)
+    (ROOT / "results" / "topt_blur_tables.json").write_text(json.dumps({"info": info, "tables": tables, "default": default}))
+    write(info, tables, default, rmax)
+
+
+def write(info: dict, tables: list, default: list, rmax: int):
     for t, (gpus, iv) in enumerate(tables, 1):
         print(f"table {t} ({', '.join(gpus)}):", [(a, b, n) for a, b, n in iv])
     print("table 0 (unknown GPU):", [(a, b, n) for a, b, n in default])
+    (ROOT / "fx" / "TOPT_BlurTables.fxh").write_text(render_tables(info, tables, default))
     (ROOT / "fx" / "TOPT_Blur.fx").write_text(render(info, tables, default, rmax))
-    print("wrote fx/TOPT_Blur.fx")
+    print("wrote fx/TOPT_BlurTables.fxh, fx/TOPT_Blur.fx")
     from scripts import movienight
     (ROOT / "fx" / "MovieNight.fx").write_text(render(info, tables, default, rmax, movienight.TEMPLATE))
     print("wrote fx/MovieNight.fx")
 
 
-def render(info: dict, tables: list, default: list, rmax: int, template: str | None = None) -> str:
+VENDOR_NAMES = {0x10DE: "NVIDIA", 0x1002: "AMD", 0x8086: "Intel"}
+
+
+def render_tables(info: dict, tables: list, default: list) -> str:
+    """fx/TOPT_BlurTables.fxh: the GPU's table, the size class for the blur size, the class constants."""
     ids = {n: i + 1 for i, n in enumerate(CLASSES)}
     ids["1"] = 0
     table_of = {g: t for t, (gs, _) in enumerate(tables, 1) for g in gs}
-    sel = ["#ifndef TOPT_GPU"]
-    for i, (vendor, lo, hi, prof, label) in enumerate(f for f in FAMILIES if f[3] in table_of):
-        sel.append(f"\t#{'if' if i == 0 else 'elif'} __VENDOR__ == 0x{vendor:04X} && __DEVICE__ >= 0x{lo:04X} && "
-                   f"__DEVICE__ <= 0x{hi:04X}\n\t\t#define TOPT_GPU {table_of[prof]} // {label} ({prof} profile)")
-    sel += ["\t#else\n\t\t#define TOPT_GPU 0 // unknown GPU: least regret over all profiles", "\t#endif", "#endif", ""]
+    out = [TABLES_HEAD, "#ifndef TOPT_GPU"]
+    fams = [f for f in FAMILIES if f[3] in table_of]
+    for i, vendor in enumerate(dict.fromkeys(f[0] for f in fams)):
+        out.append(f"\t#{'if' if i == 0 else 'elif'} __VENDOR__ == 0x{vendor:04X} // {VENDOR_NAMES.get(vendor, '')}")
+        for j, (_, lo, hi, prof, label) in enumerate(f for f in fams if f[0] == vendor):
+            out.append(f"\t\t#{'if' if j == 0 else 'elif'} __DEVICE__ >= 0x{lo:04X} && __DEVICE__ <= 0x{hi:04X} "
+                       f"// {label} ({prof} profile)\n\t\t\t#define TOPT_GPU {table_of[prof]}")
+        out += ["\t\t#else\n\t\t\t#define TOPT_GPU 0", "\t\t#endif"]
+    out += ["\t#else\n\t\t#define TOPT_GPU 0 // unknown GPU: least regret over all profiles", "\t#endif", "#endif", "",
+            "// Per table: TOPT_CHOICE = 2 * class + separable, by the blur sigma on screen (px)."]
     for t, iv in [(t, iv) for t, (_, iv) in enumerate(tables, 1)] + [(0, default)]:
         gs = ", ".join(tables[t - 1][0]) if t else "unknown GPUs"
-        sel.append(f"#{'if' if t == 1 else 'elif'} TOPT_GPU == {t} // {gs}" if t else f"#else // {gs}")
+        out.append(f"#{'if' if t == 1 else 'elif'} TOPT_GPU == {t} // {gs}" if t else f"#else // {gs}")
         for i, (a, b, (name, sep)) in enumerate(iv):
-            cond = "#if" if i == 0 else "#elif"
-            body = (f"\t\t#define TOPT_CLASS {ids[name]} // '{name}'{' separable' if sep else ''}\n"
-                    f"\t\t#define TOPT_SEP {int(sep)}")
-            sel.append(f"\t{cond} TOPT_SIGMA_SCREEN <= {b}\n{body}" if i < len(iv) - 1 else f"\t#else\n{body}")
-        sel.append("\t#endif")
-    sel.append("#endif")
+            cond = "#if" if i == 0 else "#elif" if i < len(iv) - 1 else "#else"
+            test = f" TOPT_SIGMA_SCREEN <= {b}" if i < len(iv) - 1 else ""
+            out.append(f"\t{cond}{test} // '{name}'{' separable' if sep else ''}\n\t\t#define TOPT_CHOICE {2 * ids[name] + sep}")
+        out.append("\t#endif")
+    out += ["#endif", "#define TOPT_CLASS (TOPT_CHOICE / 2)", "#define TOPT_SEP (TOPT_CHOICE % 2)", ""]
     arm = ", ".join(f"float2({x}.0, {y}.0)" for x, y in SMALL_ARM)
     steps = " : ".join(f"sigma <= {_f(smax)} ? {n}" for smax, n in SMALL_STEPS[:-1]) + f" : {SMALL_STEPS[-1][1]}"
-    blocks = [f"#if TOPT_CLASS == 0 // '1': single pass, sigma 0.7..1.3 px\n\t#define TOPT_SMALL 1\n"
-              f"\tstatic const float2 TOPT_ARM[{len(SMALL_ARM)}] = {{ {arm} }};\n"
-              f"\t#define TOPT_ARM_BLOCKS(sigma) ({steps})"]
+    out.append(f"#if TOPT_CLASS == 0 // '1': single pass, sigma 0.7..1.3 px\n\t#define TOPT_SMALL 1\n"
+               f"\tstatic const float2 TOPT_ARM[{len(SMALL_ARM)}] = {{ {arm} }};\n"
+               f"\t#define TOPT_ARM_BLOCKS(sigma) ({steps})")
+    def arr(nm, t):  # (x offset, y offset, weight) per tap, four taps a line
+        v = [f"float3({_f(x)}, {_f(y)}, {_f(w)})" for x, y, w in t]
+        return (f"\tstatic const float3 {nm}[{len(t)}] = {{\n\t\t" +
+                ",\n\t\t".join(", ".join(v[k:k + 4]) for k in range(0, len(v), 4)) + "\n\t};")
     for i, (name, (down, e, ups, upf, lo)) in enumerate(CLASSES.items(), 1):
         C, b, lo, hi, smin, smax, _ = info[name]
         taps = [S.outer(S.down_taps_1d(f, e)) for f in down]
         up = up_taps(upf)
-        arr = lambda nm, t: (f"\tstatic const float3 {nm}[{len(t)}] = {{\n\t\t" +
-                             ",\n\t\t".join(f"float3({_f(x)}, {_f(y)}, {_f(w)})" for x, y, w in t) + "\n\t};")
         lines = [f"#elif TOPT_CLASS == {i} // '{name}': sigma {smin:.1f}..{smax:.1f} px",
                  "\t#define TOPT_SMALL 0",
                  f"\t#define TOPT_STEPS {len(down)}",
@@ -303,10 +321,27 @@ def render(info: dict, tables: list, default: list, rmax: int, template: str | N
         if len(down) > 1:
             lines += [f"\t#define TOPT_ND2 {len(taps[1])}", arr("TOPT_DOWN2", taps[1])]
         lines += [f"\t#define TOPT_NUP {len(up)}", arr("TOPT_UP", up)]
-        blocks.append("\n".join(lines))
-    blocks.append("#endif")
-    return (template or TEMPLATE).replace("{SELECT}", "\n".join(sel)).replace("{CLASSES}", "\n".join(blocks)) \
-        .replace("{RMAX}", str(rmax)).replace("{NARM}", str(len(SMALL_ARM))).replace("{TRUNC}", _f(TRUNC))
+        out.append("\n".join(lines))
+    out.append("#endif")
+    return "\n".join(out) + "\n"
+
+
+def render(info: dict, tables: list, default: list, rmax: int, template: str | None = None) -> str:
+    return (template or TEMPLATE).replace("{RMAX}", str(rmax)).replace("{NARM}", str(len(SMALL_ARM))) \
+        .replace("{TRUNC}", _f(TRUNC))
+
+
+TABLES_HEAD = r"""/*
+  TOPT_BlurTables.fxh: the size classes of the topt blur (TOPT_Blur.fx, MovieNight.fx), generated by
+  scripts/make_effect.py.
+
+  TOPT_GPU: the table of the GPU's family (PCI vendor / device id ranges), each made with the cost model
+  calibrated on that architecture's TexBench report; 0 = unknown GPU (least regret over all of them).
+  Define TOPT_GPU to force one. Each table gives the size class for the blur sigma on screen
+  (TOPT_SIGMA_SCREEN, px), and the class block below its constants: downsample factors and taps, the
+  low-res sigma range and the upsample taps.
+*/
+"""
 
 
 # The effect = HEAD + BODY + TAIL. BODY (settings, size classes, the blur passes and TOPT_BlurResolve) is
@@ -362,12 +397,9 @@ uniform float TOPT_SizeTune <
 	ui_tooltip = "Multiplies the blur size set by TOPT_BLUR_SIZE.\nThe usable range of each size class is limited; the blur stops growing at its edges.";
 > = 1.0;
 
-// ---- size class (chosen at compile time from the blur size, the resolution and the GPU: each GPU
-// family gets the choices the cost model, calibrated on its TexBench report, finds cheapest.
-// TOPT_GPU forces a table, e.g. to time them against each other.)
-{SELECT}
-
-{CLASSES}
+// Size class: chosen at compile time from the blur size, the resolution and the GPU (TOPT_GPU forces a
+// GPU's table), with its constants.
+#include "TOPT_BlurTables.fxh"
 
 sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
 #ifndef TOPT_SRC_UV
@@ -686,4 +718,10 @@ TEMPLATE = HEAD + BODY + TAIL
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--render" in sys.argv:  # templates changed only: the class checks and tables from the last full run
+        c = json.loads((ROOT / "results" / "topt_blur_tables.json").read_text())
+        tabs = [(gs, [(a, b, tuple(k)) for a, b, k in iv]) for gs, iv in c["tables"]]
+        write(c["info"], tabs, [(a, b, tuple(k)) for a, b, k in c["default"]], math.ceil(TRUNC * SL_MAX))
+    else:
+        main()
