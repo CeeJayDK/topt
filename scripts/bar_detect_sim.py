@@ -340,7 +340,8 @@ def scan_profiles(rows: np.ndarray, cols: np.ndarray, H: int, W: int, level=LEVE
         b0, b = edge_io(pr[::-1], H // 2)
         if t0 is None or b0 is None:
             return None, None
-        (l0, l), (r0, r) = sides(t, H - b)
+        m = H / SEG                                     # one segment inside: the profile's rows come in segments
+        (l0, l), (r0, r) = sides(t + m, H - b - m) if H - b - t > 4 * m else sides(3 * H / 8, 5 * H / 8)
         if l0 is None or r0 is None:
             return None, None
         return tuple(map(int, (t0, b0, l0, r0))), tuple(map(int, (t, b, l, r)))
