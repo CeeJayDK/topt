@@ -386,10 +386,10 @@ BODY = r"""#include "ReShade.fxh"
 	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
 #endif
 #ifndef TOPT_BLUR_DITHER
-	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-6 methods (see the help in the UI)
+	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-10 methods (see the help in the UI)
 #endif
 #ifndef TOPT_DITHER_TEST
-	#define TOPT_DITHER_TEST 0 // 1: show a dark gradient in 7 stripes, dither methods 0-6 from the top
+	#define TOPT_DITHER_TEST 0 // 1: show a dark gradient in 11 stripes, dither methods 0-10 from the top
 #endif
 #ifndef TOPT_BLUR_NOISE
 	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
@@ -645,7 +645,7 @@ float3 TOPT_BlurResolve(float2 uv)
 #endif // TOPT_SMALL
 
 // Noise for the dither and the frosted glass.
-#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0))
+#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || TOPT_BLUR_DITHER == 10 || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0))
 #if TOPT_NEED_BN
 texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
@@ -694,6 +694,12 @@ float3 TOPT_Tri(float3 u)
 //   4 blue noise, triangular, the same in all channels
 //   5 IGN, triangular, per channel (no texture)
 //   6 Bayer 8 x 8 ordered, rectangular, per channel (shifted patterns, no texture)
+// One value, rectangular, added to G and subtracted from R and B (-,+,-): the brightness steps get as
+// small as with three independent channels for the price of one (the colour noise is harder to see):
+//   7 plus dither, 5 levels: (x + 2y) mod 5 as a rank-1 lattice, frac(dot(pos, (1/5, 2/5)) + c)
+//   8 SweetFX 1 ordered dither (CeeJay.dk 2012): frac(dot(pos, (1/16, 10/36)) + 1/4), 144 levels, (+,-,+)
+//   9 IGN (no texture)
+//  10 blue noise (one channel of the texture)
 float3 TOPT_DitherBy(float3 c, float2 pos, int method)
 {
 	pos += float2(32.0, 17.0); // away from the frosted-glass noise
@@ -706,6 +712,13 @@ float3 TOPT_DitherBy(float3 c, float2 pos, int method)
 #endif
 	if (method == 5) d = TOPT_Tri(TOPT_IGN4(pos).rgb);
 	if (method == 6) d = float3(TOPT_Bayer8(pos), TOPT_Bayer8(pos + float2(3.0, 5.0)), TOPT_Bayer8(pos + float2(6.0, 2.0))) - 0.5;
+	const float2 pc = floor(pos) + 0.5; // pixel centre
+	if (method == 7) d = float3(-1.0, 1.0, -1.0) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
+	if (method == 8) d = float3(1.0, -1.0, 1.0) * (0.5 - frac(dot(pc, float2(1.0 / 16.0, 10.0 / 36.0)) + 0.25));
+	if (method == 9) d = float3(-1.0, 1.0, -1.0) * (TOPT_IGN(floor(pos)) - 0.5);
+#if TOPT_NEED_BN
+	if (method == 10) d = float3(-1.0, 1.0, -1.0) * (TOPT_BN(pos).r - 0.5);
+#endif
 	return c + d / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
 }
 float3 TOPT_Dither(float3 c, float2 pos)
@@ -718,10 +731,10 @@ float3 TOPT_Dither(float3 c, float2 pos)
 }
 
 // Dither test: a dark warm gradient (0 to 1/8 across the screen: 32 levels on 8-bit screens, wide
-// bands) in 7 stripes, dither methods 0 (none) to 6 from the top.
+// bands) in 11 stripes, dither methods 0 (none) to 10 from the top.
 float3 TOPT_DitherTest(float2 uv, float2 pos)
 {
-	const int method = min(6, (int)(uv.y * 7.0));
+	const int method = min(10, (int)(uv.y * 11.0));
 	return TOPT_DitherBy(uv.x * 0.125 * float3(1.0, 0.75, 0.5), pos, method);
 }
 """
@@ -745,9 +758,11 @@ uniform int TOPT_Help <
 		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
 		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
 		"  4 blue noise triangular same in all channels, 5 IGN triangular per channel (no texture),\n"
-		"  6 Bayer 8x8 ordered per channel (no texture).\n"
+		"  6 Bayer 8x8 ordered per channel (no texture),\n"
+		"  one value as (-,+,-) on R, G, B (no texture unless 10): 7 plus dither (5 levels),\n"
+		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular.\n"
 		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
-		"  1: show a dark gradient in 7 stripes, dither methods 0-6 from the top.\n"
+		"  1: show a dark gradient in 11 stripes, dither methods 0-10 from the top.\n"
 		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
 		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
 		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
