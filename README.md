@@ -163,6 +163,10 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   of the cards with a TexBench report (topt/gpu_profiles.json has every
   reported GPU) instead of the approximate family ranges, once the reports
   show how many distinct tables that needs (it must stay manageable).
+* Waiting for reports from GPUs that compress render targets (GPU Blueprint:
+  none of the current test cards do): try `ClearRenderTargets = true` on
+  Movie Night's strip passes (they draw only part of each buffer; a cleared
+  rest may compress) and keep it if it is faster.
 * Movie Night (`fx/MovieNight.fx`, CeeJay.dk's effect on the topt blur, written
   by `scripts/make_effect.py` from `scripts/movienight.py`): the black bars of
   letterboxed / pillarboxed video show a blurred continuation of the picture.

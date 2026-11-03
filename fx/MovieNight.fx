@@ -815,10 +815,11 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 	lines from that screen edge inward:
 	1. The pure black edge: a probe tests two lines at once, MN_DETECT_K bilinear reads at the corners
 	   between 2 x 2 pixels along them (any light above 0 in 4 pixels per read). Top first (first probe
-	   at the 2.35:1 bar), bottom from the top's result (mirrored), then left and right (first probe at
-	   the 4:3 bar) on the rows between them. Each search first tests the two outermost lines, so a side
-	   without a bar costs one probe. The bottom is read only in the outer fifth at each end, where
-	   subtitles do not come.
+	   at the 2.35:1 bar) across the whole width; then left and right (first probe at the 4:3 bar) on the
+	   rows between the top bar and its mirror, so subtitles in a bottom bar do not count; then the bottom
+	   (first probe at the top's result) in the outer fifth of the picture's width at each end, where
+	   subtitles do not come. Each search first tests the two outermost lines, so a side without a bar
+	   costs one probe.
 	2. Then the near-black edge (compression bleed) next to it: up to MN_BLEED_MAX more lines whose point
 	   reads (2 x MN_DETECT_K, pixel centres) are all below Edge feather. Searching for near black only
 	   after the pure black edge keeps a dark frame from passing for a bar. The bars include these lines,
@@ -918,15 +919,19 @@ float4 MN_DetectPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 
 	const float W = BUFFER_WIDTH, H = BUFFER_HEIGHT;
 	float4 pure, bars;
+	// top across the whole width; left / right on the rows between the top bar and its mirror (not in a
+	// bottom bar's subtitles); the bottom in the outer fifths of the picture's width (subtitles sit in the
+	// middle, and with side bars the screen's outer fifths are all black)
 	pure.x = MN_Search(0, round(max(H - W / 2.35, 4.) * 0.5), floor(H * 0.5), float2(0., W));
-	pure.y = MN_Search(1, max(pure.x, 2.), floor(H * 0.5), float2(0., W));
 	bars.x = MN_Refine(0, pure.x, float2(0., W));
-	bars.y = MN_Refine(1, pure.y, float2(0., W));
-	const float2 rows = float2(bars.x, H - bars.y);
+	const float2 rows = float2(bars.x, H - bars.x);
 	pure.z = MN_Search(2, round(max(W - H * 4. / 3., 4.) * 0.5), floor(W * 0.5), rows);
 	pure.w = MN_Search(3, max(pure.z, 2.), floor(W * 0.5), rows);
 	bars.z = MN_Refine(2, pure.z, rows);
 	bars.w = MN_Refine(3, pure.w, rows);
+	const float2 cols = float2(bars.z, W - bars.w);
+	pure.y = MN_Search(1, max(pure.x, 2.), floor(H * 0.5), cols);
+	bars.y = MN_Refine(1, pure.y, cols);
 	const bool valid = pure.x + pure.y < 0.9 * H && pure.z + pure.w < 0.9 * W; // not a black frame
 
 	const float2 state = tex2Dfetch(MN_sBars, int2(2, 0)).xy; // the frame it last ran, a valid frame this run

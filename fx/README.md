@@ -138,17 +138,19 @@ smooth change over twice the side bar's width.
   binary search over the lines from the screen edge inward:
   1. the pure black edge: a probe reads 16 points at the corners between
      2 x 2 pixels along two lines (any light above 0 in 4 pixels per read);
-     top first (first probe at the 2.35:1 bar), bottom from the top's result
-     mirrored and read only in the outer fifth at each end (no subtitles
-     there), then left / right (first probe at the 4:3 bar) on the rows
-     between them; each search first tests the two outermost lines, so a side
-     without a bar costs one probe;
+     top first across the whole width (first probe at the 2.35:1 bar), then
+     left / right (first probe at the 4:3 bar) on the rows between the top
+     bar and its mirror (so subtitles in a bottom bar do not count), then the
+     bottom (first probe at the top's result) in the outer fifth of the
+     picture's width at each end, where subtitles do not come (the screen's
+     outer fifths would be all black with side bars); each search first tests
+     the two outermost lines, so a side without a bar costs one probe;
   2. then the near-black lines next to it (compression bleed), up to 16 lines
      at 1080p (32 at 4K) whose 32 point reads are all below Edge feather.
      Near black is searched only next to a pure black edge, so a dark frame
      does not pass for a bar. The bars include these lines and the glow
      covers them.
-  ~200-450 reads in all. It keeps the smallest bars over the frames it runs
+  ~200-650 reads in all. It keeps the smallest bars over the frames it runs
   (dark picture lines at the edge can make one frame's bars too large) and
   skips almost black frames.
 * `MOVIENIGHT_SOFT_GLOW`: the glow gets wider towards the outer edge of the
