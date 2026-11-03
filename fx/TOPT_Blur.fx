@@ -36,10 +36,10 @@
 	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
 #endif
 #ifndef TOPT_BLUR_DITHER
-	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-10 methods (see the help in the UI)
+	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-12 methods (see the help in the UI)
 #endif
 #ifndef TOPT_DITHER_TEST
-	#define TOPT_DITHER_TEST 0 // 1: show a dark gradient in 11 stripes, dither methods 0-10 from the top
+	#define TOPT_DITHER_TEST 0 // 1: show a dark gradient in 13 stripes, dither methods 0-12 from the top
 #endif
 #ifndef TOPT_BLUR_NOISE
 	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
@@ -350,6 +350,22 @@ float3 TOPT_Tri(float3 u)
 //   8 SweetFX 1 ordered dither (CeeJay.dk 2012): frac(dot(pos, (1/16, 10/36)) + 1/4), 144 levels, (+,-,+)
 //   9 IGN (no texture)
 //  10 blue noise (one channel of the texture)
+//  11 R2 ordered dither: frac(dot(pos, (0.7548777, 0.5698403))), the best of scripts.dither_lattice
+//  12 rank-1 lattice of 32 levels, (8 x + 13 y) / 32 (Fibonacci-like), the best lattice there
+// t - round(t): an ordered dither's value in (-0.5, 0.5). NVIDIA runs round / frac at a quarter rate
+// (half on Turing), so there the add-round is cheaper: adding 1.5 * 2^23 rounds to an integer (|t| <=
+// 2^22), precise keeps the compiler from folding it away; frac elsewhere (sopt's OpBench, see
+// results/dither_lattice.md). The same values (the lattices never land on a tie).
+float TOPT_Centre(float t)
+{
+#if __VENDOR__ == 0x10DE
+	precise float r = (t + 12582912.0) - 12582912.0;
+	return t - r;
+#else
+	return frac(t + 0.5) - 0.5;
+#endif
+}
+
 float3 TOPT_DitherBy(float3 c, float2 pos, int method)
 {
 	pos += float2(32.0, 17.0); // away from the frosted-glass noise
@@ -362,10 +378,12 @@ float3 TOPT_DitherBy(float3 c, float2 pos, int method)
 #endif
 	if (method == 5) d = TOPT_Tri(TOPT_IGN4(pos).rgb);
 	if (method == 6) d = float3(TOPT_Bayer8(pos), TOPT_Bayer8(pos + float2(3.0, 5.0)), TOPT_Bayer8(pos + float2(6.0, 2.0))) - 0.5;
-	const float2 pc = floor(pos) + 0.5; // pixel centre
+	const float2 pc = pos; // pixel centres: SV_Position plus whole offsets (no floor needed)
 	if (method == 7) d = float3(-1.0, 1.0, -1.0) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
 	if (method == 8) d = float3(1.0, -1.0, 1.0) * (0.5 - frac(dot(pc, float2(1.0 / 16.0, 10.0 / 36.0)) + 0.25));
 	if (method == 9) d = float3(-1.0, 1.0, -1.0) * (TOPT_IGN(floor(pos)) - 0.5);
+	if (method == 11) d = float3(-1.0, 1.0, -1.0) * TOPT_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
+	if (method == 12) d = float3(-1.0, 1.0, -1.0) * TOPT_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
 #if TOPT_NEED_BN
 	if (method == 10) d = float3(-1.0, 1.0, -1.0) * (TOPT_BN(pos).r - 0.5);
 #endif
@@ -381,10 +399,10 @@ float3 TOPT_Dither(float3 c, float2 pos)
 }
 
 // Dither test: a dark warm gradient (0 to 1/8 across the screen: 32 levels on 8-bit screens, wide
-// bands) in 11 stripes, dither methods 0 (none) to 10 from the top.
+// bands) in 13 stripes, dither methods 0 (none) to 12 from the top.
 float3 TOPT_DitherTest(float2 uv, float2 pos)
 {
-	const int method = min(10, (int)(uv.y * 11.0));
+	const int method = min(12, (int)(uv.y * 13.0));
 	return TOPT_DitherBy(uv.x * 0.125 * float3(1.0, 0.75, 0.5), pos, method);
 }
 
@@ -408,9 +426,10 @@ uniform int TOPT_Help <
 		"  4 blue noise triangular same in all channels, 5 IGN triangular per channel (no texture),\n"
 		"  6 Bayer 8x8 ordered per channel (no texture),\n"
 		"  one value as (-,+,-) on R, G, B (no texture unless 10): 7 plus dither (5 levels),\n"
-		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular.\n"
+		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular,\n"
+		"  11 R2 ordered (no texture), 12 lattice of 32 levels (8, 13) / 32 (no texture).\n"
 		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
-		"  1: show a dark gradient in 11 stripes, dither methods 0-10 from the top.\n"
+		"  1: show a dark gradient in 13 stripes, dither methods 0-12 from the top.\n"
 		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
 		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
 		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
