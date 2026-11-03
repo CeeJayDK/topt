@@ -8,6 +8,9 @@ Conventions
   (dx, dy) offset, given in *source* texels.
 * Every tap is one hardware bilinear fetch. Addressing mode defaults to MIRROR
   (D3D semantics: texel -1 -> 0, -2 -> 1, ...), since clamping would vignette.
+* The filter's weights have only 8 bits of subtexel precision on real GPUs (the D3D11 spec's
+  minimum, and every TexBench report so far): the sample position snaps to the nearest 1/256
+  of a texel. SUBTEXEL_BITS models it (None = exact); pass subtexel_bits to override.
 """
 from __future__ import annotations
 
@@ -78,6 +81,9 @@ def _warp(f: np.ndarray, warp: str | None) -> np.ndarray:
     raise ValueError(warp)
 
 
+SUBTEXEL_BITS: int | None = 8
+
+
 @lru_cache(maxsize=4096)
 def interp_matrix(n_dst: int, n_src: int, offset: float, warp: str | None = None,
                   address: str = "mirror", subtexel_bits: int | None = None) -> sp.csr_matrix:
@@ -119,6 +125,9 @@ def _variant_matrix(p: Pass, hd: int, wd: int, hs: int, ws: int, address: str) -
             cx, cy = ox + dx, oy + dy
             x0, y0 = np.floor(cx).astype(np.int64), np.floor(cy).astype(np.int64)
             fx, fy = cx - x0, cy - y0
+            if SUBTEXEL_BITS is not None:
+                q = float(1 << SUBTEXEL_BITS)
+                fx, fy = np.round(fx * q) / q, np.round(fy * q) / q
             for ax, ay, wt in ((0, 0, (1 - fx) * (1 - fy)), (1, 0, fx * (1 - fy)),
                                (0, 1, (1 - fx) * fy), (1, 1, fx * fy)):
                 c_x, c_y = x0 + ax, y0 + ay
@@ -135,6 +144,7 @@ def _variant_matrix(p: Pass, hd: int, wd: int, hs: int, ws: int, address: str) -
 
 def run_pass(p: Pass, src: np.ndarray, full_shape: tuple, address: str = "mirror",
              subtexel_bits: int | None = None) -> np.ndarray:
+    subtexel_bits = SUBTEXEL_BITS if subtexel_bits is None else subtexel_bits
     H, W = full_shape
     hd, wd = max(1, H // p.div), max(1, W // p.div)
     hs, ws = src.shape
@@ -205,6 +215,6 @@ def run_1d(pl: Pipeline, vec: np.ndarray, axis: int, address: str = "mirror") ->
         j = pl.src_index(i)
         src = vec if j < 0 else bufs[j]
         nd = max(1, len(vec) // p.div)
-        m = sum(w * interp_matrix(nd, len(src), o, p.warp, address) for o, w in factor_taps(p.taps)[axis])
+        m = sum(w * interp_matrix(nd, len(src), o, p.warp, address, SUBTEXEL_BITS) for o, w in factor_taps(p.taps)[axis])
         bufs.append(m @ src)
     return bufs[-1]

@@ -114,12 +114,12 @@ See `results/analysis.md` / `results/analysis_4k.md` (winners), `results/hybrid*
 * Low-res blur: one 2D pass is cheapest while it needs few fetches; a separable
   H + V pair wins for wider low-res kernels (x2: sigma 3, 150 vs 174 us; x4:
   sigma 7-12, 89-91 vs up to 138 us; x8: sigma 20-26).
-* Blend state as the final lerp (`TOPT_BLUR_BLEND`): moves the mix with the
+* Blend state as the final lerp (`BLUR_BLEND`): moves the mix with the
   screen to the output merger; the composite loses one fetch and 3-7 VALU
   (RDNA3 ISA) when Strength < 1. The model counts it as free unless the
   composite is texture-bound; it also frees one "free" tap for a larger
   upsampler. To be timed.
-* Brightness-only blurs (`TOPT_BLUR_LUMA`, one-channel R16F / R8 buffers):
+* Brightness-only blurs (`BLUR_LUMA`, one-channel R16F / R8 buffers):
   10-30 us cheaper at sigma 2-6 (sigma 3: 145 -> 115 us), nothing from
   sigma ~16 up; R8 is no faster than R16F (it writes slower, see below), where the low-res buffers are already tiny and the cost is the
   full-res read and the composite. Keeping colour at a lower resolution than

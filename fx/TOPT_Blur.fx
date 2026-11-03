@@ -11,327 +11,327 @@
   independent of the blur size above sigma ~8. Size 1 is a single pass: an
   exact Gaussian pinwheel of 2x2 texel blocks (sigma 0.7..1.3).
 
-  Use it as is, or call TOPT_BlurResolve(uv) from your own final pass after
-  running the TOPT_Down / TOPT_Blur (H/V) passes.
+  Use it as is, or call BLUR_Resolve(uv) from your own final pass after
+  running the BLUR_Down / BLUR_Gauss (H/V) passes.
 */
 
 #include "ReShade.fxh"
 
-#ifndef TOPT_BLUR_SIZE
-	#define TOPT_BLUR_SIZE 16 // blur sigma in pixels at 1080p (integer, 1..200; 1 = single pass, 0.7..1.3 with the fine-tune); scales with resolution
+#ifndef BLUR_SIZE
+	#define BLUR_SIZE 16 // blur sigma in pixels at 1080p (integer, 1..200; 1 = single pass, 0.7..1.3 with the fine-tune); scales with resolution
 #endif
-#ifndef TOPT_BLUR_FORMAT
-	#define TOPT_BLUR_FORMAT RGB10A2 // intermediate format; R11G11B10F keeps HDR (> 1) values
+#ifndef BLUR_FORMAT
+	#define BLUR_FORMAT RGB10A2 // intermediate format; R11G11B10F keeps HDR (> 1) values
 #endif
-#ifndef TOPT_BLUR_LUMA
-	#define TOPT_BLUR_LUMA 0 // 1: blur brightness only (one-channel buffers); the composite keeps the colour detail
+#ifndef BLUR_LUMA
+	#define BLUR_LUMA 0 // 1: blur brightness only (one-channel buffers); the composite keeps the colour detail
 #endif
-#ifndef TOPT_BLUR_LUMA_FORMAT
-	#define TOPT_BLUR_LUMA_FORMAT R16F // brightness-only buffers: R16F or R8
+#ifndef BLUR_LUMA_FORMAT
+	#define BLUR_LUMA_FORMAT R16F // brightness-only buffers: R16F or R8
 #endif
-#ifndef TOPT_BLUR_FROST
-	#define TOPT_BLUR_FROST 0 // 1: scatter the final read inside a disk (frosted glass)
+#ifndef BLUR_FROST
+	#define BLUR_FROST 0 // 1: scatter the final read inside a disk (frosted glass)
 #endif
-#ifndef TOPT_BLUR_FROST_SHARE
-	#define TOPT_BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
+#ifndef BLUR_FROST_SHARE
+	#define BLUR_FROST_SHARE 30 // frosted glass: % the blur is made narrower; the scatter makes up the width
 #endif
-#ifndef TOPT_BLUR_DITHER
-	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-12 methods (see the help in the UI)
+#ifndef BLUR_DITHER
+	#define BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-12 methods (see the help in the UI)
 #endif
-#ifndef TOPT_DITHER_TEST
-	#define TOPT_DITHER_TEST 0 // 1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top
+#ifndef BLUR_DITHER_TEST
+	#define BLUR_DITHER_TEST 0 // 1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top
 #endif
-#ifndef TOPT_BLUR_NOISE
-	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
-		#define TOPT_BLUR_NOISE TOPT_BLUR_FROST_NOISE
+#ifndef BLUR_NOISE
+	#ifdef BLUR_FROST_NOISE // the earlier name
+		#define BLUR_NOISE BLUR_FROST_NOISE
 	#else
-		#define TOPT_BLUR_NOISE 0 // dither / frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RGBA8.png), 1 IGN
+		#define BLUR_NOISE 0 // dither / frosted glass noise: 0 blue-noise texture (Textures/topt_bn64_RGBA8.png), 1 IGN
 	#endif
 #endif
-#ifndef TOPT_BLUR_BLEND
-	#define TOPT_BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
+#ifndef BLUR_BLEND
+	#define BLUR_BLEND 0 // 1: blend with the screen by the output-merger blend state instead of in the shader
 #endif
 
-#define TOPT_STR2(x) #x
-#define TOPT_STR(x) TOPT_STR2(x) // a definition's value as text (for the help in the UI)
+#define BLUR_STR2(x) #x
+#define BLUR_STR(x) BLUR_STR2(x) // a definition's value as text (for the help in the UI)
 
-#ifndef TOPT_NEED_TEX
-	#define TOPT_NEED_TEX 0 // an effect built on the blur reads the blue-noise texture itself
+#ifndef BLUR_NEED_TEX
+	#define BLUR_NEED_TEX 0 // an effect built on the blur reads the blue-noise texture itself
 #endif
-#ifndef TOPT_NEED_NOISE
-	#define TOPT_NEED_NOISE TOPT_BLUR_FROST // the scatter noise (TOPT_Noise2) is used
+#ifndef BLUR_NEED_NOISE
+	#define BLUR_NEED_NOISE BLUR_FROST // the scatter noise (BLUR_Noise2) is used
 #endif
-#if TOPT_BLUR_FROST
-	#define TOPT_BLUR_KEEP (100 - TOPT_BLUR_FROST_SHARE) // % of the blur width the blur passes make
+#if BLUR_FROST
+	#define BLUR_KEEP (100 - BLUR_FROST_SHARE) // % of the blur width the blur passes make
 #else
-	#define TOPT_BLUR_KEEP 100
+	#define BLUR_KEEP 100
 #endif
-#define TOPT_SIGMA_SCREEN (TOPT_BLUR_SIZE * TOPT_BLUR_KEEP * BUFFER_HEIGHT / 108000)
+#define BLUR_SIGMA_SCREEN (BLUR_SIZE * BLUR_KEEP * BUFFER_HEIGHT / 108000)
 
-uniform float TOPT_SizeTune <
+uniform float BLUR_SizeTune <
 	ui_type = "slider"; ui_min = 0.7; ui_max = 1.33;
 	ui_label = "Size fine-tune";
-	ui_tooltip = "Multiplies the blur size set by TOPT_BLUR_SIZE.\nThe usable range of each size class is limited; the blur stops growing at its edges.";
-> = 1.0;
+	ui_tooltip = "Multiplies the blur size set by BLUR_SIZE.\nThe usable range of each size class is limited; the blur stops growing at its edges.";
+> = 1.;
 
-// Size class: chosen at compile time from the blur size, the resolution and the GPU (TOPT_GPU forces a
+// Size class: chosen at compile time from the blur size, the resolution and the GPU (BLUR_GPU forces a
 // GPU's table), with its constants.
 #include "TOPT_BlurTables.fxh"
 
-sampler TOPT_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
-#ifndef TOPT_SRC_UV
-	#define TOPT_SRC_UV(uv) (uv) // where the first downsample reads the screen (an effect can clamp it to a region)
+sampler BLUR_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; AddressV = MIRROR; };
+#ifndef BLUR_SRC_UV
+	#define BLUR_SRC_UV(uv) (uv) // where the first downsample reads the screen (an effect can clamp it to a region)
 #endif
-#ifndef TOPT_LOW_UV
-	#define TOPT_LOW_UV(uv, px) (uv) // where the later passes read a low-res level of texel size px (likewise)
+#ifndef BLUR_LOW_UV
+	#define BLUR_LOW_UV(uv, px) (uv) // where the later passes read a low-res level of texel size px (likewise)
 #endif
 
-static const float3 TOPT_LUMA = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
-#if TOPT_BLUR_LUMA && !TOPT_SMALL
-	#define TOPT_FMT TOPT_BLUR_LUMA_FORMAT
-	#define TOPT_T float
-	#define TOPT_CH r
-	#define TOPT_TO_LOW(c) dot(c, TOPT_LUMA)
-	#define TOPT_OUT(c) float4(c, 0.0, 0.0, 1.0)
+static const float3 BLUR_LUMA_W = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
+#if BLUR_LUMA && !BLUR_SMALL
+	#define BLUR_FMT BLUR_LUMA_FORMAT
+	#define BLUR_T float
+	#define BLUR_CH r
+	#define BLUR_TO_LOW(c) dot(c, BLUR_LUMA_W)
+	#define BLUR_OUT(c) float4(c, 0., 0., 1.)
 #else
-	#define TOPT_FMT TOPT_BLUR_FORMAT
-	#define TOPT_T float3
-	#define TOPT_CH rgb
-	#define TOPT_TO_LOW(c) c
-	#define TOPT_OUT(c) float4(c, 1.0)
+	#define BLUR_FMT BLUR_FORMAT
+	#define BLUR_T float3
+	#define BLUR_CH rgb
+	#define BLUR_TO_LOW(c) c
+	#define BLUR_OUT(c) float4(c, 1.)
 #endif
 
-#if TOPT_SMALL
+#if BLUR_SMALL
 // Single pass: centre texel + 4-fold pinwheel of 2x2 texel blocks, each block's
 // Gaussian weights reproduced exactly by one bilinear fetch.
-float3 TOPT_BlurResolve(float2 uv)
+float3 BLUR_Resolve(float2 uv)
 {
-	const float sigma = clamp(TOPT_BLUR_SIZE * TOPT_BLUR_KEEP * TOPT_SizeTune * BUFFER_HEIGHT / 108000.0, 0.7, 1.3);
+	const float sigma = clamp(BLUR_SIZE * BLUR_KEEP * BLUR_SizeTune * BUFFER_HEIGHT / 108000., 0.7, 1.3);
 	const float k = -0.5 / (sigma * sigma);
-	const int n = TOPT_ARM_BLOCKS(sigma); // blocks per arm: the same for every pixel
-	float3 c = tex2Dlod(TOPT_sBackBuffer, float4(uv, 0.0, 0.0)).rgb;
-	float wsum = 1.0;
+	const int n = BLUR_ARM_BLOCKS(sigma); // blocks per arm: the same for every pixel
+	float3 c = tex2Dlod(BLUR_sBackBuffer, float4(uv, 0., 0.)).rgb;
+	float wsum = 1.;
 	[unroll] for (int i = 0; i < 4; i++)
 	{
 		[branch] if (i < n)
 		{
-			const float2 b = TOPT_ARM[i];
-			const float4 g = exp(k * float4(b.x, b.x + 1.0, b.y, b.y + 1.0) * float4(b.x, b.x + 1.0, b.y, b.y + 1.0));
+			const float2 b = BLUR_ARM[i];
+			const float4 g = exp(k * float4(b.x, b.x + 1., b.y, b.y + 1.) * float4(b.x, b.x + 1., b.y, b.y + 1.));
 			const float2 o = float2(b.x + g.y / (g.x + g.y), b.y + g.w / (g.z + g.w)); // pixels
 			const float w = (g.x + g.y) * (g.z + g.w);
-			c += w * (tex2Dlod(TOPT_sBackBuffer, float4(uv + o * BUFFER_PIXEL_SIZE, 0.0, 0.0)).rgb
-			        + tex2Dlod(TOPT_sBackBuffer, float4(uv + float2(-o.y, o.x) * BUFFER_PIXEL_SIZE, 0.0, 0.0)).rgb
-			        + tex2Dlod(TOPT_sBackBuffer, float4(uv - o * BUFFER_PIXEL_SIZE, 0.0, 0.0)).rgb
-			        + tex2Dlod(TOPT_sBackBuffer, float4(uv + float2(o.y, -o.x) * BUFFER_PIXEL_SIZE, 0.0, 0.0)).rgb);
-			wsum += 4.0 * w;
+			c += w * (tex2Dlod(BLUR_sBackBuffer, float4(uv + o * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(-o.y, o.x) * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv - o * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(o.y, -o.x) * BUFFER_PIXEL_SIZE, 0., 0.)).rgb);
+			wsum += 4. * w;
 		}
 	}
 	return c / wsum;
 }
 #else
-#define TOPT_RMAX 9   // low-res kernel radius limit (texels)
-#define TOPT_NP ((TOPT_RMAX + 1) / 2) // max merged pairs per side
+#define BLUR_RMAX 9   // low-res kernel radius limit (texels)
+#define BLUR_NP ((BLUR_RMAX + 1) / 2) // max merged pairs per side
 
-#define TOPT_DIV1 TOPT_F1
-#define TOPT_DIV2 (TOPT_F1 * TOPT_F2)
+#define BLUR_DIV1 BLUR_F1
+#define BLUR_DIV2 (BLUR_F1 * BLUR_F2)
 
-texture TOPT_tDown1 { Width = BUFFER_WIDTH / TOPT_DIV1; Height = BUFFER_HEIGHT / TOPT_DIV1; Format = TOPT_FMT; };
-sampler TOPT_sDown1 { Texture = TOPT_tDown1; AddressU = MIRROR; AddressV = MIRROR; };
-#if TOPT_STEPS > 1
-texture TOPT_tDown2 { Width = BUFFER_WIDTH / TOPT_DIV2; Height = BUFFER_HEIGHT / TOPT_DIV2; Format = TOPT_FMT; };
-sampler TOPT_sDown2 { Texture = TOPT_tDown2; AddressU = MIRROR; AddressV = MIRROR; };
-	#define TOPT_sLow TOPT_sDown2
-	#define TOPT_DIVL TOPT_DIV2
+texture BLUR_tDown1 { Width = BUFFER_WIDTH / BLUR_DIV1; Height = BUFFER_HEIGHT / BLUR_DIV1; Format = BLUR_FMT; };
+sampler BLUR_sDown1 { Texture = BLUR_tDown1; AddressU = MIRROR; AddressV = MIRROR; };
+#if BLUR_STEPS > 1
+texture BLUR_tDown2 { Width = BUFFER_WIDTH / BLUR_DIV2; Height = BUFFER_HEIGHT / BLUR_DIV2; Format = BLUR_FMT; };
+sampler BLUR_sDown2 { Texture = BLUR_tDown2; AddressU = MIRROR; AddressV = MIRROR; };
+	#define BLUR_sLow BLUR_sDown2
+	#define BLUR_DIVL BLUR_DIV2
 #else
-	#define TOPT_sLow TOPT_sDown1
-	#define TOPT_DIVL TOPT_DIV1
+	#define BLUR_sLow BLUR_sDown1
+	#define BLUR_DIVL BLUR_DIV1
 #endif
-#if TOPT_SEP
-texture TOPT_tBlurH { Width = BUFFER_WIDTH / TOPT_DIVL; Height = BUFFER_HEIGHT / TOPT_DIVL; Format = TOPT_FMT; };
-sampler TOPT_sBlurH { Texture = TOPT_tBlurH; AddressU = MIRROR; AddressV = MIRROR; };
+#if BLUR_SEP
+texture BLUR_tGaussH { Width = BUFFER_WIDTH / BLUR_DIVL; Height = BUFFER_HEIGHT / BLUR_DIVL; Format = BLUR_FMT; };
+sampler BLUR_sGaussH { Texture = BLUR_tGaussH; AddressU = MIRROR; AddressV = MIRROR; };
 #endif
-texture TOPT_tBlur { Width = BUFFER_WIDTH / TOPT_DIVL; Height = BUFFER_HEIGHT / TOPT_DIVL; Format = TOPT_FMT; };
-sampler TOPT_sBlur { Texture = TOPT_tBlur; AddressU = MIRROR; AddressV = MIRROR; };
-#if TOPT_UPSTEPS > 1 // intermediate x2 upsample to 1/(DIVL/2) resolution
-	#define TOPT_DIVU (TOPT_DIVL / 2)
-texture TOPT_tUp { Width = BUFFER_WIDTH / TOPT_DIVU; Height = BUFFER_HEIGHT / TOPT_DIVU; Format = TOPT_FMT; };
-sampler TOPT_sUp { Texture = TOPT_tUp; AddressU = MIRROR; AddressV = MIRROR; };
-	#define TOPT_sFinal TOPT_sUp
-	#define TOPT_DIVF TOPT_DIVU
+texture BLUR_tGauss { Width = BUFFER_WIDTH / BLUR_DIVL; Height = BUFFER_HEIGHT / BLUR_DIVL; Format = BLUR_FMT; };
+sampler BLUR_sGauss { Texture = BLUR_tGauss; AddressU = MIRROR; AddressV = MIRROR; };
+#if BLUR_UPSTEPS > 1 // intermediate x2 upsample to 1/(DIVL/2) resolution
+	#define BLUR_DIVU (BLUR_DIVL / 2)
+texture BLUR_tUp { Width = BUFFER_WIDTH / BLUR_DIVU; Height = BUFFER_HEIGHT / BLUR_DIVU; Format = BLUR_FMT; };
+sampler BLUR_sUp { Texture = BLUR_tUp; AddressU = MIRROR; AddressV = MIRROR; };
+	#define BLUR_sFinal BLUR_sUp
+	#define BLUR_DIVF BLUR_DIVU
 #else
-	#define TOPT_sFinal TOPT_sBlur
-	#define TOPT_DIVF TOPT_DIVL
+	#define BLUR_sFinal BLUR_sGauss
+	#define BLUR_DIVF BLUR_DIVL
 #endif
 
-float4 TOPT_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float2 px = BUFFER_PIXEL_SIZE;
-	float3 c = 0.0; // backbuffer colour; converted to brightness once at the end (it is linear)
-	[unroll] for (int i = 0; i < TOPT_ND1; i++)
-		c += TOPT_DOWN1[i].z * tex2Dlod(TOPT_sBackBuffer, float4(TOPT_SRC_UV(uv + TOPT_DOWN1[i].xy * px), 0.0, 0.0)).rgb;
-	return TOPT_OUT(TOPT_TO_LOW(c));
+	float3 c = 0.; // backbuffer colour; converted to brightness once at the end (it is linear)
+	[unroll] for (int i = 0; i < BLUR_ND1; i++)
+		c += BLUR_DOWN1_W(i) * tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0., 0.)).rgb;
+	return BLUR_OUT(BLUR_TO_LOW(c));
 }
 
-#if TOPT_STEPS > 1
-float4 TOPT_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+#if BLUR_STEPS > 1
+float4 BLUR_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIV1, BUFFER_HEIGHT / TOPT_DIV1);
-	TOPT_T c = 0.0;
-	[unroll] for (int i = 0; i < TOPT_ND2; i++)
-		c += TOPT_DOWN2[i].z * tex2Dlod(TOPT_sDown1, float4(TOPT_LOW_UV(uv + TOPT_DOWN2[i].xy * px, px), 0.0, 0.0)).TOPT_CH;
-	return TOPT_OUT(c);
+	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIV1, BUFFER_HEIGHT / BLUR_DIV1);
+	BLUR_T c = 0.;
+	[unroll] for (int i = 0; i < BLUR_ND2; i++)
+		c += BLUR_DOWN2_W(i) * tex2Dlod(BLUR_sDown1, float4(BLUR_LOW_UV(uv + BLUR_DOWN2[i].xy * px, px), 0., 0.)).BLUR_CH;
+	return BLUR_OUT(c);
 }
 #endif
 
 // Low-res Gaussian: width from the requested blur size, pairs of texels merged
 // into one bilinear fetch; one 2D pass (outer product) or H then V passes.
-float TOPT_LowSigma()
+float BLUR_LowSigma()
 {
-	const float sigma = TOPT_BLUR_SIZE * TOPT_BLUR_KEEP * TOPT_SizeTune * BUFFER_HEIGHT / 108000.0;
-	return clamp(sqrt(max(sigma * sigma - TOPT_C, 0.0) / TOPT_B), TOPT_SL_MIN, TOPT_SL_MAX);
+	const float sigma = BLUR_SIZE * BLUR_KEEP * BLUR_SizeTune * BUFFER_HEIGHT / 108000.;
+	return clamp(sqrt(max(sigma * sigma - BLUR_C, 0.) / BLUR_B), BLUR_SL_MIN, BLUR_SL_MAX);
 }
 
 // Pair m >= 1 of the 1D kernel (texels 2m-1 and 2m, the second only if within r)
 // as (offset, weight); k = -1 / (2 sl^2).
-float2 TOPT_Pair(int m, float k, int r)
+float2 BLUR_Pair(int m, float k, int r)
 {
 	const float j = 2 * m - 1;
 	const float a = exp(k * j * j);
-	const float b = j + 1.0 <= r ? exp(k * (j + 1.0) * (j + 1.0)) : 0.0;
+	const float b = j + 1. <= r ? exp(k * (j + 1.) * (j + 1.)) : 0.;
 	return float2(j + b / (a + b), a + b);
 }
 
-float4 TOPT_BlurPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_GaussPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
-	const float sl = TOPT_LowSigma();
-	const int r = min(TOPT_RMAX, (int)ceil(2.5 * sl));
+	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
+	const float sl = BLUR_LowSigma();
+	const int r = min(BLUR_RMAX, (int)ceil(2.5 * sl));
 	const int np = (r + 1) / 2; // pairs used; the same for every pixel, so the branches never diverge
 	const float k = -0.5 / (sl * sl);
 
-	float2 t[TOPT_NP + 1];
-	t[0] = float2(0.0, 1.0);
-	float wsum = 1.0;
-	[unroll] for (int m = 1; m <= TOPT_NP; m++)
+	float2 t[BLUR_NP + 1];
+	t[0] = float2(0., 1.);
+	float wsum = 1.;
+	[unroll] for (int m = 1; m <= BLUR_NP; m++)
 	{
-		t[m] = TOPT_Pair(m, k, r);
-		wsum += m <= np ? 2.0 * t[m].y : 0.0;
+		t[m] = BLUR_Pair(m, k, r);
+		wsum += m <= np ? 2. * t[m].y : 0.;
 	}
 
-	TOPT_T c = 0.0;
-	[unroll] for (int y = -TOPT_NP; y <= TOPT_NP; y++)
+	BLUR_T c = 0.;
+	[unroll] for (int y = -BLUR_NP; y <= BLUR_NP; y++)
 	{
 		[branch] if (abs(y) <= np)
 		{
 			const float2 ty = t[abs(y)];
-			[unroll] for (int x = -TOPT_NP; x <= TOPT_NP; x++)
+			[unroll] for (int x = -BLUR_NP; x <= BLUR_NP; x++)
 			{
 				[branch] if (abs(x) <= np)
 				{
 					const float2 tx = t[abs(x)];
 					const float2 o = float2(x < 0 ? -tx.x : tx.x, y < 0 ? -ty.x : ty.x);
-					c += tx.y * ty.y * tex2Dlod(TOPT_sLow, float4(TOPT_LOW_UV(uv + o * px, px), 0.0, 0.0)).TOPT_CH;
+					c += tx.y * ty.y * tex2Dlod(BLUR_sLow, float4(BLUR_LOW_UV(uv + o * px, px), 0., 0.)).BLUR_CH;
 				}
 			}
 		}
 	}
-	return TOPT_OUT(c / (wsum * wsum));
+	return BLUR_OUT(c / (wsum * wsum));
 }
 
-#if TOPT_SEP
-TOPT_T TOPT_Blur1D(sampler s, float2 uv, float2 dir)
+#if BLUR_SEP
+BLUR_T BLUR_Gauss1D(sampler s, float2 uv, float2 dir)
 {
-	const float2 d = dir / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
-	const float sl = TOPT_LowSigma();
-	const int r = min(TOPT_RMAX, (int)ceil(2.5 * sl));
+	const float2 d = dir / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
+	const float sl = BLUR_LowSigma();
+	const int r = min(BLUR_RMAX, (int)ceil(2.5 * sl));
 	const int np = (r + 1) / 2;
 	const float k = -0.5 / (sl * sl);
 
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
-	TOPT_T c = tex2Dlod(s, float4(TOPT_LOW_UV(uv, px), 0.0, 0.0)).TOPT_CH;
-	float wsum = 1.0;
-	[unroll] for (int m = 1; m <= TOPT_NP; m++)
+	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
+	BLUR_T c = tex2Dlod(s, float4(BLUR_LOW_UV(uv, px), 0., 0.)).BLUR_CH;
+	float wsum = 1.;
+	[unroll] for (int m = 1; m <= BLUR_NP; m++)
 	{
 		[branch] if (m <= np)
 		{
-			const float2 p = TOPT_Pair(m, k, r);
-			c += p.y * (tex2Dlod(s, float4(TOPT_LOW_UV(uv + p.x * d, px), 0.0, 0.0)).TOPT_CH
-			          + tex2Dlod(s, float4(TOPT_LOW_UV(uv - p.x * d, px), 0.0, 0.0)).TOPT_CH);
-			wsum += 2.0 * p.y;
+			const float2 p = BLUR_Pair(m, k, r);
+			c += p.y * (tex2Dlod(s, float4(BLUR_LOW_UV(uv + p.x * d, px), 0., 0.)).BLUR_CH
+			          + tex2Dlod(s, float4(BLUR_LOW_UV(uv - p.x * d, px), 0., 0.)).BLUR_CH);
+			wsum += 2. * p.y;
 		}
 	}
 	return c / wsum;
 }
 
-float4 TOPT_BlurHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_GaussHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return TOPT_OUT(TOPT_Blur1D(TOPT_sLow, uv, float2(1.0, 0.0)));
+	return BLUR_OUT(BLUR_Gauss1D(BLUR_sLow, uv, float2(1., 0.)));
 }
 
-float4 TOPT_BlurVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_GaussVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return TOPT_OUT(TOPT_Blur1D(TOPT_sBlurH, uv, float2(0.0, 1.0)));
+	return BLUR_OUT(BLUR_Gauss1D(BLUR_sGaussH, uv, float2(0., 1.)));
 }
 #endif
 
-#if TOPT_UPSTEPS > 1
-float4 TOPT_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+#if BLUR_UPSTEPS > 1
+float4 BLUR_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVL, BUFFER_HEIGHT / TOPT_DIVL);
-	TOPT_T c = 0.0;
-	[unroll] for (int i = 0; i < TOPT_NUP; i++)
-		c += TOPT_UP[i].z * tex2Dlod(TOPT_sBlur, float4(TOPT_LOW_UV(uv + TOPT_UP[i].xy * px, px), 0.0, 0.0)).TOPT_CH;
-	return TOPT_OUT(c);
+	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
+	BLUR_T c = 0.;
+	[unroll] for (int i = 0; i < BLUR_NUP; i++)
+		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sGauss, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0., 0.)).BLUR_CH;
+	return BLUR_OUT(c);
 }
 #endif
 
 // The blurred image at uv (full resolution): smooth upsample of the low-res
 // blur. Call this from your own composite pass.
-float3 TOPT_BlurResolve(float2 uv)
+float3 BLUR_Resolve(float2 uv)
 {
-	const float2 px = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVF, BUFFER_HEIGHT / TOPT_DIVF);
-	TOPT_T c = 0.0;
-	[unroll] for (int i = 0; i < TOPT_NUP; i++)
-		c += TOPT_UP[i].z * tex2Dlod(TOPT_sFinal, float4(TOPT_LOW_UV(uv + TOPT_UP[i].xy * px, px), 0.0, 0.0)).TOPT_CH;
+	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVF, BUFFER_HEIGHT / BLUR_DIVF);
+	BLUR_T c = 0.;
+	[unroll] for (int i = 0; i < BLUR_NUP; i++)
+		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sFinal, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0., 0.)).BLUR_CH;
 	return c; // brightness-only: the blurred luma in all three channels
 }
-#endif // TOPT_SMALL
+#endif // BLUR_SMALL
 
 // Noise for the dither and the frosted glass.
-#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || TOPT_BLUR_DITHER == 10 || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0) || TOPT_NEED_TEX)
-#if TOPT_NEED_BN
-texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
-sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+#define BLUR_NEED_BN (BLUR_DITHER_TEST || (BLUR_DITHER >= 1 && BLUR_DITHER <= 4) || BLUR_DITHER == 10 || (BLUR_NEED_NOISE && BLUR_NOISE == 0) || BLUR_NEED_TEX)
+#if BLUR_NEED_BN
+texture BLUR_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
+sampler BLUR_sBN { Texture = BLUR_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 // Four independent blue-noise values in (0, 1) (64 x 64 void-and-cluster, one per channel), centred on
 // the 256 levels so they are symmetric about 0.5.
-float4 TOPT_BN(float2 pos) { return tex2Dlod(TOPT_sBN, float4((floor(pos) + 0.5) / 64.0, 0.0, 0.0)) * (255.0 / 256.0) + 0.5 / 256.0; }
+float4 BLUR_BN(float2 pos) { return tex2Dlod(BLUR_sBN, float4((floor(pos) + 0.5) / 64., 0., 0.)) * (255. / 256.) + 0.5 / 256.; }
 #endif
 // Interleaved gradient noise (Jimenez 2014), four decorrelated copies.
-float TOPT_IGN(float2 p) { return frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))); }
-float4 TOPT_IGN4(float2 pos)
+float BLUR_IGN(float2 p) { return frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))); }
+float4 BLUR_IGN4(float2 pos)
 {
 	const float2 p = floor(pos);
-	return float4(TOPT_IGN(p), TOPT_IGN(p + float2(47.0, 17.0)), TOPT_IGN(p + float2(13.0, 61.0)), TOPT_IGN(p + float2(71.0, 29.0)));
+	return float4(BLUR_IGN(p), BLUR_IGN(p + float2(47., 17.)), BLUR_IGN(p + float2(13., 61.)), BLUR_IGN(p + float2(71., 29.)));
 }
-float2 TOPT_Noise2(float2 pos) // frosted glass
+float2 BLUR_Noise2(float2 pos) // frosted glass
 {
-#if TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0
-	return TOPT_BN(pos).rg;
+#if BLUR_NEED_NOISE && BLUR_NOISE == 0
+	return BLUR_BN(pos).rg;
 #else
-	return TOPT_IGN4(pos).rg;
+	return BLUR_IGN4(pos).rg;
 #endif
 }
 
 // Ordered dither: 8 x 8 Bayer threshold in [0, 1) from the pixel position (float-only, works on D3D9).
-float TOPT_Bayer2(float2 p) { p = floor(p); return frac(p.x * 0.5 + p.y * p.y * 0.75); }
-float TOPT_Bayer8(float2 p) { return TOPT_Bayer2(p * 0.25) * 0.0625 + TOPT_Bayer2(p * 0.5) * 0.25 + TOPT_Bayer2(p) + 0.0078125; }
+float BLUR_Bayer2(float2 p) { p = floor(p); return frac(p.x * 0.5 + p.y * p.y * 0.75); }
+float BLUR_Bayer8(float2 p) { return BLUR_Bayer2(p * 0.25) * 0.0625 + BLUR_Bayer2(p * 0.5) * 0.25 + BLUR_Bayer2(p) + 0.0078125; }
 
 // Uniform (0, 1) -> triangular in (-1, 1) by the inverse distribution: one value per channel keeps the
 // noise's spectrum (blue stays blue).
-float3 TOPT_Tri(float3 u)
+float3 BLUR_Tri(float3 u)
 {
-	const float3 v = 2.0 * u - 1.0;
-	return sign(v) * (1.0 - sqrt(1.0 - abs(v)));
+	const float3 v = 2. * u - 1.;
+	return sign(v) * (1. - sqrt(1. - abs(v)));
 }
 
 #ifndef BUFFER_COLOR_BIT_DEPTH
@@ -359,43 +359,43 @@ float3 TOPT_Tri(float3 u)
 // (half on Turing), so there the add-round is cheaper: adding 1.5 * 2^23 rounds to an integer (|t| <=
 // 2^22), precise keeps the compiler from folding it away; frac elsewhere (sopt's OpBench, see
 // results/dither_lattice.md). The same values (the lattices never land on a tie).
-float TOPT_Centre(float t)
+float BLUR_Centre(float t)
 {
 #if __VENDOR__ == 0x10DE
-	precise float r = (t + 12582912.0) - 12582912.0;
+	precise float r = (t + 12582912.) - 12582912.;
 	return t - r;
 #else
 	return frac(t + 0.5) - 0.5;
 #endif
 }
 
-float3 TOPT_DitherBy(float3 c, float2 pos, int method)
+float3 BLUR_DitherBy(float3 c, float2 pos, int method)
 {
-	pos += float2(32.0, 17.0); // away from the frosted-glass noise
-	float3 d = 0.0;
-#if TOPT_NEED_BN
-	if (method == 1) d = TOPT_Tri(TOPT_BN(pos).rgb);
-	if (method == 2) d = TOPT_BN(pos).rgb + TOPT_BN(pos + float2(11.0, 45.0)).rgb - 1.0;
-	if (method == 3) d = TOPT_BN(pos).rgb - 0.5;
-	if (method == 4) d = TOPT_Tri(TOPT_BN(pos).rrr);
+	pos += float2(32., 17.); // away from the frosted-glass noise
+	float3 d = 0.;
+#if BLUR_NEED_BN
+	if (method == 1) d = BLUR_Tri(BLUR_BN(pos).rgb);
+	if (method == 2) d = BLUR_BN(pos).rgb + BLUR_BN(pos + float2(11., 45.)).rgb - 1.;
+	if (method == 3) d = BLUR_BN(pos).rgb - 0.5;
+	if (method == 4) d = BLUR_Tri(BLUR_BN(pos).rrr);
 #endif
-	if (method == 5) d = TOPT_Tri(TOPT_IGN4(pos).rgb);
-	if (method == 6) d = float3(TOPT_Bayer8(pos), TOPT_Bayer8(pos + float2(3.0, 5.0)), TOPT_Bayer8(pos + float2(6.0, 2.0))) - 0.5;
+	if (method == 5) d = BLUR_Tri(BLUR_IGN4(pos).rgb);
+	if (method == 6) d = float3(BLUR_Bayer8(pos), BLUR_Bayer8(pos + float2(3., 5.)), BLUR_Bayer8(pos + float2(6., 2.))) - 0.5;
 	const float2 pc = pos; // pixel centres: SV_Position plus whole offsets (no floor needed)
-	if (method == 7) d = float3(-1.0, 1.0, -1.0) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
-	if (method == 8) d = float3(1.0, -1.0, 1.0) * (0.5 - frac(dot(pc, float2(1.0 / 16.0, 10.0 / 36.0)) + 0.25));
-	if (method == 9) d = float3(-1.0, 1.0, -1.0) * (TOPT_IGN(floor(pos)) - 0.5);
-	if (method == 11) d = float3(-1.0, 1.0, -1.0) * TOPT_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
-	if (method == 12) d = float3(-1.0, 1.0, -1.0) * TOPT_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
-#if TOPT_NEED_BN
-	if (method == 10) d = float3(-1.0, 1.0, -1.0) * (TOPT_BN(pos).r - 0.5);
+	if (method == 7) d = float3(-1., 1., -1.) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
+	if (method == 8) d = float3(1., -1., 1.) * (0.5 - frac(dot(pc, float2(1. / 16., 10. / 36.)) + 0.25));
+	if (method == 9) d = float3(-1., 1., -1.) * (BLUR_IGN(floor(pos)) - 0.5);
+	if (method == 11) d = float3(-1., 1., -1.) * BLUR_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
+	if (method == 12) d = float3(-1., 1., -1.) * BLUR_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
+#if BLUR_NEED_BN
+	if (method == 10) d = float3(-1., 1., -1.) * (BLUR_BN(pos).r - 0.5);
 #endif
-	return c + d / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.0);
+	return c + d / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.);
 }
-float3 TOPT_Dither(float3 c, float2 pos)
+float3 BLUR_Dither(float3 c, float2 pos)
 {
-#if TOPT_BLUR_DITHER
-	return TOPT_DitherBy(c, pos, TOPT_BLUR_DITHER);
+#if BLUR_DITHER
+	return BLUR_DitherBy(c, pos, BLUR_DITHER);
 #else
 	return c;
 #endif
@@ -403,27 +403,28 @@ float3 TOPT_Dither(float3 c, float2 pos)
 
 // Dither test: a grey gradient from 0.25 at the left to 0.75 at the right (bands of 15 px at 1080p
 // on 8-bit screens) in 13 stripes, dither methods 0 (none) to 12 from the top.
-float3 TOPT_DitherTest(float2 uv, float2 pos)
+float3 BLUR_DitherTest(float2 uv, float2 pos)
 {
-	const int method = min(12, (int)(uv.y * 13.0));
-	return TOPT_DitherBy((0.25 + 0.5 * uv.x).xxx, pos, method);
+	const int method = min(12, (int)(uv.y * 13.));
+	return BLUR_DitherBy((0.25 + 0.5 * uv.x).xxx, pos, method);
 }
 
-uniform int TOPT_Help <
+uniform int BLUR_Help <
 	ui_type = "radio"; ui_label = " ";
 	ui_category = "Help: preprocessor definitions"; ui_category_closed = true;
 	ui_text =
+		"Detected GPU architecture: " BLUR_GPU_NAME "\n\n"
 		"Set with the preprocessor definitions below the effect's settings (current value after =).\n\n"
-		"TOPT_BLUR_SIZE = " TOPT_STR(TOPT_BLUR_SIZE) "\n"
+		"BLUR_SIZE = " BLUR_STR(BLUR_SIZE) "\n"
 		"  Blur sigma in pixels at 1080p (1-200; scales with the resolution).\n"
-		"TOPT_BLUR_LUMA = " TOPT_STR(TOPT_BLUR_LUMA) "\n"
+		"BLUR_LUMA = " BLUR_STR(BLUR_LUMA) "\n"
 		"  1: blur the brightness only (one-channel buffers, cheaper); the colour detail stays.\n"
-		"TOPT_BLUR_BLEND = " TOPT_STR(TOPT_BLUR_BLEND) "\n"
+		"BLUR_BLEND = " BLUR_STR(BLUR_BLEND) "\n"
 		"  1: blend with the screen by the blend state instead of in the shader.\n"
-		"TOPT_BLUR_FROST = " TOPT_STR(TOPT_BLUR_FROST) ", TOPT_BLUR_FROST_SHARE = " TOPT_STR(TOPT_BLUR_FROST_SHARE) "\n"
+		"BLUR_FROST = " BLUR_STR(BLUR_FROST) ", BLUR_FROST_SHARE = " BLUR_STR(BLUR_FROST_SHARE) "\n"
 		"  Frosted glass: the blur is made SHARE % narrower and a random scatter of the\n"
 		"  final read makes up the width.\n"
-		"TOPT_BLUR_DITHER = " TOPT_STR(TOPT_BLUR_DITHER) "\n"
+		"BLUR_DITHER = " BLUR_STR(BLUR_DITHER) "\n"
 		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
 		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
 		"  4 blue noise triangular same in all channels, 5 IGN triangular per channel (no texture),\n"
@@ -431,106 +432,106 @@ uniform int TOPT_Help <
 		"  one value as (-,+,-) on R, G, B (no texture unless 10): 7 plus dither (5 levels),\n"
 		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular,\n"
 		"  11 R2 ordered (no texture), 12 lattice of 32 levels (8, 13) / 32 (no texture).\n"
-		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
+		"BLUR_DITHER_TEST = " BLUR_STR(BLUR_DITHER_TEST) "\n"
 		"  1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top.\n"
-		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
+		"BLUR_NOISE = " BLUR_STR(BLUR_NOISE) "\n"
 		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
-		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
+		"BLUR_FORMAT = " BLUR_STR(BLUR_FORMAT) "\n"
 		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
-		"TOPT_GPU = " TOPT_STR(TOPT_GPU) "\n"
+		"BLUR_GPU = " BLUR_STR(BLUR_GPU) "\n"
 		"  The size-class table, picked from your GPU (0 = unknown GPU). Set it to force one.";
 >;
 
-uniform float TOPT_Strength <
-	ui_type = "slider"; ui_min = 0.0; ui_max = 1.0;
+uniform float BLUR_Strength <
+	ui_type = "slider"; ui_min = 0.; ui_max = 1.;
 	ui_label = "Strength";
-> = 1.0;
+> = 1.;
 
-#if TOPT_BLUR_FROST
-uniform float TOPT_FrostRadius <
-	ui_type = "slider"; ui_min = 0.0; ui_max = 32.0;
+#if BLUR_FROST
+uniform float BLUR_FrostRadius <
+	ui_type = "slider"; ui_min = 0.; ui_max = 32.;
 	ui_label = "Extra frosted glass radius (px)";
-	ui_tooltip = "Added to the radius that makes up the blur width TOPT_BLUR_FROST_SHARE takes from the blur.";
-> = 0.0;
+	ui_tooltip = "Added to the radius that makes up the blur width BLUR_FROST_SHARE takes from the blur.";
+> = 0.;
 #endif
 
-uniform bool TOPT_ShowBlur <
+uniform bool BLUR_ShowBlur <
 	ui_label = "Show blur only";
 > = false;
 
 
-#if TOPT_BLUR_FROST
+#if BLUR_FROST
 // Frosted glass: move the final read to a random point in a disk. The blur passes make the blur
-// TOPT_BLUR_FROST_SHARE % narrower; a disk of radius R adds (R / 2)^2 to the variance on each axis, so
-// R = 2 sqrt(sigma^2 - sigma_blur^2) gives the full width back (plus TOPT_FrostRadius).
-float2 TOPT_Frost(float2 pos, float2 uv)
+// BLUR_FROST_SHARE % narrower; a disk of radius R adds (R / 2)^2 to the variance on each axis, so
+// R = 2 sqrt(sigma^2 - sigma_blur^2) gives the full width back (plus BLUR_FrostRadius).
+float2 BLUR_Frost(float2 pos, float2 uv)
 {
-	const float sigma = TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0;
-	const float keep = TOPT_BLUR_KEEP / 100.0;
-	const float radius = 2.0 * sigma * sqrt(1.0 - keep * keep) + TOPT_FrostRadius;
-	const float2 u = TOPT_Noise2(pos);
+	const float sigma = BLUR_SIZE * BLUR_SizeTune * BUFFER_HEIGHT / 1080.;
+	const float keep = BLUR_KEEP / 100.;
+	const float radius = 2. * sigma * sqrt(1. - keep * keep) + BLUR_FrostRadius;
+	const float2 u = BLUR_Noise2(pos);
 	float2 cs; sincos(6.2831853 * u.x, cs.y, cs.x);
 	return uv + cs * (sqrt(u.y) * radius) * BUFFER_PIXEL_SIZE;
 }
 #else
-	#define TOPT_Frost(pos, uv) (uv)
+	#define BLUR_Frost(pos, uv) (uv)
 #endif
 
-#if TOPT_DITHER_TEST
-float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+#if BLUR_DITHER_TEST
+float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(TOPT_DitherTest(uv, pos.xy), 1.0);
+	return float4(BLUR_DitherTest(uv, pos.xy), 1.);
 }
-#elif TOPT_BLUR_LUMA
+#elif BLUR_LUMA
 // Brightness only: replace the pixel's luma with the blurred luma, keep its colour detail.
-float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float yb = dot(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), TOPT_LUMA);
-	if (TOPT_ShowBlur)
-		return float4(TOPT_Dither(yb.xxx, pos.xy), 1.0);
+	const float yb = dot(BLUR_Resolve(BLUR_Frost(pos.xy, uv)), BLUR_LUMA_W);
+	if (BLUR_ShowBlur)
+		return float4(BLUR_Dither(yb.xxx, pos.xy), 1.);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
-	return float4(TOPT_Dither(o + TOPT_Strength * (yb - dot(o, TOPT_LUMA)), pos.xy), 1.0);
+	return float4(BLUR_Dither(o + BLUR_Strength * (yb - dot(o, BLUR_LUMA_W)), pos.xy), 1.);
 }
-#elif TOPT_BLUR_BLEND
+#elif BLUR_BLEND
 // The pass blends: screen = blur * a + screen * (1 - a). The shader neither reads
 // the screen nor lerps. Blending uses the stored (non-sRGB) values, as the
 // shader lerp below does, so the result is the same.
-float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(TOPT_Dither(TOPT_BlurResolve(TOPT_Frost(pos.xy, uv)), pos.xy), TOPT_ShowBlur ? 1.0 : TOPT_Strength);
+	return float4(BLUR_Dither(BLUR_Resolve(BLUR_Frost(pos.xy, uv)), pos.xy), BLUR_ShowBlur ? 1. : BLUR_Strength);
 }
 #else
-float4 TOPT_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
+float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	const float3 blur = TOPT_BlurResolve(TOPT_Frost(pos.xy, uv));
-	if (TOPT_ShowBlur)
-		return float4(TOPT_Dither(blur, pos.xy), 1.0);
+	const float3 blur = BLUR_Resolve(BLUR_Frost(pos.xy, uv));
+	if (BLUR_ShowBlur)
+		return float4(BLUR_Dither(blur, pos.xy), 1.);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
-	return float4(TOPT_Dither(lerp(o, blur, TOPT_Strength), pos.xy), 1.0);
+	return float4(BLUR_Dither(lerp(o, blur, BLUR_Strength), pos.xy), 1.);
 }
 #endif
 
-technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the size with the TOPT_BLUR_SIZE preprocessor definition (sigma in pixels at 1080p)."; >
+technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the size with the BLUR_SIZE preprocessor definition (sigma in pixels at 1080p)."; >
 {
-#if !TOPT_SMALL
-	pass Down1 { VertexShader = PostProcessVS; PixelShader = TOPT_Down1PS; RenderTarget = TOPT_tDown1; }
-#if TOPT_STEPS > 1
-	pass Down2 { VertexShader = PostProcessVS; PixelShader = TOPT_Down2PS; RenderTarget = TOPT_tDown2; }
+#if !BLUR_SMALL
+	pass Down1 { VertexShader = PostProcessVS; PixelShader = BLUR_Down1PS; RenderTarget = BLUR_tDown1; }
+#if BLUR_STEPS > 1
+	pass Down2 { VertexShader = PostProcessVS; PixelShader = BLUR_Down2PS; RenderTarget = BLUR_tDown2; }
 #endif
-#if TOPT_SEP
-	pass BlurH { VertexShader = PostProcessVS; PixelShader = TOPT_BlurHPS; RenderTarget = TOPT_tBlurH; }
-	pass BlurV { VertexShader = PostProcessVS; PixelShader = TOPT_BlurVPS; RenderTarget = TOPT_tBlur; }
+#if BLUR_SEP
+	pass BlurH { VertexShader = PostProcessVS; PixelShader = BLUR_GaussHPS; RenderTarget = BLUR_tGaussH; }
+	pass BlurV { VertexShader = PostProcessVS; PixelShader = BLUR_GaussVPS; RenderTarget = BLUR_tGauss; }
 #else
-	pass Blur { VertexShader = PostProcessVS; PixelShader = TOPT_BlurPS; RenderTarget = TOPT_tBlur; }
+	pass Blur { VertexShader = PostProcessVS; PixelShader = BLUR_GaussPS; RenderTarget = BLUR_tGauss; }
 #endif
-#if TOPT_UPSTEPS > 1
-	pass Up { VertexShader = PostProcessVS; PixelShader = TOPT_UpPS; RenderTarget = TOPT_tUp; }
+#if BLUR_UPSTEPS > 1
+	pass Up { VertexShader = PostProcessVS; PixelShader = BLUR_UpPS; RenderTarget = BLUR_tUp; }
 #endif
 #endif
 	pass Composite
 	{
-		VertexShader = PostProcessVS; PixelShader = TOPT_CompositePS;
-#if TOPT_BLUR_BLEND && !TOPT_BLUR_LUMA
+		VertexShader = PostProcessVS; PixelShader = BLUR_CompositePS;
+#if BLUR_BLEND && !BLUR_LUMA
 		BlendEnable = true; BlendOp = ADD; SrcBlend = SRCALPHA; DestBlend = INVSRCALPHA;
 		RenderTargetWriteMask = 7; // keep the screen's alpha
 #endif

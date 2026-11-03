@@ -50,19 +50,20 @@ HEAD = r"""/*------------------.
 	  then the near-black compression bleed next to it, which the glow then
 	  covers) and stores them for the Bars setting "Detected".
 	* Test option: fill the whole bars (ignore their content).
-	* Blue-noise dither against banding (TOPT_BLUR_DITHER, on by default;
-	  needs Textures/topt_bn64_RGBA8.png, or TOPT_BLUR_NOISE 1 for IGN);
+	* Blue-noise dither against banding (BLUR_DITHER, on by default;
+	  needs Textures/topt_bn64_RGBA8.png, or BLUR_NOISE 1 for IGN);
 	  independent noise per colour channel.
 */
 
 #ifndef MOVIENIGHT_BLUR_SIZE
 	#define MOVIENIGHT_BLUR_SIZE 32 // blur sigma in pixels at 1080p (2..200); scales with resolution
 #endif
-#define TOPT_BLUR_SIZE MOVIENIGHT_BLUR_SIZE
+#undef BLUR_SIZE // the blur size is MOVIENIGHT_BLUR_SIZE here
+#define BLUR_SIZE MOVIENIGHT_BLUR_SIZE
 #ifndef MOVIENIGHT_SOFT_GLOW
 	#define MOVIENIGHT_SOFT_GLOW 0 // wider glow towards the outer edge of the bars: 0 off, 1 ring of 8 reads, 2 frosted-glass scatter
 #endif
-#define TOPT_NEED_TEX (MOVIENIGHT_SOFT_GLOW == 2) // the frosted glass reads the blue-noise texture
+#define BLUR_NEED_TEX (MOVIENIGHT_SOFT_GLOW == 2) // the frosted glass reads the blue-noise texture
 #ifndef MOVIENIGHT_DETECT_MS
 	#define MOVIENIGHT_DETECT_MS 1000 // how long the bar detection runs when switched on (ms); the bars it keeps are the smallest it saw
 #endif
@@ -173,10 +174,10 @@ float2 MN_Inside(float2 uv, float2 px)
 {
 	return clamp(uv, (ceil(MN_PicMin() / px - 0.5) + 0.5) * px, (floor(MN_PicMax() / px - 0.5) + 0.5) * px);
 }
-#define TOPT_SRC_UV(uv) MN_Inside(uv, MN_PX)
-#define TOPT_LOW_UV(uv, px) MN_Inside(uv, px)
-#undef TOPT_BLUR_FROST
-#define TOPT_BLUR_FROST 0 // the frosted-glass scatter is TOPT_Blur's composite; not used here
+#define BLUR_SRC_UV(uv) MN_Inside(uv, MN_PX)
+#define BLUR_LOW_UV(uv, px) MN_Inside(uv, px)
+#undef BLUR_FROST
+#define BLUR_FROST 0 // the frosted-glass scatter is TOPT_Blur's composite; not used here
 
 """
 
@@ -185,15 +186,16 @@ uniform int MN_Help <
 	ui_type = "radio"; ui_label = " ";
 	ui_category = "Help: preprocessor definitions"; ui_category_closed = true;
 	ui_text =
+		"Detected GPU architecture: " BLUR_GPU_NAME "\n\n"
 		"Set with the preprocessor definitions below the effect's settings (current value after =).\n\n"
-		"MOVIENIGHT_BLUR_SIZE = " TOPT_STR(MOVIENIGHT_BLUR_SIZE) "\n"
+		"MOVIENIGHT_BLUR_SIZE = " BLUR_STR(MOVIENIGHT_BLUR_SIZE) "\n"
 		"  Blur sigma in pixels at 1080p (at least 2 px on screen; scales with the resolution).\n"
-		"MOVIENIGHT_SOFT_GLOW = " TOPT_STR(MOVIENIGHT_SOFT_GLOW) "\n"
+		"MOVIENIGHT_SOFT_GLOW = " BLUR_STR(MOVIENIGHT_SOFT_GLOW) "\n"
 		"  Wider glow towards the outer edge of the bars (Soft glow slider), in the final pass:\n"
 		"  0 off, 1 a ring of 8 reads, 2 frosted glass (one read of the zoomed blue noise).\n"
-		"MOVIENIGHT_DETECT_MS = " TOPT_STR(MOVIENIGHT_DETECT_MS) "\n"
+		"MOVIENIGHT_DETECT_MS = " BLUR_STR(MOVIENIGHT_DETECT_MS) "\n"
 		"  How long \"Movie Night: detect bars\" runs when switched on (ms); it keeps the smallest bars it saw.\n"
-		"TOPT_BLUR_DITHER = " TOPT_STR(TOPT_BLUR_DITHER) "\n"
+		"BLUR_DITHER = " BLUR_STR(BLUR_DITHER) "\n"
 		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
 		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
 		"  4 blue noise triangular same in all channels, 5 IGN triangular per channel (no texture),\n"
@@ -201,15 +203,15 @@ uniform int MN_Help <
 		"  one value as (-,+,-) on R, G, B (no texture unless 10): 7 plus dither (5 levels),\n"
 		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular,\n"
 		"  11 R2 ordered (no texture), 12 lattice of 32 levels (8, 13) / 32 (no texture).\n"
-		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
+		"BLUR_DITHER_TEST = " BLUR_STR(BLUR_DITHER_TEST) "\n"
 		"  1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top.\n"
-		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
+		"BLUR_FORMAT = " BLUR_STR(BLUR_FORMAT) "\n"
 		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
-		"TOPT_GPU = " TOPT_STR(TOPT_GPU) "\n"
+		"BLUR_GPU = " BLUR_STR(BLUR_GPU) "\n"
 		"  The size-class table, picked from your GPU (0 = unknown GPU). Set it to force one.";
 >;
 
-#if TOPT_SMALL
+#if BLUR_SMALL
 	#error "Movie Night needs a blur of at least 2 px at this resolution: raise MOVIENIGHT_BLUR_SIZE"
 #endif
 
@@ -238,7 +240,7 @@ float2 MN_Map(float2 uv)
 }
 
 // The blur's sigma on screen (pixels).
-float MN_Sigma() { return TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0; }
+float MN_Sigma() { return BLUR_SIZE * BLUR_SizeTune * BUFFER_HEIGHT / 1080.0; }
 
 #if MOVIENIGHT_SOFT_GLOW
 // The soft glow's largest radius at Soft glow 1 (pixels): reads on a circle of radius rho (the ring, or one
@@ -250,7 +252,7 @@ float MN_SoftMax() { return SoftGlow * 2.5 * MN_Sigma(); }
 // 3 sigma plus the downsample footprint, plus the soft glow's radius.
 float2 MN_Reach()
 {
-	float r = 3.0 * MN_Sigma() + 2.0 * TOPT_DIVL;
+	float r = 3.0 * MN_Sigma() + 2.0 * BLUR_DIVL;
 #if MOVIENIGHT_SOFT_GLOW
 	r += MN_SoftMax();
 #endif
@@ -354,7 +356,7 @@ float MN_Depth(float2 uv)
 
 #if MOVIENIGHT_SOFT_GLOW == 2
 // The blue noise, bilinear: zoomed, it changes smoothly from pixel to pixel.
-sampler MN_sBNLinear { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = LINEAR; MinFilter = LINEAR; MipFilter = LINEAR; };
+sampler MN_sBNLinear { Texture = BLUR_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = LINEAR; MinFilter = LINEAR; MipFilter = LINEAR; };
 #endif
 
 #if MOVIENIGHT_SOFT_GLOW == 1
@@ -369,18 +371,18 @@ float3 MN_Glow(float2 uv, float2 pos)
 	const float2 p = MN_Map(uv);
 #if MOVIENIGHT_SOFT_GLOW == 1
 	// a ring of 8 bilinear reads of the blur's last level around p; it takes over from the smooth
-	// upsample (TOPT_BlurResolve) while the radius grows to half the sigma
+	// upsample (BLUR_Resolve) while the radius grows to half the sigma
 	const float rho = smoothstep(0.0, 1.0, MN_Depth(uv)) * MN_SoftMax();
 	const float w = saturate(2.0 * rho / MN_Sigma());
 	float3 c = 0.0;
 	[branch] if (w < 1.0)
-		c = (1.0 - w) * TOPT_BlurResolve(p);
+		c = (1.0 - w) * BLUR_Resolve(p);
 	[branch] if (w > 0.0)
 	{
-		const float2 fpx = 1.0 / float2(BUFFER_WIDTH / TOPT_DIVF, BUFFER_HEIGHT / TOPT_DIVF);
-		TOPT_T r = 0.0;
+		const float2 fpx = 1.0 / float2(BUFFER_WIDTH / BLUR_DIVF, BUFFER_HEIGHT / BLUR_DIVF);
+		BLUR_T r = 0.0;
 		[unroll] for (int i = 0; i < 8; i++)
-			r += tex2Dlod(TOPT_sFinal, float4(MN_Inside(p + MN_RING[i] * rho * MN_PX, fpx), 0.0, 0.0)).TOPT_CH;
+			r += tex2Dlod(BLUR_sFinal, float4(MN_Inside(p + MN_RING[i] * rho * MN_PX, fpx), 0.0, 0.0)).BLUR_CH;
 		c += (0.125 * w) * r;
 	}
 	return c;
@@ -391,9 +393,9 @@ float3 MN_Glow(float2 uv, float2 pos)
 	float2 o;
 	sincos(6.2831853 * n, o.y, o.x);
 	const float r = smoothstep(0.0, 1.0, MN_Depth(uv)) * MN_SoftMax();
-	return TOPT_BlurResolve(p + o * r * MN_PX);
+	return BLUR_Resolve(p + o * r * MN_PX);
 #else
-	return TOPT_BlurResolve(p);
+	return BLUR_Resolve(p);
 #endif
 }
 
@@ -415,14 +417,14 @@ float MN_Cover(float3 c, float2 uv)
 
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
-#if TOPT_DITHER_TEST
-	return TOPT_DitherTest(texcoord, vpos.xy);
+#if BLUR_DITHER_TEST
+	return BLUR_DitherTest(texcoord, vpos.xy);
 #else
 	const float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
 	const float a = FillAll ? 0.0 : MN_Cover(color, texcoord);
 	float3 o = color;
 	[branch] if (a < 1.0) // subtitles skip the glow
-		o = lerp(TOPT_Dither(MN_Glow(texcoord, vpos.xy) * Opacity, vpos.xy), color, a);
+		o = lerp(BLUR_Dither(MN_Glow(texcoord, vpos.xy) * Opacity, vpos.xy), color, a);
 	return saturate(o);
 #endif
 }
@@ -577,18 +579,18 @@ technique MovieNight
 {
 	pass Detect { VertexShader = PostProcessVS; PixelShader = MN_DetectPS; RenderTarget = MN_tDetect; }
 	pass Store { VertexShader = PostProcessVS; PixelShader = MN_StorePS; RenderTarget = MN_tBars; }
-	pass Down1 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_Down1PS; RenderTarget = TOPT_tDown1; }
-#if TOPT_STEPS > 1
-	pass Down2 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_Down2PS; RenderTarget = TOPT_tDown2; }
+	pass Down1 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_Down1PS; RenderTarget = BLUR_tDown1; }
+#if BLUR_STEPS > 1
+	pass Down2 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_Down2PS; RenderTarget = BLUR_tDown2; }
 #endif
-#if TOPT_SEP
-	pass BlurH { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_BlurHPS; RenderTarget = TOPT_tBlurH; }
-	pass BlurV { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_BlurVPS; RenderTarget = TOPT_tBlur; }
+#if BLUR_SEP
+	pass GaussH { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussHPS; RenderTarget = BLUR_tGaussH; }
+	pass GaussV { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussVPS; RenderTarget = BLUR_tGauss; }
 #else
-	pass Blur { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_BlurPS; RenderTarget = TOPT_tBlur; }
+	pass Gauss { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussPS; RenderTarget = BLUR_tGauss; }
 #endif
-#if TOPT_UPSTEPS > 1
-	pass Up { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = TOPT_UpPS; RenderTarget = TOPT_tUp; }
+#if BLUR_UPSTEPS > 1
+	pass Up { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_UpPS; RenderTarget = BLUR_tUp; }
 #endif
 	pass Bars { PrimitiveTopology = TRIANGLELIST; VertexCount = 12; VertexShader = MN_BarsVS; PixelShader = MN_BarsPS; }
 }
