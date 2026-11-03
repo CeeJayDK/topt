@@ -119,17 +119,26 @@ smooth change over twice the side bar's width.
   content, e.g. to see side bars on full-screen video.
 * Bar detection: the technique "Movie Night: detect bars" (`timeout` =
   `MOVIENIGHT_DETECT_MS`, default 1000 ms: switch it on, it switches itself
-  off; it must come before MovieNight) writes the bars to a 2 x 1 texture that
-  MovieNight reads with Bars = Detected. One pixel runs a binary search per
-  bar over the lines from the screen edge inward; a probe reads 16 points at
-  the corners between 2 x 2 pixels along two lines (any light in 4 pixels
-  per read). Top first (first probe at the 2.35:1 bar), bottom from the top's
-  result mirrored, then left / right (first probe at the 4:3 bar) on the rows
-  between them; each search first tests the two outermost lines, so a side
-  without a bar costs one probe (~200-400 reads in all). It keeps the
-  smallest bars over the frames it runs (a dark scene can hide the
-  picture's edge) and skips almost black frames. Light is anything above 0,
-  so edge bleed counts as picture.
+  off) only marks the frames it runs in; MovieNight's first pass (3 pixels,
+  idle otherwise) then searches the screen before it draws, so the order of
+  the techniques does not matter. Bars = Detected uses the result (a 3 x 1
+  texture, kept until the effect reloads). One pixel searches each bar by
+  binary search over the lines from the screen edge inward:
+  1. the pure black edge: a probe reads 16 points at the corners between
+     2 x 2 pixels along two lines (any light above 0 in 4 pixels per read);
+     top first (first probe at the 2.35:1 bar), bottom from the top's result
+     mirrored and read only in the outer fifth at each end (no subtitles
+     there), then left / right (first probe at the 4:3 bar) on the rows
+     between them; each search first tests the two outermost lines, so a side
+     without a bar costs one probe;
+  2. then the near-black lines next to it (compression bleed), up to 16 lines
+     at 1080p (32 at 4K) whose 32 point reads are all below Edge feather.
+     Near black is searched only next to a pure black edge, so a dark frame
+     does not pass for a bar. The bars include these lines and the glow
+     covers them.
+  ~200-450 reads in all. It keeps the smallest bars over the frames it runs
+  (dark picture lines at the edge can make one frame's bars too large) and
+  skips almost black frames.
 * `MOVIENIGHT_SOFT_GLOW`: the glow gets wider towards the outer edge of the
   bars (smoothstep from the picture edge to the screen edge, scaled by Soft
   glow), in the final pass, no extra passes. 1: a ring of 8 bilinear reads
