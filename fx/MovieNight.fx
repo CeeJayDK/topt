@@ -29,9 +29,13 @@
 	* Each bar zooms the picture towards the centre across itself only (top /
 	  bottom vertically, left / right horizontally), both in the corners, with
 	  a smooth change between them.
-	* Bar content: black shows the glow, near black (a subtitle's shadow)
-	  lies over it as a shadow, brighter (subtitles) covers it. Near the
-	  picture edge, compression bleed (almost black) counts as black.
+	* Bar content: pure black shows the glow; Feather lets near black (from
+	  0 up to its level) show it too, fading out, so a near-black subtitle
+	  shadow lies over the glow; Edge feather does the same next to the
+	  picture (compression bleed).
+	* Bar detection: the technique "Movie Night: detect bars" finds the bars
+	  (a binary search from 2.35:1 / 4:3 guesses) and stores them for the
+	  Bars setting "Detected".
 	* Test option: fill the whole bars (ignore their content).
 	* Blue-noise dither against banding (TOPT_BLUR_DITHER, on by default;
 	  needs Textures/topt_bn64_RGBA8.png, or TOPT_BLUR_NOISE 1 for IGN);
@@ -45,7 +49,17 @@
 #ifndef MOVIENIGHT_SOFT_GLOW
 	#define MOVIENIGHT_SOFT_GLOW 0 // wider glow towards the outer edge of the bars: 0 off, 1 ring of 8 reads, 2 frosted-glass scatter
 #endif
-#define TOPT_NEED_NOISE (MOVIENIGHT_SOFT_GLOW == 2) // the scatter's noise
+#define TOPT_NEED_TEX (MOVIENIGHT_SOFT_GLOW == 2) // the frosted glass reads the blue-noise texture
+#ifndef MOVIENIGHT_DETECT_MS
+	#define MOVIENIGHT_DETECT_MS 1000 // how long the bar detection runs when switched on (ms); the bars it keeps are the smallest it saw
+#endif
+
+uniform int BarSource <
+	ui_type = "combo"; ui_items = "Manual (the sliders below)\0Detected (run the technique Movie Night: detect bars)\0";
+	ui_label = "Bars";
+	ui_tooltip = "Detected: the bars the technique \"Movie Night: detect bars\" found (switch it on for a moment\n"
+	             "while the video plays; it switches itself off). It must come before MovieNight in the list.";
+> = 0;
 
 uniform float Top <
 	ui_type = "drag"; ui_min = 0.0; ui_max = 1000.0; ui_step = 1.0;
@@ -81,25 +95,33 @@ uniform float SoftGlow <
 > = 1.0;
 #endif
 
-uniform float ShadowLevel <
-	ui_type = "drag"; ui_min = 0.01; ui_max = 0.25; ui_step = 0.005;
-	ui_label = "Shadow level";
-	ui_tooltip = "Bar pixels are laid over the glow with an opacity that grows with their brightness:\n"
-	             "black shows the glow, this level and brighter (subtitles) cover it, in between is a shadow.\n"
-	             "Set the player's subtitle shadow to near black (below this level) to keep it over the glow.";
-> = 0.06;
+#if MOVIENIGHT_SOFT_GLOW == 2
+uniform float FrostGrain <
+	ui_type = "drag"; ui_min = 1.0; ui_max = 64.0; ui_step = 1.0;
+	ui_label = "Frost grain (px)";
+	ui_tooltip = "Size of the frosted glass' bumps: the noise is zoomed by this much, so the scatter\n"
+	             "glides from one direction to the next like glass (1: every pixel jumps).";
+> = 8.0;
+#endif
 
-uniform float EdgeBleed <
-	ui_type = "drag"; ui_min = 0.0; ui_max = 0.25; ui_step = 0.005;
-	ui_label = "Edge bleed level";
-	ui_tooltip = "Video compression can leave the bars almost black next to the picture (edge bleed).\n"
-	             "Near the picture edge, bar pixels up to this level count as black.";
-> = 0.06;
+uniform float Feather <
+	ui_type = "drag"; ui_min = 0.0; ui_max = 64.0; ui_step = 1.0;
+	ui_label = "Feather (8-bit levels)";
+	ui_tooltip = "Away from the picture edge: bar pixels from 0 up to this level get the glow, less of it the\n"
+	             "brighter they are, so near black (a subtitle's shadow) lies over the glow. 0: only pure black.";
+> = 0.0;
+
+uniform float EdgeFeather <
+	ui_type = "drag"; ui_min = 0.0; ui_max = 64.0; ui_step = 1.0;
+	ui_label = "Edge feather (8-bit levels)";
+	ui_tooltip = "The same next to the picture edge, where video compression leaves the bars almost black\n"
+	             "(edge bleed). Changes to Feather over Edge feather width.";
+> = 16.0;
 
 uniform float EdgeWidth <
 	ui_type = "drag"; ui_min = 1.0; ui_max = 64.0; ui_step = 1.0;
-	ui_label = "Edge bleed width (px)";
-	ui_tooltip = "How far into the bars the edge bleed level applies (it fades out over this distance).";
+	ui_label = "Edge feather width (px)";
+	ui_tooltip = "How far into the bars Edge feather applies (it changes to Feather over this distance).";
 > = 16.0;
 
 uniform bool FillAll <
@@ -115,9 +137,16 @@ uniform float Zoom <
 
 static const float2 MN_PX = float2(BUFFER_RCP_WIDTH, BUFFER_RCP_HEIGHT);
 
+// The detected bars (px): texel 0 (top, bottom, left, right), texel 1 (frame, run state) (MN_DetectPS).
+texture MN_tBars { Width = 2; Height = 1; Format = RGBA32F; };
+sampler MN_sBars { Texture = MN_tBars; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+
+// The bars in pixels: top, bottom, left, right.
+float4 MN_Bars() { return BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right); }
+
 // The picture rectangle (uv), between the bars.
-float2 MN_PicMin() { return float2(Left, Top) * MN_PX; }
-float2 MN_PicMax() { return 1.0 - float2(Right, Bottom) * MN_PX; }
+float2 MN_PicMin() { return MN_Bars().zx * MN_PX; }
+float2 MN_PicMax() { return 1.0 - MN_Bars().wy * MN_PX; }
 
 // The blur works on the picture only: its passes draw only inside the picture (MN_StripVS) and read
 // the screen, and each low-res level, clamped to the centres of the pixels / texels inside it, so
@@ -155,7 +184,7 @@ float2 MN_Inside(float2 uv, float2 px)
 	#define TOPT_BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-12 methods (see the help in the UI)
 #endif
 #ifndef TOPT_DITHER_TEST
-	#define TOPT_DITHER_TEST 0 // 1: show a dark gradient in 13 stripes, dither methods 0-12 from the top
+	#define TOPT_DITHER_TEST 0 // 1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top
 #endif
 #ifndef TOPT_BLUR_NOISE
 	#ifdef TOPT_BLUR_FROST_NOISE // the earlier name
@@ -171,6 +200,9 @@ float2 MN_Inside(float2 uv, float2 px)
 #define TOPT_STR2(x) #x
 #define TOPT_STR(x) TOPT_STR2(x) // a definition's value as text (for the help in the UI)
 
+#ifndef TOPT_NEED_TEX
+	#define TOPT_NEED_TEX 0 // an effect built on the blur reads the blue-noise texture itself
+#endif
 #ifndef TOPT_NEED_NOISE
 	#define TOPT_NEED_NOISE TOPT_BLUR_FROST // the scatter noise (TOPT_Noise2) is used
 #endif
@@ -411,7 +443,7 @@ float3 TOPT_BlurResolve(float2 uv)
 #endif // TOPT_SMALL
 
 // Noise for the dither and the frosted glass.
-#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || TOPT_BLUR_DITHER == 10 || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0))
+#define TOPT_NEED_BN (TOPT_DITHER_TEST || (TOPT_BLUR_DITHER >= 1 && TOPT_BLUR_DITHER <= 4) || TOPT_BLUR_DITHER == 10 || (TOPT_NEED_NOISE && TOPT_BLUR_NOISE == 0) || TOPT_NEED_TEX)
 #if TOPT_NEED_BN
 texture TOPT_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler TOPT_sBN { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
@@ -514,12 +546,12 @@ float3 TOPT_Dither(float3 c, float2 pos)
 #endif
 }
 
-// Dither test: a dark warm gradient (0 to 1/8 across the screen: 32 levels on 8-bit screens, wide
-// bands) in 13 stripes, dither methods 0 (none) to 12 from the top.
+// Dither test: a grey gradient from 0.25 at the left to 0.75 at the right (bands of 15 px at 1080p
+// on 8-bit screens) in 13 stripes, dither methods 0 (none) to 12 from the top.
 float3 TOPT_DitherTest(float2 uv, float2 pos)
 {
 	const int method = min(12, (int)(uv.y * 13.0));
-	return TOPT_DitherBy(uv.x * 0.125 * float3(1.0, 0.75, 0.5), pos, method);
+	return TOPT_DitherBy((0.25 + 0.5 * uv.x).xxx, pos, method);
 }
 
 uniform int MN_Help <
@@ -531,7 +563,9 @@ uniform int MN_Help <
 		"  Blur sigma in pixels at 1080p (at least 2 px on screen; scales with the resolution).\n"
 		"MOVIENIGHT_SOFT_GLOW = " TOPT_STR(MOVIENIGHT_SOFT_GLOW) "\n"
 		"  Wider glow towards the outer edge of the bars (Soft glow slider), in the final pass:\n"
-		"  0 off, 1 a ring of 8 reads, 2 a frosted-glass scatter (one noise read).\n"
+		"  0 off, 1 a ring of 8 reads, 2 frosted glass (one read of the zoomed blue noise).\n"
+		"MOVIENIGHT_DETECT_MS = " TOPT_STR(MOVIENIGHT_DETECT_MS) "\n"
+		"  How long \"Movie Night: detect bars\" runs when switched on (ms); it keeps the smallest bars it saw.\n"
 		"TOPT_BLUR_DITHER = " TOPT_STR(TOPT_BLUR_DITHER) "\n"
 		"  Dither against banding: 0 off, 1 blue noise triangular per channel (one read),\n"
 		"  2 blue noise triangular per channel (two reads), 3 blue noise rectangular per channel,\n"
@@ -541,9 +575,7 @@ uniform int MN_Help <
 		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular,\n"
 		"  11 R2 ordered (no texture), 12 lattice of 32 levels (8, 13) / 32 (no texture).\n"
 		"TOPT_DITHER_TEST = " TOPT_STR(TOPT_DITHER_TEST) "\n"
-		"  1: show a dark gradient in 13 stripes, dither methods 0-12 from the top.\n"
-		"TOPT_BLUR_NOISE = " TOPT_STR(TOPT_BLUR_NOISE) "\n"
-		"  Soft glow 2's noise: 0 blue-noise texture, 1 IGN.\n"
+		"  1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top.\n"
 		"TOPT_BLUR_FORMAT = " TOPT_STR(TOPT_BLUR_FORMAT) "\n"
 		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
 		"TOPT_GPU = " TOPT_STR(TOPT_GPU) "\n"
@@ -569,7 +601,8 @@ float MN_Near(float t, float lo, float hi)
 // the corners zoom both ways, with a smooth change between them (MN_Near).
 float2 MN_Map(float2 uv)
 {
-	const float2 d = float2(Left + Right, Top + Bottom) * MN_PX;
+	const float4 bars = MN_Bars();
+	const float2 d = (bars.zx + bars.wy) * MN_PX;
 	const float2 lo = MN_PicMin(), hi = MN_PicMax();
 	float2 w = 0.0;
 	if (d.x > 0.0) w.x = MN_Near(uv.x, lo.x, hi.x); // no side bars: no horizontal zoom
@@ -581,10 +614,9 @@ float2 MN_Map(float2 uv)
 float MN_Sigma() { return TOPT_BLUR_SIZE * TOPT_SizeTune * BUFFER_HEIGHT / 1080.0; }
 
 #if MOVIENIGHT_SOFT_GLOW
-// The soft glow's largest radius at Soft glow 1 (pixels): a ring of radius rho widens the glow by rho / sqrt(2)
-// per axis, a uniform disk of radius R by R / 2; both make the sigma ~2 x at the screen edge.
-	#define MN_SOFT_R (MOVIENIGHT_SOFT_GLOW == 1 ? 2.5 : 3.5)
-float MN_SoftMax() { return SoftGlow * MN_SOFT_R * MN_Sigma(); }
+// The soft glow's largest radius at Soft glow 1 (pixels): reads on a circle of radius rho (the ring, or one
+// read in the frosted glass) widen the glow by rho / sqrt(2) per axis: the sigma ~2 x at the screen edge.
+float MN_SoftMax() { return SoftGlow * 2.5 * MN_Sigma(); }
 #endif
 
 // How far (uv) beyond the picture strip a bar shows the blur passes must draw, inside the picture:
@@ -607,25 +639,26 @@ void MN_StripVS(in uint id : SV_VertexID, out float4 position : SV_Position, out
 {
 	const float2 m = MN_Reach();
 	const float2 lo = MN_PicMin(), hi = MN_PicMax();
-	const float2 d = float2(Left + Right, Top + Bottom) * MN_PX;
+	const float4 bars = MN_Bars();
+	const float2 d = (bars.zx + bars.wy) * MN_PX;
 	const uint side = id / 6; // 0 top, 1 bottom, 2 left, 3 right
 	float2 a = 0.0, b = 0.0; // strip corners
-	if (side == 0 && Top > 0.0)
+	if (side == 0 && bars.x > 0.0)
 	{
 		a = float2(0.0, min(0.5 * d.y, lo.y) - m.y);
 		b = float2(1.0, lo.y + (0.5 - lo.y) * d.y + m.y);
 	}
-	else if (side == 1 && Bottom > 0.0)
+	else if (side == 1 && bars.y > 0.0)
 	{
 		a = float2(0.0, hi.y + (0.5 - hi.y) * d.y - m.y);
 		b = float2(1.0, max(1.0 - 0.5 * d.y, hi.y) + m.y);
 	}
-	else if (side == 2 && Left > 0.0)
+	else if (side == 2 && bars.z > 0.0)
 	{
 		a = float2(min(0.5 * d.x, lo.x) - m.x, 0.0);
 		b = float2(lo.x + (0.5 - lo.x) * d.x + m.x, 1.0);
 	}
-	else if (side == 3 && Right > 0.0)
+	else if (side == 3 && bars.w > 0.0)
 	{
 		a = float2(hi.x + (0.5 - hi.x) * d.x - m.x, 0.0);
 		b = float2(max(1.0 - 0.5 * d.x, hi.x) + m.x, 1.0);
@@ -653,10 +686,11 @@ void MN_StripVS(in uint id : SV_VertexID, out float4 position : SV_Position, out
 */
 void MN_BarsVS(in uint id : SV_VertexID, out float4 position : SV_Position, out float2 texcoord : TEXCOORD)
 {
-	const float ID0 = Top * MN_PX.y;
-	const float ID3 = 1.0 - Bottom * MN_PX.y;
-	const float ID6 = Left * MN_PX.x;
-	const float ID9 = 1.0 - Right * MN_PX.x;
+	const float4 bars = MN_Bars();
+	const float ID0 = bars.x * MN_PX.y;
+	const float ID3 = 1.0 - bars.y * MN_PX.y;
+	const float ID6 = bars.z * MN_PX.x;
+	const float ID9 = 1.0 - bars.w * MN_PX.x;
 
 	[call] switch (id)
 	{
@@ -681,13 +715,19 @@ void MN_BarsVS(in uint id : SV_VertexID, out float4 position : SV_Position, out 
 float MN_Depth(float2 uv)
 {
 	const float2 lo = MN_PicMin(), hi = MN_PicMax();
+	const float4 bars = MN_Bars();
 	float t = 0.0;
-	if (Top > 0.0)    t = max(t, (lo.y - uv.y) / lo.y);
-	if (Bottom > 0.0) t = max(t, (uv.y - hi.y) / (1.0 - hi.y));
-	if (Left > 0.0)   t = max(t, (lo.x - uv.x) / lo.x);
-	if (Right > 0.0)  t = max(t, (uv.x - hi.x) / (1.0 - hi.x));
+	if (bars.x > 0.0) t = max(t, (lo.y - uv.y) / lo.y);
+	if (bars.y > 0.0) t = max(t, (uv.y - hi.y) / (1.0 - hi.y));
+	if (bars.z > 0.0) t = max(t, (lo.x - uv.x) / lo.x);
+	if (bars.w > 0.0) t = max(t, (uv.x - hi.x) / (1.0 - hi.x));
 	return saturate(t);
 }
+#endif
+
+#if MOVIENIGHT_SOFT_GLOW == 2
+// The blue noise, bilinear: zoomed, it changes smoothly from pixel to pixel.
+sampler MN_sBNLinear { Texture = TOPT_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = LINEAR; MinFilter = LINEAR; MipFilter = LINEAR; };
 #endif
 
 #if MOVIENIGHT_SOFT_GLOW == 1
@@ -718,26 +758,27 @@ float3 MN_Glow(float2 uv, float2 pos)
 	}
 	return c;
 #elif MOVIENIGHT_SOFT_GLOW == 2
-	// the read scattered uniformly inside a disk (frosted glass), its radius growing into the bar
-	const float2 n = TOPT_Noise2(pos);
+	// frosted glass: the read moved by the radius in a direction from the zoomed blue noise, so it glides
+	// around the circle from pixel to pixel like glass bends the light; the radius grows into the bar
+	const float n = tex2Dlod(MN_sBNLinear, float4(pos / (64.0 * FrostGrain), 0.0, 0.0)).r;
 	float2 o;
-	sincos(6.2831853 * n.y, o.y, o.x);
-	const float r = sqrt(n.x) * smoothstep(0.0, 1.0, MN_Depth(uv)) * MN_SoftMax();
+	sincos(6.2831853 * n, o.y, o.x);
+	const float r = smoothstep(0.0, 1.0, MN_Depth(uv)) * MN_SoftMax();
 	return TOPT_BlurResolve(p + o * r * MN_PX);
 #else
 	return TOPT_BlurResolve(p);
 #endif
 }
 
-// How much a bar pixel covers the glow: black shows it, near black (a subtitle's shadow) lies over it with an
-// opacity growing with its brightness up to ShadowLevel, brighter (subtitles) covers it. Near the picture
-// edge, compression bleed counts as black up to EdgeBleed, fading out over EdgeWidth pixels.
+// How much a bar pixel covers the glow: pure black shows it; up to the feather level (Edge feather next to
+// the picture, changing to Feather over EdgeWidth pixels) it covers it as much as it is bright against
+// that level, so near black lies over the glow as a shadow; brighter (subtitles) covers it.
 float MN_Cover(float3 c, float2 uv)
 {
-	const float black = 2.0 / 255.0;
 	const float2 o = max(MN_PicMin() - uv, uv - MN_PicMax()) / MN_PX; // pixels into the bar
-	const float edge = max(black, lerp(EdgeBleed, black, smoothstep(0.0, EdgeWidth, max(o.x, o.y))));
-	return saturate((max(c.r, max(c.g, c.b)) - edge) / (ShadowLevel - black));
+	const float level = lerp(EdgeFeather, Feather, smoothstep(0.0, EdgeWidth, max(o.x, o.y))) / 255.0;
+	const float v = max(c.r, max(c.g, c.b));
+	return level > 0.0 ? saturate(v / level) : (v > 0.0 ? 1.0 : 0.0);
 }
 
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
@@ -752,6 +793,85 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 		o = lerp(TOPT_Dither(MN_Glow(texcoord, vpos.xy) * Opacity, vpos.xy), color, a);
 	return saturate(o);
 #endif
+}
+
+/*
+	Bar detection (technique "Movie Night: detect bars"): one pixel searches the screen for each bar with a
+	binary search over the lines from that screen edge inward. A probe tests two lines at once: MN_DETECT_K
+	bilinear reads at the corners between 2 x 2 pixels along them (any light in 4 pixels per read). Top first
+	(first probe at the 2.35:1 bar), bottom from the top's result (mirrored), then left and right (first probe
+	at the 4:3 bar) on the rows between them. Each search first tests the two outermost lines, so a side
+	without a bar costs one probe. ~11 probes per bar otherwise. Over the frames it runs (MOVIENIGHT_DETECT_MS)
+	it keeps the smallest bars it saw (a dark scene can hide the picture's edge); frames that are almost all
+	black are skipped.
+*/
+#define MN_DETECT_K 16
+
+uniform int MN_Frame < source = "framecount"; >;
+
+texture MN_tDetect { Width = 2; Height = 1; Format = RGBA32F; };
+sampler MN_sDetect { Texture = MN_tDetect; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+
+// Any light in lines l - 1 and l from a screen edge (0 top, 1 bottom, 2 left, 3 right), l >= 1, at
+// MN_DETECT_K points across span (px along the line); l = 0.5: the outermost line alone.
+bool MN_LineLit(int edge, float l, float2 span)
+{
+	bool lit = false;
+	[loop] for (int i = 0; i < MN_DETECT_K; i++)
+	{
+		const float s = floor(lerp(span.x, span.y, (i + 0.5) / MN_DETECT_K)); // a corner between two pixels
+		const float2 p = edge == 0 ? float2(s, l) : edge == 1 ? float2(s, BUFFER_HEIGHT - l)
+		               : edge == 2 ? float2(l, s) : float2(BUFFER_WIDTH - l, s);
+		lit = lit || any(tex2Dlod(ReShade::BackBuffer, float4(p * MN_PX, 0.0, 0.0)).rgb > 0.0);
+	}
+	return lit;
+}
+
+// The number of black lines at a screen edge (at most lmax): the first line with light, by binary search
+// (first probe at guess).
+float MN_Search(int edge, float guess, float lmax, float2 span)
+{
+	if (MN_LineLit(edge, 1.0, span))
+		return MN_LineLit(edge, 0.5, span) ? 0.0 : 1.0;
+	float lo = 2.0, hi = lmax + 1.0; // lines < lo are black; the first lit line is in [lo, hi]
+	float probe = clamp(guess, lo, hi - 1.0);
+	[loop] for (int it = 0; it < 16 && lo < hi; it++)
+	{
+		if (MN_LineLit(edge, probe, span)) hi = probe; else lo = probe + 1.0;
+		probe = floor((lo + hi) * 0.5);
+	}
+	return lo;
+}
+
+float4 MN_DetectPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	const float W = BUFFER_WIDTH, H = BUFFER_HEIGHT;
+	const float top = MN_Search(0, round(max(H - W / 2.35, 2.0) * 0.5), floor(H * 0.5), float2(0.0, W));
+	const float bottom = MN_Search(1, max(top, 2.0), floor(H * 0.5), float2(0.0, W));
+	const float2 rows = float2(top, H - bottom);
+	const float left = MN_Search(2, round(max(W - H * 4.0 / 3.0, 2.0) * 0.5), floor(W * 0.5), rows);
+	const float right = MN_Search(3, max(left, 2.0), floor(W * 0.5), rows);
+	float4 bars = float4(top, bottom, left, right);
+	const bool valid = top + bottom < 0.9 * H && left + right < 0.9 * W; // not a black frame
+
+	const float4 prev = tex2Dfetch(MN_sBars, int2(0, 0));
+	const float2 state = tex2Dfetch(MN_sBars, int2(1, 0)).xy; // the frame it last ran, a valid frame this run
+	const bool run = MN_Frame - state.x <= 2.0 && state.y > 0.0; // continuing a run with a valid frame
+	bars = valid ? (run ? min(bars, prev) : bars) : prev;
+	return vpos.x < 1.0 ? bars : float4(MN_Frame, valid || run ? 1.0 : 0.0, 0.0, 0.0);
+}
+
+float4 MN_StorePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	return tex2Dfetch(MN_sDetect, int2(vpos.xy));
+}
+
+technique MovieNight_Detect < ui_label = "Movie Night: detect bars"; timeout = MOVIENIGHT_DETECT_MS;
+	ui_tooltip = "Finds the black bars of the playing video and stores them for MovieNight's Bars setting\n"
+	             "\"Detected\". Switch it on for a moment; it switches itself off. Put it before MovieNight."; >
+{
+	pass Detect { VertexShader = PostProcessVS; PixelShader = MN_DetectPS; RenderTarget = MN_tDetect; }
+	pass Store { VertexShader = PostProcessVS; PixelShader = MN_StorePS; RenderTarget = MN_tBars; }
 }
 
 technique MovieNight

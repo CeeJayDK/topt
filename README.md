@@ -173,9 +173,10 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   (`MOVIENIGHT_SOFT_GLOW`: a ring of 8 reads or a frosted-glass scatter in the
   final pass, radius growing into the bar; estimate in
   `results/movienight_cost.md`). Each bar zooms across itself only (corners
-  both ways, smooth change); near-black bar pixels lie over the glow as a
-  shadow, and edge bleed near the picture counts as black. Next: hardware
-  timing.
+  both ways, smooth change); feathers let near-black bar pixels (a subtitle
+  shadow, edge bleed next to the picture) take the glow partly. A technique
+  detects the bars (binary search from 2.35:1 / 4:3 guesses, stored in a
+  texture). Next: hardware timing.
 * Quad sharing (`scripts/quad_share.py`, `results/quad_share.md`): each pixel
   of a 2 x 2 quad makes N reads and gets its neighbours' through
   `ddx_fine` / `ddy_fine` (4N samples). Medium quality for sigma 0.7-1.2 with

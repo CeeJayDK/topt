@@ -75,7 +75,7 @@ def main():
              "the strips + the bars pass); in brackets the extra over no soft glow. Ring: 8 more bilinear reads",
              "per bar pixel (the upsample's reads skipped from 27 % into the bar on); frost: one noise read and the scattered read (TOPT_BlurResolve as before); 0.4f:",
              "the earlier second blur level (three passes at 4 x coarser resolution, strips widened by its reach).",
-             "Both new options also widen the strips by their radius (ring 2.5, frost 3.5 sigma).", ""]
+             "Both new options also widen the strips by their radius (2.5 sigma).", ""]
     for res, (W, H) in (("1080p", (1920, 1080)), ("4K", (3840, 2160))):
         T = round(H * (1 - 16 / 9 / ASPECT) / 2)
         sig = round(SIZE * H / 1080)
@@ -89,7 +89,7 @@ def main():
             base = cost(gpu, pl, W, H, T, strips(W, H, T, reach))
             # the ring takes over from the upsample (skipped) once its radius is sigma / 2: 27 % into the bar
             ring = cost(gpu, pl, W, H, T, strips(W, H, T, reach + 2.5 * sig), 8 - 0.73 * len(pl.passes[-1].taps))
-            frost = cost(gpu, pl, W, H, T, strips(W, H, T, reach + 3.5 * sig), 1)
+            frost = cost(gpu, pl, W, H, T, strips(W, H, T, reach + 2.5 * sig), 1)
             sdiv = 4 * divl
             soft = math.sqrt(sig ** 2 + (sdiv * 2.5) ** 2)
             sreach = 3 * soft + 2 * sdiv
