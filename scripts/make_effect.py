@@ -31,7 +31,7 @@ TRUNC = 2.5                        # low-res kernel radius in low-res sigmas
 # name: (down factors, down binomial e, up steps, up filter, lowest low-res sigma for medium quality)
 CLASSES = {
     "2": ((2,), 3, (2,), "p4", 0.8),
-    "4s": ((4,), 9, (2, 2), "e2", 0.3),   # two-step 2x2 upsample: smooth enough at small sl
+    "4s": ((4,), 9, (2, 2), "e2", 0.35),  # two-step 2x2 upsample: smooth enough at small sl (tv fails at 0.33)
     "4": ((4,), 5, (4,), "p5", SL_MIN),
     "8": ((8,), 3, (8,), "p4", SL_MIN),
     # x16 and more: x8 first, then the rest (one x16 pass into a 1/16 target leaves the GPU under-filled at
@@ -42,7 +42,7 @@ CLASSES = {
     "128": ((8, 16), 3, (128,), "p4", 1.4),
     # one bilinear read to upsample (e1): medium quality from a wider low-res Gaussian (sl >= 2.0..2.6),
     # so a narrower sigma range, but 3 fewer full-resolution reads
-    "8e": ((8,), 3, (8,), "e1", 2.4),
+    "8e": ((8,), 3, (8,), "e1", 2.5),   # blocky just above 2.4 (radius 7)
     "16e": ((8, 2), 3, (16,), "e1", 2.2),
     "32e": ((8, 4), 1, (32,), "e1", 2.6),
     "64e": ((8, 8), 1, (64,), "e1", 2.6),
@@ -52,7 +52,7 @@ CLASSES = {
     "6e": ((6,), 3, (6,), "e1", 2.45),  # r = ceil(2.5 sl) = 6 (sl <= 2.4) fails medium
     "12e": ((4, 3), 3, (12,), "e1", 2.4),
     "24e": ((8, 3), 3, (24,), "e1", 2.2),
-    "48e": ((8, 6), 3, (48,), "e1", 2.0),
+    "48e": ((8, 6), 3, (48,), "e1", 2.05),  # blocky just above 2.0 (radius 6)
 }
 
 
