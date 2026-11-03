@@ -519,10 +519,10 @@ technique TOPT_Blur < ui_tooltip = "Fast Gaussian-like blur (topt).\nSet the siz
 	pass Down2 { VertexShader = PostProcessVS; PixelShader = BLUR_Down2PS; RenderTarget = BLUR_tDown2; }
 #endif
 #if BLUR_SEP
-	pass BlurH { VertexShader = PostProcessVS; PixelShader = BLUR_GaussHPS; RenderTarget = BLUR_tGaussH; }
-	pass BlurV { VertexShader = PostProcessVS; PixelShader = BLUR_GaussVPS; RenderTarget = BLUR_tGauss; }
+	pass GaussH { VertexShader = PostProcessVS; PixelShader = BLUR_GaussHPS; RenderTarget = BLUR_tGaussH; }
+	pass GaussV { VertexShader = PostProcessVS; PixelShader = BLUR_GaussVPS; RenderTarget = BLUR_tGauss; }
 #else
-	pass Blur { VertexShader = PostProcessVS; PixelShader = BLUR_GaussPS; RenderTarget = BLUR_tGauss; }
+	pass Gauss { VertexShader = PostProcessVS; PixelShader = BLUR_GaussPS; RenderTarget = BLUR_tGauss; }
 #endif
 #if BLUR_UPSTEPS > 1
 	pass Up { VertexShader = PostProcessVS; PixelShader = BLUR_UpPS; RenderTarget = BLUR_tUp; }

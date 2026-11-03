@@ -92,8 +92,8 @@ cost on a GTX 1660 at 1080p (its table), over a plain composite pass:
 | 4 / 5–6 | x4 (+x2 up pass), 2D / separable | 109 / 111 |
 | 7–12 | x4, separable | 95–104 |
 | 13–14 | x8, separable | 74–75 |
-| 15–18 | x6 "e", separable | 65 |
-| 19–27 | x8 "e", separable | 61–62 |
+| 15–19 | x6 "e", separable | 65 |
+| 20–27 | x8 "e", separable | 61–62 |
 | 28 / 29–35 | x8 + x2 / x4 + x3 "e", separable | 76 / 65–66 |
 | 36–53 | x8 + x2 "e", separable | 61–63 |
 | 54–81 | x8 + x3 "e", separable | 62–63 |

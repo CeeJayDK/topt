@@ -152,7 +152,7 @@
 		#define BLUR_CHOICE 8
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -170,7 +170,7 @@
 		#define BLUR_CHOICE 32
 	#elif BLUR_SIGMA_SCREEN <= 83 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 97 // '32e'
+	#elif BLUR_SIGMA_SCREEN <= 99 // '32e'
 		#define BLUR_CHOICE 22
 	#elif BLUR_SIGMA_SCREEN <= 162 // '48e'
 		#define BLUR_CHOICE 34
@@ -212,6 +212,10 @@
 		#define BLUR_CHOICE 24
 	#elif BLUR_SIGMA_SCREEN <= 333 // '128'
 		#define BLUR_CHOICE 16
+	#elif BLUR_SIGMA_SCREEN <= 407 // '128e'
+		#define BLUR_CHOICE 26
+	#elif BLUR_SIGMA_SCREEN <= 408 // '128'
+		#define BLUR_CHOICE 16
 	#else // '128e'
 		#define BLUR_CHOICE 26
 	#endif
@@ -236,7 +240,7 @@
 		#define BLUR_CHOICE 32
 	#elif BLUR_SIGMA_SCREEN <= 102 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 153 // '48e'
+	#elif BLUR_SIGMA_SCREEN <= 152 // '48e'
 		#define BLUR_CHOICE 34
 	#elif BLUR_SIGMA_SCREEN <= 162 // '48e' separable
 		#define BLUR_CHOICE 35
@@ -264,7 +268,7 @@
 		#define BLUR_CHOICE 7
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -280,7 +284,7 @@
 		#define BLUR_CHOICE 33
 	#elif BLUR_SIGMA_SCREEN <= 83 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 97 // '32e'
+	#elif BLUR_SIGMA_SCREEN <= 99 // '32e'
 		#define BLUR_CHOICE 22
 	#elif BLUR_SIGMA_SCREEN <= 162 // '48e'
 		#define BLUR_CHOICE 34
@@ -372,9 +376,9 @@
 		#define BLUR_CHOICE 12
 	#elif BLUR_SIGMA_SCREEN <= 58 // '24e'
 		#define BLUR_CHOICE 32
-	#elif BLUR_SIGMA_SCREEN <= 97 // '32'
+	#elif BLUR_SIGMA_SCREEN <= 99 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 153 // '48e'
+	#elif BLUR_SIGMA_SCREEN <= 152 // '48e'
 		#define BLUR_CHOICE 34
 	#elif BLUR_SIGMA_SCREEN <= 217 // '64'
 		#define BLUR_CHOICE 14
@@ -394,7 +398,7 @@
 		#define BLUR_CHOICE 7
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -438,7 +442,7 @@
 		#define BLUR_CHOICE 7
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -480,7 +484,7 @@
 		#define BLUR_CHOICE 5
 	#elif BLUR_SIGMA_SCREEN <= 12 // '4' separable
 		#define BLUR_CHOICE 7
-	#elif BLUR_SIGMA_SCREEN <= 18 // '8' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '8' separable
 		#define BLUR_CHOICE 9
 	#elif BLUR_SIGMA_SCREEN <= 23 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -522,7 +526,7 @@
 		#define BLUR_CHOICE 7
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -538,7 +542,7 @@
 		#define BLUR_CHOICE 33
 	#elif BLUR_SIGMA_SCREEN <= 83 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 97 // '32e'
+	#elif BLUR_SIGMA_SCREEN <= 99 // '32e'
 		#define BLUR_CHOICE 22
 	#elif BLUR_SIGMA_SCREEN <= 162 // '48e'
 		#define BLUR_CHOICE 34
@@ -580,6 +584,10 @@
 		#define BLUR_CHOICE 24
 	#elif BLUR_SIGMA_SCREEN <= 333 // '128'
 		#define BLUR_CHOICE 16
+	#elif BLUR_SIGMA_SCREEN <= 407 // '128e'
+		#define BLUR_CHOICE 26
+	#elif BLUR_SIGMA_SCREEN <= 408 // '128'
+		#define BLUR_CHOICE 16
 	#else // '128e'
 		#define BLUR_CHOICE 26
 	#endif
@@ -598,7 +606,7 @@
 		#define BLUR_CHOICE 7
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -614,7 +622,7 @@
 		#define BLUR_CHOICE 32
 	#elif BLUR_SIGMA_SCREEN <= 83 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 97 // '32e'
+	#elif BLUR_SIGMA_SCREEN <= 99 // '32e'
 		#define BLUR_CHOICE 22
 	#elif BLUR_SIGMA_SCREEN <= 162 // '48e'
 		#define BLUR_CHOICE 34
@@ -642,7 +650,7 @@
 		#define BLUR_CHOICE 7
 	#elif BLUR_SIGMA_SCREEN <= 14 // '8' separable
 		#define BLUR_CHOICE 9
-	#elif BLUR_SIGMA_SCREEN <= 18 // '6e' separable
+	#elif BLUR_SIGMA_SCREEN <= 19 // '6e' separable
 		#define BLUR_CHOICE 29
 	#elif BLUR_SIGMA_SCREEN <= 27 // '8e' separable
 		#define BLUR_CHOICE 19
@@ -660,7 +668,7 @@
 		#define BLUR_CHOICE 33
 	#elif BLUR_SIGMA_SCREEN <= 83 // '32'
 		#define BLUR_CHOICE 12
-	#elif BLUR_SIGMA_SCREEN <= 97 // '32e'
+	#elif BLUR_SIGMA_SCREEN <= 99 // '32e'
 		#define BLUR_CHOICE 22
 	#elif BLUR_SIGMA_SCREEN <= 162 // '48e'
 		#define BLUR_CHOICE 34
@@ -689,8 +697,8 @@
 	#define BLUR_F1 2
 	#define BLUR_F2 1
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 1.55127001;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 3.83921331;
+	static const float BLUR_C = 1.57888183;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 3.83411358;
 	static const float BLUR_SL_MIN = 0.8; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -709,15 +717,15 @@
 	static const float2 BLUR_UP[4] = {
 		float2(0.0803454039, 0.27318983), float2(-0.27318983, 0.0803454039), float2(-0.0803454039, -0.27318983), float2(0.27318983, -0.0803454039)
 	};
-#elif BLUR_CLASS == 2 // '4s': sigma 3.7..7.2 px: downsample x4, Gaussian at 1/4, upsample Binomial2
+#elif BLUR_CLASS == 2 // '4s': sigma 3.8..7.2 px: downsample x4, Gaussian at 1/4, upsample Binomial2
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 1
 	#define BLUR_F1 4
 	#define BLUR_F2 1
 	#define BLUR_UPSTEPS 2
-	static const float BLUR_C = 12.2066274;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 15.3568532;
-	static const float BLUR_SL_MIN = 0.3; // low-res Gaussian sigma range (texels)
+	static const float BLUR_C = 12.3153877;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 15.3364543;
+	static const float BLUR_SL_MIN = 0.35; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 1.6;
 	// the buffers, named after what they hold
 	#define BLUR_tDown1 BLUR_Down4_Box4_Binomial9
@@ -744,14 +752,14 @@
 	static const float2 BLUR_UP[4] = {
 		float2(-0.5, -0.5), float2(-0.5, 0.5), float2(0.5, -0.5), float2(0.5, 0.5)
 	};
-#elif BLUR_CLASS == 3 // '4': sigma 6.7..13.6 px: downsample x4, Gaussian at 1/4, upsample Pinwheel5
+#elif BLUR_CLASS == 3 // '4': sigma 6.7..13.5 px: downsample x4, Gaussian at 1/4, upsample Pinwheel5
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 1
 	#define BLUR_F1 4
 	#define BLUR_F2 1
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 6.12521583;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 15.3568532;
+	static const float BLUR_C = 6.23785097;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 15.3364543;
 	static const float BLUR_SL_MIN = 1.6; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -780,8 +788,8 @@
 	#define BLUR_F1 8
 	#define BLUR_F2 1
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 22.8976017;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 61.4274129;
+	static const float BLUR_C = 23.3489148;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 61.3458172;
 	static const float BLUR_SL_MIN = 1.6; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -806,14 +814,14 @@
 	static const float2 BLUR_UP[4] = {
 		float2(0.0803454039, 0.27318983), float2(-0.27318983, 0.0803454039), float2(-0.0803454039, -0.27318983), float2(0.27318983, -0.0803454039)
 	};
-#elif BLUR_CLASS == 5 // '16': sigma 24.4..54.4 px: downsample x16, Gaussian at 1/16, upsample Pinwheel4
+#elif BLUR_CLASS == 5 // '16': sigma 24.5..54.3 px: downsample x16, Gaussian at 1/16, upsample Pinwheel4
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 2
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 115.332658;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 245.709652;
+	static const float BLUR_C = 117.110937;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 245.383269;
 	static const float BLUR_SL_MIN = 1.4; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -845,14 +853,14 @@
 	static const float2 BLUR_UP[4] = {
 		float2(0.0803454039, 0.27318983), float2(-0.27318983, 0.0803454039), float2(-0.0803454039, -0.27318983), float2(0.27318983, -0.0803454039)
 	};
-#elif BLUR_CLASS == 6 // '32': sigma 48...108.4 px: downsample x32, Gaussian at 1/32, upsample Pinwheel4
+#elif BLUR_CLASS == 6 // '32': sigma 48.1..108.3 px: downsample x32, Gaussian at 1/32, upsample Pinwheel4
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 4
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 381.615982;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 982.838606;
+	static const float BLUR_C = 388.790971;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 981.533076;
 	static const float BLUR_SL_MIN = 1.4; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -886,14 +894,14 @@
 	static const float2 BLUR_UP[4] = {
 		float2(0.0803454039, 0.27318983), float2(-0.27318983, 0.0803454039), float2(-0.0803454039, -0.27318983), float2(0.27318983, -0.0803454039)
 	};
-#elif BLUR_CLASS == 7 // '64': sigma 96.1..216.7 px: downsample x64, Gaussian at 1/64, upsample Pinwheel4
+#elif BLUR_CLASS == 7 // '64': sigma 96.2..216.7 px: downsample x64, Gaussian at 1/64, upsample Pinwheel4
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 8
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 1531.25434;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 3931.35442;
+	static const float BLUR_C = 1559.83055;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 3926.1323;
 	static const float BLUR_SL_MIN = 1.4; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -931,14 +939,14 @@
 	static const float2 BLUR_UP[4] = {
 		float2(0.0803454039, 0.27318983), float2(-0.27318983, 0.0803454039), float2(-0.0803454039, -0.27318983), float2(0.27318983, -0.0803454039)
 	};
-#elif BLUR_CLASS == 8 // '128': sigma 192.2..433.5 px: downsample x128, Gaussian at 1/128, upsample Pinwheel4
+#elif BLUR_CLASS == 8 // '128': sigma 192.4..433.4 px: downsample x128, Gaussian at 1/128, upsample Pinwheel4
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 16
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 6135.23566;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 15725.4177;
+	static const float BLUR_C = 6249.5722;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 15704.5292;
 	static const float BLUR_SL_MIN = 1.4; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -990,15 +998,15 @@
 	static const float2 BLUR_UP[4] = {
 		float2(0.0803454039, 0.27318983), float2(-0.27318983, 0.0803454039), float2(-0.0803454039, -0.27318983), float2(0.27318983, -0.0803454039)
 	};
-#elif BLUR_CLASS == 9 // '8e': sigma 19.3..27.0 px: downsample x8, Gaussian at 1/8, upsample one bilinear read
+#elif BLUR_CLASS == 9 // '8e': sigma 20.1..27.0 px: downsample x8, Gaussian at 1/8, upsample one bilinear read
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 1
 	#define BLUR_F1 8
 	#define BLUR_F2 1
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 20.3838012;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 61.4274129;
-	static const float BLUR_SL_MIN = 2.4; // low-res Gaussian sigma range (texels)
+	static const float BLUR_C = 20.8176648;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 61.3458172;
+	static const float BLUR_SL_MIN = 2.5; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
 	#define BLUR_tDown1 BLUR_Down8_Box8_Binomial3
@@ -1028,8 +1036,8 @@
 	#define BLUR_F1 8
 	#define BLUR_F2 2
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 105.062983;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 245.709652;
+	static const float BLUR_C = 106.798437;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 245.383269;
 	static const float BLUR_SL_MIN = 2.2; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1067,8 +1075,8 @@
 	#define BLUR_F1 8
 	#define BLUR_F2 4
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 332.224153;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 982.838606;
+	static const float BLUR_C = 339.165971;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 981.533076;
 	static const float BLUR_SL_MIN = 2.6; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1097,14 +1105,14 @@
 	static const float2 BLUR_UP[1] = {
 		float2(0., 0.)
 	};
-#elif BLUR_CLASS == 12 // '64e': sigma 167.1..216.3 px: downsample x64, Gaussian at 1/64, upsample one bilinear read
+#elif BLUR_CLASS == 12 // '64e': sigma 167.1..216.2 px: downsample x64, Gaussian at 1/64, upsample one bilinear read
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 8
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 1349.31328;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 3931.35442;
+	static const float BLUR_C = 1377.08055;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 3926.1323;
 	static const float BLUR_SL_MIN = 2.6; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1136,14 +1144,14 @@
 	static const float2 BLUR_UP[1] = {
 		float2(0., 0.)
 	};
-#elif BLUR_CLASS == 13 // '128e': sigma 334.3..432.7 px: downsample x128, Gaussian at 1/128, upsample one bilinear read
+#elif BLUR_CLASS == 13 // '128e': sigma 334.2..432.5 px: downsample x128, Gaussian at 1/128, upsample one bilinear read
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 16
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 5439.00311;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 15725.4177;
+	static const float BLUR_C = 5550.0722;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 15704.5292;
 	static const float BLUR_SL_MIN = 2.6; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1193,8 +1201,8 @@
 	#define BLUR_F1 6
 	#define BLUR_F2 1
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 11.3495687;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 34.5529197;
+	static const float BLUR_C = 11.5832004;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 34.5070222;
 	static const float BLUR_SL_MIN = 2.45; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1216,14 +1224,14 @@
 	static const float2 BLUR_UP[1] = {
 		float2(0., 0.)
 	};
-#elif BLUR_CLASS == 15 // '12e': sigma 29...40.6 px: downsample x12, Gaussian at 1/12, upsample one bilinear read
+#elif BLUR_CLASS == 15 // '12e': sigma 29...40.5 px: downsample x12, Gaussian at 1/12, upsample one bilinear read
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 4
 	#define BLUR_F2 3
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 47.4816083;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 138.211679;
+	static const float BLUR_C = 48.4989682;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 138.028089;
 	static const float BLUR_SL_MIN = 2.4; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1259,8 +1267,8 @@
 	#define BLUR_F1 8
 	#define BLUR_F2 3
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 191.009766;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 552.846716;
+	static const float BLUR_C = 194.960221;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 552.112355;
 	static const float BLUR_SL_MIN = 2.2; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
@@ -1294,15 +1302,15 @@
 	static const float2 BLUR_UP[1] = {
 		float2(0., 0.)
 	};
-#elif BLUR_CLASS == 17 // '48e': sigma 98...162.3 px: downsample x48, Gaussian at 1/48, upsample one bilinear read
+#elif BLUR_CLASS == 17 // '48e': sigma 100.3..162.2 px: downsample x48, Gaussian at 1/48, upsample one bilinear read
 	#define BLUR_SMALL 0
 	#define BLUR_STEPS 2
 	#define BLUR_F1 8
 	#define BLUR_F2 6
 	#define BLUR_UPSTEPS 1
-	static const float BLUR_C = 767.122399;  // chain variance (px^2): sigma^2 = C + B * sl^2
-	static const float BLUR_B = 2211.38686;
-	static const float BLUR_SL_MIN = 2.; // low-res Gaussian sigma range (texels)
+	static const float BLUR_C = 782.824823;  // chain variance (px^2): sigma^2 = C + B * sl^2
+	static const float BLUR_B = 2208.44942;
+	static const float BLUR_SL_MIN = 2.05; // low-res Gaussian sigma range (texels)
 	static const float BLUR_SL_MAX = 3.4;
 	// the buffers, named after what they hold
 	#define BLUR_tDown1 BLUR_Down8_Box8_Binomial3

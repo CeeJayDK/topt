@@ -963,10 +963,10 @@ technique MovieNight
 	pass Down2 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_Down2PS; RenderTarget = BLUR_tDown2; }
 #endif
 #if BLUR_SEP
-	pass BlurH { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussHPS; RenderTarget = BLUR_tGaussH; }
-	pass BlurV { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussVPS; RenderTarget = BLUR_tGauss; }
+	pass GaussH { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussHPS; RenderTarget = BLUR_tGaussH; }
+	pass GaussV { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussVPS; RenderTarget = BLUR_tGauss; }
 #else
-	pass Blur { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussPS; RenderTarget = BLUR_tGauss; }
+	pass Gauss { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_GaussPS; RenderTarget = BLUR_tGauss; }
 #endif
 #if BLUR_UPSTEPS > 1
 	pass Up { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_UpPS; RenderTarget = BLUR_tUp; }
