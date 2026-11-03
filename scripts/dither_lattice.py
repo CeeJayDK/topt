@@ -25,7 +25,7 @@ frac(t) - 0.5 after t = dot(pos, a) + c (two mads):
 * add-round: t - round(t) with round(t) = (t + 12582912) - 12582912 (1.5 * 2^23; needs `precise`, fxc
   folds it otherwise; |t| <= 2^22): 3 adds, and the offset c absorbs the 0.5. Exact on the lattices.
 * uint: t - float(uint(t)) (t >= 0)
-Writes results/dither_lattice.md and results/dither_lattice.json.
+Writes results/dither_lattice.md and results/dither_lattice.json (the best of each kind).
 """
 from __future__ import annotations
 
@@ -86,8 +86,17 @@ def canon(N, p, q):
     return (N,) + tuple(sorted((p, q)))
 
 
+NAMED = {"plus dither (CeeJay)": ("lattice", (5, 1, 2)), "SweetFX 1": ("lattice", (144, 9, 40)),
+         "IGN": ("scrambled", (0.06711056, 0.00583715, 52.9829189)),
+         "R2": ("real", (1 / 1.32471795724474602596, 1 / 1.32471795724474602596 ** 2))}
+
+
 def candidates():
     seen = set()
+    for kind, args in NAMED.values():
+        if kind == "lattice":
+            seen.add(args)
+        yield kind, args
     for N in range(2, 257):
         for p in (range(1, N) if N <= 64 else (1,)):
             for q in range(0, N):
@@ -104,7 +113,6 @@ def candidates():
     rng = np.random.default_rng(1)
     for a, b in rng.random((3000, 2)):
         yield ("real", (float(a), float(b)))
-    yield ("scrambled", (0.06711056, 0.00583715, 52.9829189))
     for a, b, k in zip(rng.random(3000), rng.random(3000), rng.uniform(2, 100, 3000)):
         yield ("scrambled", (float(a), float(b), float(k)))
 
@@ -171,18 +179,24 @@ def label(kind, args):
 
 
 def main():
-    opbench = Path(sys.argv[1]) if len(sys.argv) > 1 else None
-    cands = list(candidates())
-    print(len(cands), "candidates", flush=True)
-    with Pool() as pool:
-        res = pool.map(run, cands, chunksize=64)
-    rows = [{"kind": k, "args": list(a), "label": label(k, a), **{f"{s}_{m}": v for s, d in sc.items() for m, v in d.items()}}
-            for k, a, sc in res]
-    (ROOT / "results" / "dither_lattice.json").write_text(json.dumps(rows))
-    named = {"plus dither (CeeJay)": ("lattice", canon(5, 1, 2)), "SweetFX 1": ("lattice", canon(144, 9, 40)),
-             "IGN": ("scrambled", (0.06711056, 0.00583715, 52.9829189))}
-    R2 = 1.32471795724474602596
-    named["R2"] = ("real", (1 / R2, 1 / R2 ** 2))
+    """argv: the OpBench folder; --rows <file>: keep / reuse every candidate's score there (not in the repo)."""
+    args = sys.argv[1:]
+    store = Path(args.pop(args.index("--rows") + 1)) if "--rows" in args else None
+    if "--rows" in args:
+        args.remove("--rows")
+    opbench = Path(args[0]) if args else None
+    if store and store.exists():
+        rows = json.loads(store.read_text())
+    else:
+        cands = list(candidates())
+        print(len(cands), "candidates", flush=True)
+        with Pool() as pool:
+            res = pool.map(run, cands, chunksize=64)
+        rows = [{"kind": k, "args": list(a), "label": label(k, a), **{f"{s}_{m}": v for s, d in sc.items() for m, v in d.items()}}
+                for k, a, sc in res]
+        if store:
+            store.write_text(json.dumps(rows))
+    named = NAMED
 
     def fmt(r, s="-+-"):
         return (f"| {r['label']} | {r[s + '_vis']:.4f} | {r[s + '_grain']:.4f} | {r[s + '_band']:.4f} | "
@@ -195,8 +209,10 @@ def main():
     for n, (k, a) in named.items():
         r = next(x for x in rows if x["kind"] == k and tuple(x["args"]) == tuple(a))
         lines.append(fmt({**r, "label": f"{n}: {r['label']}"}))
+    best = []
     for kind in ("lattice", "real", "scrambled"):
         sel = sorted((r for r in rows if r["kind"] == kind), key=lambda r: r["-+-_vis"])[:15]
+        best += sel
         lines += ["", f"## Best {kind} patterns (by vis, -+-)", ""] + head + [fmt(r) for r in sel]
     lat = [r for r in rows if r["kind"] == "lattice"]
     lines += ["", "## Best lattice per level count N", "", "| N | pattern | vis | grain | band |", "|---:|---|---:|---:|---:|"]
@@ -213,6 +229,7 @@ def main():
                   "| GPU | " + " | ".join(forms) + " |", "|---|" + "---:|" * len(forms)]
         for g, v in c.items():
             lines.append(f"| {g} | " + " | ".join(f"{v[f]:.1f}" for f in forms) + " |")
+    (ROOT / "results" / "dither_lattice.json").write_text(json.dumps(best, indent=0))
     (ROOT / "results" / "dither_lattice.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
