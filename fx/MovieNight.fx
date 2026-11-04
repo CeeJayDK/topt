@@ -29,8 +29,9 @@
 	* Each bar zooms the picture towards the centre across itself only (top /
 	  bottom vertically, left / right horizontally), both in the corners, with
 	  a smooth change between them.
-	* Bar content: pure black shows the glow; Feather lets near black (from
-	  0 up to its level) show it too, fading out, so a near-black subtitle
+	* Bar content: black (up to Black level, for the noise some videos
+	  leave in their bars) shows the glow; Feather lets near black (up to
+	  its level above that) show it too, fading out, so a near-black subtitle
 	  shadow lies over the glow; Edge feather does the same next to the
 	  picture (compression bleed).
 	* Bar detection: the technique "Movie Night: detect bars" finds the bars
@@ -117,11 +118,20 @@ uniform float FrostGrain <
 > = 8.;
 #endif
 
+uniform float BlackLevel <
+	ui_type = "drag"; ui_min = 0.; ui_max = 32.; ui_step = 1.;
+	ui_label = "Black level (8-bit levels)";
+	ui_tooltip = "Bar pixels up to this level count as pure black (the noise or dither some videos leave in\n"
+	             "their black bars), for the glow and for the bar detection. Feather and Edge feather count\n"
+	             "from it. Raise it if the glow shows a pattern of black specks or the detection misses bars.";
+> = 4.;
+
 uniform float Feather <
 	ui_type = "drag"; ui_min = 0.; ui_max = 64.; ui_step = 1.;
 	ui_label = "Feather (8-bit levels)";
-	ui_tooltip = "Away from the picture edge: bar pixels from 0 up to this level get the glow, less of it the\n"
-	             "brighter they are, so near black (a subtitle's shadow) lies over the glow. 0: only pure black.";
+	ui_tooltip = "Away from the picture edge: bar pixels from the black level up to this many levels above it\n"
+	             "get the glow, less of it the brighter they are, so near black (a subtitle's shadow) lies over\n"
+	             "the glow. 0: only black.";
 > = 0.;
 
 uniform float EdgeFeather <
@@ -807,9 +817,10 @@ float3 MN_Glow(float2 uv, float2 pos)
 #endif
 }
 
-// How much a bar pixel covers the glow: pure black shows it; up to the feather level (Edge feather next to
-// the picture, changing to Feather over EdgeWidth pixels) it covers it as much as it is bright against
-// that level, so near black lies over the glow as a shadow; brighter (subtitles) covers it.
+// How much a bar pixel covers the glow: black (up to Black level) shows it; up to the feather level above
+// that (Edge feather next to the picture, changing to Feather over EdgeWidth pixels) it covers it as much
+// as it is bright against that level, so near black lies over the glow as a shadow; brighter (subtitles)
+// covers it.
 float MN_Cover(float3 c, float2 uv)
 {
 	// detected compression bleed next to the picture: covered by the glow
@@ -818,9 +829,9 @@ float MN_Cover(float3 c, float2 uv)
 	if (dot(step(0., into) * (1. - step(MN_Bleed(), into)), 1.) > 0.)
 		return 0.;
 	const float2 o = max(MN_PicMin() - uv, uv - MN_PicMax()) / MN_PX; // pixels into the bar
-	const float level = lerp(EdgeFeather, Feather, smoothstep(0., EdgeWidth, max(o.x, o.y))) / 255.;
-	const float v = max(c.r, max(c.g, c.b));
-	return level > 0. ? saturate(v / level) : (v > 0. ? 1. : 0.);
+	const float level = lerp(EdgeFeather, Feather, smoothstep(0., EdgeWidth, max(o.x, o.y)));
+	const float v = max(c.r, max(c.g, c.b)) * 255. - BlackLevel; // levels above the black level
+	return level > 0. ? saturate(v / level) : (v > 0.5 ? 1. : 0.);
 }
 
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
@@ -897,6 +908,7 @@ float4 MN_RowSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 	float m = 0.;
 	[loop] for (int x = x0; x < x1; x++)
 		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
+	m = max(m - (BlackLevel + 0.5) / 255., 0.); // up to the black level: 0
 	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sRowSeg, int2(s, y)).x) : 0.;
 }
 
@@ -907,6 +919,7 @@ float4 MN_ColSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 	float m = 0.;
 	[loop] for (int y = y0; y < y1; y++)
 		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
+	m = max(m - (BlackLevel + 0.5) / 255., 0.);
 	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sColSeg, int2(x, s)).x) : 0.;
 }
 

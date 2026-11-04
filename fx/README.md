@@ -123,9 +123,12 @@ smooth change over twice the side bar's width.
   Bar adjust (-8..8 px) widens or narrows each bar there, manual or detected,
   and the glow always covers the lines it adds (e.g. a thin bright edge from
   sharpening); Opacity; Zoom shrinks the bar geometry (for testing).
-* Bar content: pure black shows the glow. Feather (8-bit levels, default 0 =
-  only pure black): bar pixels from 0 up to this level get the glow too, less
-  the brighter they are (opacity = level / Feather), so a subtitle shadow set
+* Bar content: black shows the glow; Black level (8-bit levels, default 4)
+  sets what counts as black, for the glow and the detection (some videos leave
+  noise or dither in their black bars, which otherwise punches black specks
+  into the glow and hides the bars from the detection). Feather (8-bit levels
+  above the black level, default 0 = only black): bar pixels up to this level
+  get the glow too, less the brighter they are (opacity = level / Feather), so a subtitle shadow set
   to near black in the player lies over the glow; brighter (subtitles) covers
   it. Edge feather (default 16) does the same next to the picture, where
   compression leaves the bars almost black (edge bleed), changing to Feather
