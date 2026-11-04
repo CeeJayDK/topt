@@ -179,8 +179,9 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   `results/movienight_cost.md`). Each bar zooms across itself only (corners
   both ways, smooth change); feathers let near-black bar pixels (a subtitle
   shadow, edge bleed next to the picture) take the glow partly. A technique
-  detects the bars (binary search from 2.35:1 / 4:3 guesses, stored in a
-  texture). Next: hardware timing.
+  detects the bars (max profiles of every pixel over a 1 s run, searched
+  from the screen centre outward; six methods compared in
+  `results/bar_detect.md`), stored in a texture. Next: hardware timing.
 * Quad sharing (`scripts/quad_share.py`, `results/quad_share.md`): each pixel
   of a 2 x 2 quad makes N reads and gets its neighbours' through
   `ddx_fine` / `ddy_fine` (4N samples). Medium quality for sigma 0.7-1.2 with

@@ -131,28 +131,28 @@ smooth change over twice the side bar's width.
   content, e.g. to see side bars on full-screen video.
 * Bar detection: the technique "Movie Night: detect bars" (`timeout` =
   `MOVIENIGHT_DETECT_MS`, default 1000 ms: switch it on, it switches itself
-  off) only marks the frames it runs in; MovieNight's first pass (3 pixels,
-  idle otherwise) then searches the screen before it draws, so the order of
-  the techniques does not matter. Bars = Detected uses the result (a 3 x 1
-  texture, kept until the effect reloads). One pixel searches each bar by
-  binary search over the lines from the screen edge inward:
-  1. the pure black edge: a probe reads 16 points at the corners between
-     2 x 2 pixels along two lines (any light above 0 in 4 pixels per read);
-     top first across the whole width (first probe at the 2.35:1 bar), then
-     left / right (first probe at the 4:3 bar) on the rows between the top
-     bar and its mirror (so subtitles in a bottom bar do not count), then the
-     bottom (first probe at the top's result) in the outer fifth of the
-     picture's width at each end, where subtitles do not come (the screen's
-     outer fifths would be all black with side bars); each search first tests
-     the two outermost lines, so a side without a bar costs one probe;
-  2. then the near-black lines next to it (compression bleed), up to 16 lines
-     at 1080p (32 at 4K) whose 32 point reads are all below Edge feather.
-     Near black is searched only next to a pure black edge, so a dark frame
-     does not pass for a bar. The bars include these lines and the glow
-     covers them.
-  ~200-650 reads in all. It keeps the smallest bars over the frames it runs
-  (dark picture lines at the edge can make one frame's bars too large) and
-  skips almost black frames.
+  off). While it runs, MovieNight does not draw its bars, so the detection
+  sees them black whatever the order of the techniques; Bars = Detected uses
+  the result (a 3 x 1 texture, kept until the effect reloads). The method won
+  a comparison of six (`scripts/bar_detect_sim.py`, `results/bar_detect.md`:
+  11 real frames with odd layouts and subtitles, 15 synthetic stress cases):
+  1. max profiles, kept over the frames of the run (the run's first frame is
+     skipped, it may still show the glow): per row the maximum of max(R, G, B)
+     over each 1/64 of the width, per column over each 1/64 of the height.
+     Every pixel is read (about two full-screen passes, only while it runs):
+     a dark scene only has to light a line once, a black frame adds nothing;
+  2. inside-out: from the lit line nearest the screen centre outward to the
+     first black line. The picture is connected around the centre, so a
+     subtitle further out in a bar does not count, even one wider than the
+     picture. Left / right on the middle quarter of the rows, then top /
+     bottom on the outer 1/16 of the picture's width at each end, then left /
+     right again on the picture's rows. Each scan reads a line texture and
+     its blocks (min, max per 32 lines): ~100 reads;
+  3. the fringe next to each pure black edge (compression bleed, the
+     player's scaling; 0-2 lines in the real frames): up to 4 lines at 1080p
+     below Edge feather and below half the picture line just inside it (a
+     step, not a dark edge of the picture). The bars include it and the glow
+     covers it.
 * `MOVIENIGHT_SOFT_GLOW`: the glow gets wider towards the outer edge of the
   bars (smoothstep from the picture edge to the screen edge, scaled by Soft
   glow), in the final pass, no extra passes. 1: a ring of 8 bilinear reads

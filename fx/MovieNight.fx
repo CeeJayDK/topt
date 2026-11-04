@@ -34,9 +34,10 @@
 	  shadow lies over the glow; Edge feather does the same next to the
 	  picture (compression bleed).
 	* Bar detection: the technique "Movie Night: detect bars" finds the bars
-	  (a binary search from 2.35:1 / 4:3 guesses for the pure black edge,
-	  then the near-black compression bleed next to it, which the glow then
-	  covers) and stores them for the Bars setting "Detected".
+	  (max profiles of every pixel over the run, searched from the screen
+	  centre outward, so subtitles in the bars do not count; then the
+	  near-black fringe next to the picture, which the glow covers) and
+	  stores them for the Bars setting "Detected".
 	* Test option: fill the whole bars (ignore their content).
 	* Blue-noise dither against banding (BLUR_DITHER, on by default;
 	  needs Textures/topt_bn64_RGBA8.png, or BLUR_NOISE 1 for IGN);
@@ -60,8 +61,8 @@ uniform int BarSource <
 	ui_type = "combo"; ui_items = "Manual (the sliders below)\0Detected (run the technique Movie Night: detect bars)\0";
 	ui_label = "Bars";
 	ui_tooltip = "Detected: the bars the technique \"Movie Night: detect bars\" found (switch it on for a moment\n"
-	             "while the video plays; it switches itself off). They include the near-black lines next to the\n"
-	             "picture (below Edge feather), which the glow then covers.";
+	             "while the video plays; it switches itself off, the bars stay black meanwhile). They include the\n"
+	             "near-black fringe next to the picture (below Edge feather), which the glow then covers.";
 > = 0;
 
 uniform float Top <
@@ -145,6 +146,11 @@ static const float2 MN_PX = float2(BUFFER_RCP_WIDTH, BUFFER_RCP_HEIGHT);
 // texel 1 pure black only, texel 2 the detection's state (MN_DetectPS).
 texture MN_tBars { Width = 3; Height = 1; Format = RGBA32F; };
 sampler MN_sBars { Texture = MN_tBars; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+// The last frame the bar detection ran in (MN_TriggerPS); while it runs, the bars are not drawn.
+texture MN_tTrigger { Width = 1; Height = 1; Format = R32F; };
+sampler MN_sTrigger { Texture = MN_tTrigger; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+uniform int MN_Frame < source = "framecount"; >;
+bool MN_Detecting() { return MN_Frame - tex2Dlod(MN_sTrigger, float4(0.5, 0.5, 0., 0.)).x <= 1.; }
 
 // The bars in pixels: top, bottom, left, right.
 float4 MN_Bars() { return BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right); }
@@ -716,6 +722,8 @@ void MN_BarsVS(in uint id : SV_VertexID, out float4 position : SV_Position, out 
 		case 11: texcoord = float2(ID9, 2.);  break;
 	}
 	position = float4(texcoord * float2(2., -2.) + float2(-1., 1.), 1., Zoom);
+	if (MN_Detecting())
+		position = 0.; // the bar detection is running: leave the bars black for it
 }
 
 #if MOVIENIGHT_SOFT_GLOW
@@ -809,137 +817,262 @@ float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Tar
 }
 
 /*
-	Bar detection. The technique "Movie Night: detect bars" only marks the frames it runs in (a timeout
-	switches it off); MovieNight's first pass then searches the screen before it draws anything, so the
-	order of the techniques does not matter. One pixel searches each bar with a binary search over the
-	lines from that screen edge inward:
-	1. The pure black edge: a probe tests two lines at once, MN_DETECT_K bilinear reads at the corners
-	   between 2 x 2 pixels along them (any light above 0 in 4 pixels per read). Top first (first probe
-	   at the 2.35:1 bar) across the whole width; then left and right (first probe at the 4:3 bar) on the
-	   rows between the top bar and its mirror, so subtitles in a bottom bar do not count; then the bottom
-	   (first probe at the top's result) in the outer fifth of the picture's width at each end, where
-	   subtitles do not come. Each search first tests the two outermost lines, so a side without a bar
-	   costs one probe.
-	2. Then the near-black edge (compression bleed) next to it: up to MN_BLEED_MAX more lines whose point
-	   reads (2 x MN_DETECT_K, pixel centres) are all below Edge feather. Searching for near black only
-	   after the pure black edge keeps a dark frame from passing for a bar. The bars include these lines,
-	   so the glow covers them.
-	Over the frames it runs (MOVIENIGHT_DETECT_MS) it keeps the smallest bars it saw (a dark scene can
-	hide the picture's edge); frames that are almost all black are skipped. MN_tBars: texel 0 the bars
-	with the bleed, texel 1 the pure black bars, texel 2 (the frame it last ran, a valid frame this run).
+	Bar detection (the technique "Movie Night: detect bars", MOVIENIGHT_DETECT_MS long; the bars are not
+	drawn while it runs, so it sees them black whatever the order of the techniques):
+	1. Max profiles, kept over the frames of the run (the brightest value seen; the first frame is skipped,
+	   it may still show the glow): per row the maximum of max(R, G, B) over each 1/64 of the width
+	   (MN_tRowSeg, 64 x H), per column over each 1/64 of the height (MN_tColSeg, W x 64). Every pixel is
+	   read: a dark scene only has to light a line once during the run, a black frame adds nothing.
+	2. Inside-out (from the lit line nearest the screen centre outward to the first black line: the picture
+	   is connected around the centre, so subtitles further out in a bar do not count): left / right on the
+	   middle quarter of the rows, then top / bottom on the outer 1/16 of the picture's width at each end
+	   (subtitles sit in the middle), then left / right again on the picture's rows. Each scan reads a line
+	   texture (one value per line) and its blocks (min, max per 32 lines), ~100 reads.
+	3. The fringe next to each pure black edge (compression bleed, the player's scaling): up to MN_FRINGE
+	   lines below Edge feather and below half the picture line just inside it (a step, not a dark edge of
+	   the picture). The bars include it, and the glow covers it.
+	Compared with other searches in scripts/bar_detect_sim.py (results/bar_detect.md). MN_tBars: texel 0
+	the bars with the fringe, texel 1 pure black only, texel 2 (the frame it last ran, 1 if it found bars).
 */
-#define MN_DETECT_K 16
-#define MN_BLEED_MAX round(16. * BUFFER_HEIGHT / 1080.) // a macroblock of 1080p video, scaled
+#define MN_SEG 64
+#define MN_BLOCK 32
+#define MN_FRINGE round(4. * BUFFER_HEIGHT / 1080.)
 
-uniform int MN_Frame < source = "framecount"; >;
-
-texture MN_tTrigger { Width = 1; Height = 1; Format = R32F; };
-sampler MN_sTrigger { Texture = MN_tTrigger; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tRowSeg    { Width = MN_SEG; Height = BUFFER_HEIGHT; Format = R16F; };
+sampler MN_sRowSeg    { Texture = MN_tRowSeg; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tRowSegNew { Width = MN_SEG; Height = BUFFER_HEIGHT; Format = R16F; };
+sampler MN_sRowSegNew { Texture = MN_tRowSegNew; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tColSeg    { Width = BUFFER_WIDTH; Height = MN_SEG; Format = R16F; };
+sampler MN_sColSeg    { Texture = MN_tColSeg; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tColSegNew { Width = BUFFER_WIDTH; Height = MN_SEG; Format = R16F; };
+sampler MN_sColSegNew { Texture = MN_tColSegNew; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+// line profiles (one value per column / row) and their blocks (min, max)
+texture MN_tColLine  { Width = BUFFER_WIDTH; Height = 1; Format = R16F; };
+sampler MN_sColLine  { Texture = MN_tColLine; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tColBlock { Width = (BUFFER_WIDTH + MN_BLOCK - 1) / MN_BLOCK; Height = 1; Format = RG16F; };
+sampler MN_sColBlock { Texture = MN_tColBlock; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tRowLine  { Width = BUFFER_HEIGHT; Height = 1; Format = R16F; };
+sampler MN_sRowLine  { Texture = MN_tRowLine; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tRowBlock { Width = (BUFFER_HEIGHT + MN_BLOCK - 1) / MN_BLOCK; Height = 1; Format = RG16F; };
+sampler MN_sRowBlock { Texture = MN_tRowBlock; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+// the scans' results: (black lines at the low end, with the fringe, at the high end, with the fringe); x < 0: none
+texture MN_tSidesA { Width = 1; Height = 1; Format = RGBA32F; };
+sampler MN_sSidesA { Texture = MN_tSidesA; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tTB     { Width = 1; Height = 1; Format = RGBA32F; };
+sampler MN_sTB     { Texture = MN_tTB; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
+texture MN_tSidesB { Width = 1; Height = 1; Format = RGBA32F; };
+sampler MN_sSidesB { Texture = MN_tSidesB; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 texture MN_tDetect { Width = 3; Height = 1; Format = RGBA32F; };
 sampler MN_sDetect { Texture = MN_tDetect; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
-sampler MN_sScreenPoint { Texture = ReShade::BackBufferTex; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 
-// Point i of n along a line (px): spread over span, or (outer) over the outer fifth at each end.
-float MN_Along(int i, int n, float2 span, bool outer)
+// 1. Max profiles. A run continues while the detection ran in the previous frame; its first frame writes 0.
+bool MN_RunGoesOn() { return MN_Frame - tex2Dfetch(MN_sTrigger, int2(0, 0)).x <= 1.; }
+float MN_Max3(float3 c) { return max(c.r, max(c.g, c.b)); }
+
+float4 MN_RowSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
-	const float t = (i + 0.5) / n;
-	if (!outer)
-		return lerp(span.x, span.y, t);
-	const float w = 0.2 * (span.y - span.x);
-	return t < 0.5 ? span.x + w * 2. * t : span.y - w * 2. * (1. - t);
+	const int y = int(vpos.y), s = int(vpos.x);
+	const int x0 = s * BUFFER_WIDTH / MN_SEG, x1 = (s + 1) * BUFFER_WIDTH / MN_SEG;
+	float m = 0.;
+	[loop] for (int x = x0; x < x1; x++)
+		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
+	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sRowSeg, int2(s, y)).x) : 0.;
 }
 
-// Screen position (px) of point s along line l from a screen edge (0 top, 1 bottom, 2 left, 3 right).
-float2 MN_LinePoint(int edge, float l, float s)
+float4 MN_ColSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
-	return edge == 0 ? float2(s, l) : edge == 1 ? float2(s, BUFFER_HEIGHT - l) : edge == 2 ? float2(l, s) : float2(BUFFER_WIDTH - l, s);
+	const int x = int(vpos.x), s = int(vpos.y);
+	const int y0 = s * BUFFER_HEIGHT / MN_SEG, y1 = (s + 1) * BUFFER_HEIGHT / MN_SEG;
+	float m = 0.;
+	[loop] for (int y = y0; y < y1; y++)
+		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
+	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sColSeg, int2(x, s)).x) : 0.;
 }
 
-// Any light in lines l - 1 and l from the edge (l >= 1; l = 0.5: the outermost line alone).
-bool MN_LineLit(int edge, float l, float2 span)
+float4 MN_RowSegCopyPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return tex2Dfetch(MN_sRowSegNew, int2(vpos.xy)); }
+float4 MN_ColSegCopyPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return tex2Dfetch(MN_sColSegNew, int2(vpos.xy)); }
+
+float4 MN_TriggerPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
-	bool lit = false;
-	[loop] for (int i = 0; i < MN_DETECT_K; i++)
+	return MN_Frame;
+}
+
+// 2. Line profiles: each column's maximum over the rows [r0, r1), each row's over the outer 1/16 of the
+// picture's columns [l, W - r) at each end (whole segments that overlap them).
+float2 MN_SegRange(float lo, float hi, float n) { return float2(floor(lo * MN_SEG / n), ceil(hi * MN_SEG / n) - 1.); }
+
+float MN_ColLine(int x, float r0, float r1)
+{
+	const float2 s = MN_SegRange(r0, r1, BUFFER_HEIGHT);
+	float m = 0.;
+	[loop] for (int i = int(s.x); i <= int(s.y); i++)
+		m = max(m, tex2Dfetch(MN_sColSeg, int2(x, i)).x);
+	return m;
+}
+
+float4 MN_ColLineAPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	return MN_ColLine(int(vpos.x), BUFFER_HEIGHT * 0.375, BUFFER_HEIGHT * 0.625); // the middle quarter
+}
+
+float4 MN_ColLineBPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	const float4 tb = tex2Dfetch(MN_sTB, int2(0, 0));
+	const float m = BUFFER_HEIGHT / float(MN_SEG); // one segment inside the picture's rows
+	const float r0 = tb.y + m, r1 = BUFFER_HEIGHT - tb.w - m;
+	return r1 - r0 > 2. * m ? MN_ColLine(int(vpos.x), r0, r1) : MN_ColLine(int(vpos.x), BUFFER_HEIGHT * 0.375, BUFFER_HEIGHT * 0.625);
+}
+
+float4 MN_RowLinePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	const float4 lr = tex2Dfetch(MN_sSidesA, int2(0, 0));
+	const float l = max(lr.y, 0.), r = max(lr.w, 0.);
+	const float o = max(1., round((BUFFER_WIDTH - l - r) / 16.));
+	const float2 a = MN_SegRange(l, l + o, BUFFER_WIDTH), b = MN_SegRange(BUFFER_WIDTH - r - o, BUFFER_WIDTH - r, BUFFER_WIDTH);
+	const int y = int(vpos.x);
+	float m = 0.;
+	[loop] for (int i = 0; i < MN_SEG; i++)
+		if ((i >= a.x && i <= a.y) || (i >= b.x && i <= b.y))
+			m = max(m, tex2Dfetch(MN_sRowSeg, int2(i, y)).x);
+	return m;
+}
+
+// (min, max) of each block of MN_BLOCK lines
+float4 MN_Block(sampler lines, int b, int n)
+{
+	float2 mm = float2(1e30, 0.);
+	[loop] for (int i = b * MN_BLOCK; i < min(n, (b + 1) * MN_BLOCK); i++)
 	{
-		const float2 p = MN_LinePoint(edge, l, floor(MN_Along(i, MN_DETECT_K, span, edge == 1))); // a corner
-		lit = lit || any(tex2Dlod(ReShade::BackBuffer, float4(p * MN_PX, 0., 0.)).rgb > 0.);
+		const float v = tex2Dfetch(lines, int2(i, 0)).x;
+		mm = float2(min(mm.x, v), max(mm.y, v));
 	}
-	return lit;
+	return float4(mm, 0., 0.);
 }
+float4 MN_ColBlockPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return MN_Block(MN_sColLine, int(vpos.x), BUFFER_WIDTH); }
+float4 MN_RowBlockPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return MN_Block(MN_sRowLine, int(vpos.x), BUFFER_HEIGHT); }
 
-// Line n (0 = the outermost) from the edge is darker than level at all its points.
-bool MN_LineDark(int edge, float n, float2 span, float level)
+// The first black line from line c downward (dir -1) or upward (dir 1); -1 / n: none. The rest of c's block
+// is read line by line, then whole blocks by their minimum until one has a black line, then that block.
+int MN_FirstBlack(sampler lines, sampler blocks, int n, int c, int dir)
 {
-	bool dark = true;
-	[loop] for (int i = 0; i < 2 * MN_DETECT_K; i++)
+	const int nb = (n + MN_BLOCK - 1) / MN_BLOCK;
+	int found = dir < 0 ? -1 : n;
+	int b = c / MN_BLOCK;
+	int i = c;
+	[loop] for (int k = 0; k < MN_BLOCK; k++)
 	{
-		const float2 p = MN_LinePoint(edge, n + 0.5, floor(MN_Along(i, 2 * MN_DETECT_K, span, edge == 1)) + 0.5);
-		const float3 c = tex2Dlod(MN_sScreenPoint, float4(p * MN_PX, 0., 0.)).rgb;
-		dark = dark && max(c.r, max(c.g, c.b)) < level;
+		if (i < b * MN_BLOCK || i >= min(n, (b + 1) * MN_BLOCK))
+			break;
+		if (tex2Dfetch(lines, int2(i, 0)).x <= 0.)
+		{
+			found = i;
+			break;
+		}
+		i += dir;
 	}
-	return dark;
-}
-
-// The number of pure black lines at a screen edge (at most lmax): the first line with light, by binary
-// search (first probe at guess).
-float MN_Search(int edge, float guess, float lmax, float2 span)
-{
-	if (MN_LineLit(edge, 1., span))
-		return MN_LineLit(edge, 0.5, span) ? 0. : 1.;
-	float lo = 2., hi = lmax + 1.; // lines < lo are black; the first lit line is in [lo, hi]
-	float probe = clamp(guess, lo, hi - 1.);
-	[loop] for (int it = 0; it < 16 && lo < hi; it++)
+	if (found >= 0 && found < n)
+		return found;
+	b += dir;
+	[loop] for (int k = 0; k < nb; k++)
 	{
-		if (MN_LineLit(edge, probe, span)) hi = probe; else lo = probe + 1.;
-		probe = floor((lo + hi) * 0.5);
+		if (b < 0 || b >= nb || tex2Dfetch(blocks, int2(b, 0)).x <= 0.)
+			break;
+		b += dir;
 	}
-	return lo;
-}
-
-// The bar with the near-black lines next to its pure black edge e0 (binary search, up to MN_BLEED_MAX).
-float MN_Refine(int edge, float e0, float2 span)
-{
-	const float level = EdgeFeather / 255.;
-	if (e0 <= 0. || level <= 0.)
-		return e0;
-	float lo = e0, hi = e0 + MN_BLEED_MAX; // lines < lo are near black; the first other line is in [lo, hi]
-	[loop] for (int it = 0; it < 8 && lo < hi; it++)
+	if (b < 0 || b >= nb)
+		return found;
+	i = dir < 0 ? min(n, (b + 1) * MN_BLOCK) - 1 : b * MN_BLOCK;
+	[loop] for (int k = 0; k < MN_BLOCK; k++)
 	{
-		const float n = floor((lo + hi) * 0.5);
-		if (MN_LineDark(edge, n, span, level)) lo = n + 1.; else hi = n;
+		if (i < b * MN_BLOCK || i >= min(n, (b + 1) * MN_BLOCK))
+			break;
+		if (tex2Dfetch(lines, int2(i, 0)).x <= 0.)
+		{
+			found = i;
+			break;
+		}
+		i += dir;
 	}
-	return lo;
+	return found;
 }
 
-float4 MN_DetectPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+// The lit line nearest the centre (blocks by their maximum: the centre's, then outward alternating); -1: all black.
+int MN_LitNearCentre(sampler lines, sampler blocks, int n)
 {
-	const float4 keep = tex2Dfetch(MN_sBars, int2(vpos.xy));
-	[branch] if (MN_Frame - tex2Dfetch(MN_sTrigger, int2(0, 0)).x > 2.)
-		return keep; // not detecting
+	const int c = n / 2;
+	if (tex2Dfetch(lines, int2(c, 0)).x > 0.)
+		return c;
+	const int nb = (n + MN_BLOCK - 1) / MN_BLOCK, bc = c / MN_BLOCK;
+	int best = -1;
+	[loop] for (int k = 0; k < 2 * nb; k++)
+	{
+		const int b = bc + (k % 2 == 1 ? (k + 1) / 2 : -(k / 2)); // bc, bc + 1, bc - 1, bc + 2, ...
+		if (b >= 0 && b < nb && tex2Dfetch(blocks, int2(b, 0)).y > 0.)
+		{
+			[loop] for (int j = 0; j < MN_BLOCK; j++)
+			{
+				const int i = b * MN_BLOCK + j;
+				if (i < n && tex2Dfetch(lines, int2(i, 0)).x > 0. && (best < 0 || abs(i - c) < abs(best - c)))
+					best = i;
+			}
+			break;
+		}
+	}
+	return best;
+}
 
-	const float W = BUFFER_WIDTH, H = BUFFER_HEIGHT;
-	float4 pure, bars;
-	// top across the whole width; left / right on the rows between the top bar and its mirror (not in a
-	// bottom bar's subtitles); the bottom in the outer fifths of the picture's width (subtitles sit in the
-	// middle, and with side bars the screen's outer fifths are all black)
-	pure.x = MN_Search(0, round(max(H - W / 2.35, 4.) * 0.5), floor(H * 0.5), float2(0., W));
-	bars.x = MN_Refine(0, pure.x, float2(0., W));
-	const float2 rows = float2(bars.x, H - bars.x);
-	pure.z = MN_Search(2, round(max(W - H * 4. / 3., 4.) * 0.5), floor(W * 0.5), rows);
-	pure.w = MN_Search(3, max(pure.z, 2.), floor(W * 0.5), rows);
-	bars.z = MN_Refine(2, pure.z, rows);
-	bars.w = MN_Refine(3, pure.w, rows);
-	const float2 cols = float2(bars.z, W - bars.w);
-	pure.y = MN_Search(1, max(pure.x, 2.), floor(H * 0.5), cols);
-	bars.y = MN_Refine(1, pure.y, cols);
-	const bool valid = pure.x + pure.y < 0.9 * H && pure.z + pure.w < 0.9 * W; // not a black frame
+// The fringe: lines from the pure black edge inward (line index e0 - 1 + dir * k from the bar) below the
+// level and below half the picture line just inside it, at most MN_FRINGE.
+float MN_Fringe(sampler lines, int n, int black, int dir)
+{
+	if ((dir < 0 && black < 0) || (dir > 0 && black >= n))
+		return 0.; // no bar
+	const int first = black - dir; // the first lit line next to the bar
+	const int ref = clamp(first - dir * int(MN_FRINGE), 0, n - 1);
+	const float thr = min(EdgeFeather / 255., 0.5 * tex2Dfetch(lines, int2(ref, 0)).x);
+	float k = 0.;
+	[loop] for (int i = 0; i < int(MN_FRINGE); i++)
+	{
+		if (tex2Dfetch(lines, int2(clamp(first - dir * i, 0, n - 1), 0)).x >= thr)
+			break;
+		k += 1.;
+	}
+	return k;
+}
 
-	const float2 state = tex2Dfetch(MN_sBars, int2(2, 0)).xy; // the frame it last ran, a valid frame this run
-	const bool run = MN_Frame - state.x <= 2. && state.y > 0.; // continuing a run with a valid frame
-	const float4 prev = tex2Dfetch(MN_sBars, int2(0, 0)), prev0 = tex2Dfetch(MN_sBars, int2(1, 0));
-	bars = valid ? (run ? min(bars, prev) : bars) : prev;
-	pure = valid ? (run ? min(pure, prev0) : pure) : prev0;
-	return vpos.x < 1. ? bars : vpos.x < 2. ? pure : float4(MN_Frame, valid || run ? 1. : 0., 0., 0.);
+// Inside-out scan of a line profile of n lines: (black lines at the low end, with the fringe, at the high
+// end, with the fringe); x < 0: no picture.
+float4 MN_Scan(sampler lines, sampler blocks, int n)
+{
+	const int c = MN_LitNearCentre(lines, blocks, n);
+	if (c < 0)
+		return -1.;
+	const int lo = MN_FirstBlack(lines, blocks, n, c, -1), hi = MN_FirstBlack(lines, blocks, n, c, 1);
+	const float e0 = lo + 1, e1 = n - hi;
+	if (e0 > n / 2 || e1 > n / 2)
+		return -1.;
+	return float4(e0, e0 + MN_Fringe(lines, n, lo, -1), e1, e1 + MN_Fringe(lines, n, hi, 1));
+}
+float4 MN_SidesAPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return MN_Scan(MN_sColLine, MN_sColBlock, BUFFER_WIDTH); }
+float4 MN_TBPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	return tex2Dfetch(MN_sSidesA, int2(0, 0)).x < 0. ? -1. : MN_Scan(MN_sRowLine, MN_sRowBlock, BUFFER_HEIGHT);
+}
+float4 MN_SidesBPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	return tex2Dfetch(MN_sTB, int2(0, 0)).x < 0. ? -1. : MN_Scan(MN_sColLine, MN_sColBlock, BUFFER_WIDTH);
+}
+
+// 3. The bars: kept from before where a scan found no picture (a black frame, the run's first frame).
+float4 MN_CombinePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
+{
+	const float4 tb = tex2Dfetch(MN_sTB, int2(0, 0)), lr = tex2Dfetch(MN_sSidesB, int2(0, 0));
+	const bool found = tb.x >= 0. && lr.x >= 0.;
+	if (vpos.x >= 2.)
+		return float4(MN_Frame, found ? 1. : 0., 0., 0.);
+	if (!found)
+		return tex2Dfetch(MN_sBars, int2(vpos.xy));
+	return vpos.x < 1. ? float4(tb.y, tb.w, lr.y, lr.w) : float4(tb.x, tb.z, lr.x, lr.z);
 }
 
 float4 MN_StorePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
@@ -947,22 +1080,31 @@ float4 MN_StorePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Ta
 	return tex2Dfetch(MN_sDetect, int2(vpos.xy));
 }
 
-float4 MN_TriggerPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
-{
-	return MN_Frame;
-}
-
 technique MovieNight_Detect < ui_label = "Movie Night: detect bars"; timeout = MOVIENIGHT_DETECT_MS;
 	ui_tooltip = "Finds the black bars of the playing video and stores them for MovieNight's Bars setting\n"
-	             "\"Detected\". Switch it on for a moment; it switches itself off."; >
+	             "\"Detected\". Switch it on for a moment while the video plays; it switches itself off.\n"
+	             "The bars stay black while it runs."; >
 {
-	pass { VertexShader = PostProcessVS; PixelShader = MN_TriggerPS; RenderTarget = MN_tTrigger; }
+	pass RowProfile { VertexShader = PostProcessVS; PixelShader = MN_RowSegPS; RenderTarget = MN_tRowSegNew; }
+	pass RowProfileKeep { VertexShader = PostProcessVS; PixelShader = MN_RowSegCopyPS; RenderTarget = MN_tRowSeg; }
+	pass ColumnProfile { VertexShader = PostProcessVS; PixelShader = MN_ColSegPS; RenderTarget = MN_tColSegNew; }
+	pass ColumnProfileKeep { VertexShader = PostProcessVS; PixelShader = MN_ColSegCopyPS; RenderTarget = MN_tColSeg; }
+	pass Trigger { VertexShader = PostProcessVS; PixelShader = MN_TriggerPS; RenderTarget = MN_tTrigger; }
+	pass SideLinesA { VertexShader = PostProcessVS; PixelShader = MN_ColLineAPS; RenderTarget = MN_tColLine; }
+	pass SideBlocksA { VertexShader = PostProcessVS; PixelShader = MN_ColBlockPS; RenderTarget = MN_tColBlock; }
+	pass SidesA { VertexShader = PostProcessVS; PixelShader = MN_SidesAPS; RenderTarget = MN_tSidesA; }
+	pass TopBottomLines { VertexShader = PostProcessVS; PixelShader = MN_RowLinePS; RenderTarget = MN_tRowLine; }
+	pass TopBottomBlocks { VertexShader = PostProcessVS; PixelShader = MN_RowBlockPS; RenderTarget = MN_tRowBlock; }
+	pass TopBottom { VertexShader = PostProcessVS; PixelShader = MN_TBPS; RenderTarget = MN_tTB; }
+	pass SideLinesB { VertexShader = PostProcessVS; PixelShader = MN_ColLineBPS; RenderTarget = MN_tColLine; }
+	pass SideBlocksB { VertexShader = PostProcessVS; PixelShader = MN_ColBlockPS; RenderTarget = MN_tColBlock; }
+	pass SidesB { VertexShader = PostProcessVS; PixelShader = MN_SidesBPS; RenderTarget = MN_tSidesB; }
+	pass Combine { VertexShader = PostProcessVS; PixelShader = MN_CombinePS; RenderTarget = MN_tDetect; }
+	pass Store { VertexShader = PostProcessVS; PixelShader = MN_StorePS; RenderTarget = MN_tBars; }
 }
 
 technique MovieNight
 {
-	pass Detect { VertexShader = PostProcessVS; PixelShader = MN_DetectPS; RenderTarget = MN_tDetect; }
-	pass Store { VertexShader = PostProcessVS; PixelShader = MN_StorePS; RenderTarget = MN_tBars; }
 	pass Down1 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_Down1PS; RenderTarget = BLUR_tDown1; }
 #if BLUR_STEPS > 1
 	pass Down2 { PrimitiveTopology = TRIANGLELIST; VertexCount = 24; VertexShader = MN_StripVS; PixelShader = BLUR_Down2PS; RenderTarget = BLUR_tDown2; }
