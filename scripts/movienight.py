@@ -230,7 +230,8 @@ uniform int MN_Help <
 		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular,\n"
 		"  11 R2 ordered (no texture), 12 lattice of 32 levels (8, 13) / 32 (no texture).\n"
 		"BLUR_DITHER_TEST = " BLUR_STR(BLUR_DITHER_TEST) "\n"
-		"  1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top.\n"
+		"  1: in the bars over the top quarter of the screen, a grey gradient (0.25 to 0.75, left to\n"
+		"  right) dithered with the BLUR_DITHER method.\n"
 		"BLUR_FORMAT = " BLUR_STR(BLUR_FORMAT) "\n"
 		"  Format of the blur buffers; R11G11B10F keeps HDR (> 1) values.\n"
 		"BLUR_GPU = " BLUR_STR(BLUR_GPU) "\n"
@@ -446,15 +447,15 @@ float MN_Cover(float3 c, float2 uv)
 float3 MN_BarsPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
 #if BLUR_DITHER_TEST
-	return BLUR_DitherTest(texcoord, vpos.xy);
-#else
+	if (texcoord.y < 0.25)
+		return BLUR_Dither((texcoord.x * 0.5 + 0.25).xxx, vpos.xy); // dither test (in the bars)
+#endif
 	const float3 color = tex2D(ReShade::BackBuffer, texcoord).rgb;
 	const float a = FillAll ? 0.0 : MN_Cover(color, texcoord);
 	float3 o = color;
 	[branch] if (a < 1.0) // subtitles skip the glow
 		o = lerp(BLUR_Dither(MN_Glow(texcoord, vpos.xy) * Opacity, vpos.xy), color, a);
 	return saturate(o);
-#endif
 }
 
 /*

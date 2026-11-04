@@ -450,7 +450,7 @@ BODY = r"""#include "ReShade.fxh"
 	#define BLUR_DITHER 1 // dither of the output against banding: 0 off, 1-12 methods (see the help in the UI)
 #endif
 #ifndef BLUR_DITHER_TEST
-	#define BLUR_DITHER_TEST 0 // 1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top
+	#define BLUR_DITHER_TEST 0 // 1: show a grey gradient (0.25 to 0.75, left to right) over the top quarter of the screen, with the BLUR_DITHER method
 #endif
 #ifndef BLUR_NOISE
 	#ifdef BLUR_FROST_NOISE // the earlier name
@@ -709,7 +709,7 @@ float3 BLUR_Resolve(float2 uv)
 #endif // BLUR_SMALL
 
 // Noise for the dither and the frosted glass.
-#define BLUR_NEED_BN (BLUR_DITHER_TEST || (BLUR_DITHER >= 1 && BLUR_DITHER <= 4) || BLUR_DITHER == 10 || (BLUR_NEED_NOISE && BLUR_NOISE == 0) || BLUR_NEED_TEX)
+#define BLUR_NEED_BN ((BLUR_DITHER >= 1 && BLUR_DITHER <= 4) || BLUR_DITHER == 10 || (BLUR_NEED_NOISE && BLUR_NOISE == 0) || BLUR_NEED_TEX)
 #if BLUR_NEED_BN
 texture BLUR_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; Format = RGBA8; };
 sampler BLUR_sBN { Texture = BLUR_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
@@ -812,13 +812,13 @@ float3 BLUR_Dither(float3 c, float2 pos)
 #endif
 }
 
-// Dither test: a grey gradient from 0.25 at the left to 0.75 at the right (bands of 15 px at 1080p
-// on 8-bit screens) in 13 stripes, dither methods 0 (none) to 12 from the top.
-float3 BLUR_DitherTest(float2 uv, float2 pos)
-{
-	const int method = min(12, (int)(uv.y * 13.0));
-	return BLUR_DitherBy((0.25 + 0.5 * uv.x).xxx, pos, method);
-}
+// Dither test: over the top quarter of the screen, a grey gradient from 0.25 at the left to 0.75 at the
+// right (bands of 15 px at 1080p on 8-bit screens) with the BLUR_DITHER method; returns from the pixel shader.
+#if BLUR_DITHER_TEST
+	#define BLUR_DITHER_TEST_AT(uv, pos) if (uv.y < 0.25) return float4(BLUR_Dither((uv.x * 0.5 + 0.25).xxx, pos), 1.0);
+#else
+	#define BLUR_DITHER_TEST_AT(uv, pos)
+#endif
 """
 
 TAIL = r"""
@@ -846,7 +846,8 @@ uniform int BLUR_Help <
 		"  8 SweetFX 1 ordered (+,-,+), 9 IGN rectangular, 10 blue noise rectangular,\n"
 		"  11 R2 ordered (no texture), 12 lattice of 32 levels (8, 13) / 32 (no texture).\n"
 		"BLUR_DITHER_TEST = " BLUR_STR(BLUR_DITHER_TEST) "\n"
-		"  1: show a grey gradient (0.25 to 0.75) in 13 stripes, dither methods 0-12 from the top.\n"
+		"  1: show a grey gradient (0.25 to 0.75, left to right) over the top quarter of the screen,\n"
+		"  dithered with the BLUR_DITHER method.\n"
 		"BLUR_NOISE = " BLUR_STR(BLUR_NOISE) "\n"
 		"  Frosted-glass noise: 0 blue-noise texture, 1 IGN.\n"
 		"BLUR_FORMAT = " BLUR_STR(BLUR_FORMAT) "\n"
@@ -890,15 +891,11 @@ float2 BLUR_Frost(float2 pos, float2 uv)
 	#define BLUR_Frost(pos, uv) (uv)
 #endif
 
-#if BLUR_DITHER_TEST
-float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
-{
-	return float4(BLUR_DitherTest(uv, pos.xy), 1.0);
-}
-#elif BLUR_LUMA
+#if BLUR_LUMA
 // Brightness only: replace the pixel's luma with the blurred luma, keep its colour detail.
 float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
+	BLUR_DITHER_TEST_AT(uv, pos.xy)
 	const float yb = dot(BLUR_Resolve(BLUR_Frost(pos.xy, uv)), BLUR_LUMA_W);
 	if (BLUR_ShowBlur)
 		return float4(BLUR_Dither(yb.xxx, pos.xy), 1.0);
@@ -911,11 +908,13 @@ float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 // shader lerp below does, so the result is the same.
 float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
+	BLUR_DITHER_TEST_AT(uv, pos.xy)
 	return float4(BLUR_Dither(BLUR_Resolve(BLUR_Frost(pos.xy, uv)), pos.xy), BLUR_ShowBlur ? 1.0 : BLUR_Strength);
 }
 #else
 float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
+	BLUR_DITHER_TEST_AT(uv, pos.xy)
 	const float3 blur = BLUR_Resolve(BLUR_Frost(pos.xy, uv));
 	if (BLUR_ShowBlur)
 		return float4(BLUR_Dither(blur, pos.xy), 1.0);
