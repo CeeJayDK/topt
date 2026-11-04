@@ -92,13 +92,13 @@ static const float3 BLUR_LUMA_W = float3(0.2126, 0.7152, 0.0722); // Rec. 709 we
 	#define BLUR_T float
 	#define BLUR_CH r
 	#define BLUR_TO_LOW(c) dot(c, BLUR_LUMA_W)
-	#define BLUR_OUT(c) float4(c, 0., 0., 1.)
+	#define BLUR_OUT(c) float4(c, 0, 0, 1)
 #else
 	#define BLUR_FMT BLUR_FORMAT
 	#define BLUR_T float3
 	#define BLUR_CH rgb
 	#define BLUR_TO_LOW(c) c
-	#define BLUR_OUT(c) float4(c, 1.)
+	#define BLUR_OUT(c) float4(c, 1)
 #endif
 
 #if BLUR_SMALL
@@ -109,7 +109,7 @@ float3 BLUR_Resolve(float2 uv)
 	const float sigma = clamp(BLUR_SIZE * BLUR_KEEP * BLUR_SizeTune * BUFFER_HEIGHT / 108000., 0.7, 1.3);
 	const float k = -0.5 / (sigma * sigma);
 	const int n = BLUR_ARM_BLOCKS(sigma); // blocks per arm: the same for every pixel
-	float3 c = tex2Dlod(BLUR_sBackBuffer, float4(uv, 0., 0.)).rgb;
+	float3 c = tex2Dlod(BLUR_sBackBuffer, float4(uv, 0, 0)).rgb;
 	float wsum = 1.;
 	[unroll] for (int i = 0; i < 4; i++)
 	{
@@ -119,10 +119,10 @@ float3 BLUR_Resolve(float2 uv)
 			const float4 g = exp(k * float4(b.x, b.x + 1., b.y, b.y + 1.) * float4(b.x, b.x + 1., b.y, b.y + 1.));
 			const float2 o = float2(b.x + g.y / (g.x + g.y), b.y + g.w / (g.z + g.w)); // pixels
 			const float w = (g.x + g.y) * (g.z + g.w);
-			c += w * (tex2Dlod(BLUR_sBackBuffer, float4(uv + o * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
-			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(-o.y, o.x) * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
-			        + tex2Dlod(BLUR_sBackBuffer, float4(uv - o * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
-			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(o.y, -o.x) * BUFFER_PIXEL_SIZE, 0., 0.)).rgb);
+			c += w * (tex2Dlod(BLUR_sBackBuffer, float4(uv + o * BUFFER_PIXEL_SIZE, 0, 0)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(-o.y, o.x) * BUFFER_PIXEL_SIZE, 0, 0)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv - o * BUFFER_PIXEL_SIZE, 0, 0)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(o.y, -o.x) * BUFFER_PIXEL_SIZE, 0, 0)).rgb);
 			wsum += 4. * w;
 		}
 	}
@@ -168,7 +168,7 @@ float4 BLUR_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = BUFFER_PIXEL_SIZE;
 	float3 c = 0.; // backbuffer colour; converted to brightness once at the end (it is linear)
 	[unroll] for (int i = 0; i < BLUR_ND1; i++)
-		c += BLUR_DOWN1_W(i) * tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0., 0.)).rgb;
+		c += BLUR_DOWN1_W(i) * tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0, 0)).rgb;
 	return BLUR_OUT(BLUR_TO_LOW(c));
 }
 
@@ -178,7 +178,7 @@ float4 BLUR_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIV1, BUFFER_HEIGHT / BLUR_DIV1);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_ND2; i++)
-		c += BLUR_DOWN2_W(i) * tex2Dlod(BLUR_sDown1, float4(BLUR_LOW_UV(uv + BLUR_DOWN2[i].xy * px, px), 0., 0.)).BLUR_CH;
+		c += BLUR_DOWN2_W(i) * tex2Dlod(BLUR_sDown1, float4(BLUR_LOW_UV(uv + BLUR_DOWN2[i].xy * px, px), 0, 0)).BLUR_CH;
 	return BLUR_OUT(c);
 }
 #endif
@@ -210,7 +210,7 @@ float4 BLUR_GaussPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float k = -0.5 / (sl * sl);
 
 	float2 t[BLUR_NP + 1];
-	t[0] = float2(0., 1.);
+	t[0] = float2(0, 1);
 	float wsum = 1.;
 	[unroll] for (int m = 1; m <= BLUR_NP; m++)
 	{
@@ -230,7 +230,7 @@ float4 BLUR_GaussPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 				{
 					const float2 tx = t[abs(x)];
 					const float2 o = float2(x < 0 ? -tx.x : tx.x, y < 0 ? -ty.x : ty.x);
-					c += tx.y * ty.y * tex2Dlod(BLUR_sLow, float4(BLUR_LOW_UV(uv + o * px, px), 0., 0.)).BLUR_CH;
+					c += tx.y * ty.y * tex2Dlod(BLUR_sLow, float4(BLUR_LOW_UV(uv + o * px, px), 0, 0)).BLUR_CH;
 				}
 			}
 		}
@@ -248,15 +248,15 @@ BLUR_T BLUR_Gauss1D(sampler s, float2 uv, float2 dir)
 	const float k = -0.5 / (sl * sl);
 
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
-	BLUR_T c = tex2Dlod(s, float4(BLUR_LOW_UV(uv, px), 0., 0.)).BLUR_CH;
+	BLUR_T c = tex2Dlod(s, float4(BLUR_LOW_UV(uv, px), 0, 0)).BLUR_CH;
 	float wsum = 1.;
 	[unroll] for (int m = 1; m <= BLUR_NP; m++)
 	{
 		[branch] if (m <= np)
 		{
 			const float2 p = BLUR_Pair(m, k, r);
-			c += p.y * (tex2Dlod(s, float4(BLUR_LOW_UV(uv + p.x * d, px), 0., 0.)).BLUR_CH
-			          + tex2Dlod(s, float4(BLUR_LOW_UV(uv - p.x * d, px), 0., 0.)).BLUR_CH);
+			c += p.y * (tex2Dlod(s, float4(BLUR_LOW_UV(uv + p.x * d, px), 0, 0)).BLUR_CH
+			          + tex2Dlod(s, float4(BLUR_LOW_UV(uv - p.x * d, px), 0, 0)).BLUR_CH);
 			wsum += 2. * p.y;
 		}
 	}
@@ -265,12 +265,12 @@ BLUR_T BLUR_Gauss1D(sampler s, float2 uv, float2 dir)
 
 float4 BLUR_GaussHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return BLUR_OUT(BLUR_Gauss1D(BLUR_sLow, uv, float2(1., 0.)));
+	return BLUR_OUT(BLUR_Gauss1D(BLUR_sLow, uv, float2(1, 0)));
 }
 
 float4 BLUR_GaussVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return BLUR_OUT(BLUR_Gauss1D(BLUR_sGaussH, uv, float2(0., 1.)));
+	return BLUR_OUT(BLUR_Gauss1D(BLUR_sGaussH, uv, float2(0, 1)));
 }
 #endif
 
@@ -280,7 +280,7 @@ float4 BLUR_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_NUP; i++)
-		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sGauss, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0., 0.)).BLUR_CH;
+		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sGauss, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0, 0)).BLUR_CH;
 	return BLUR_OUT(c);
 }
 #endif
@@ -292,7 +292,7 @@ float3 BLUR_Resolve(float2 uv)
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVF, BUFFER_HEIGHT / BLUR_DIVF);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_NUP; i++)
-		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sFinal, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0., 0.)).BLUR_CH;
+		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sFinal, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0, 0)).BLUR_CH;
 	return c; // brightness-only: the blurred luma in all three channels
 }
 #endif // BLUR_SMALL
@@ -304,14 +304,14 @@ texture BLUR_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; 
 sampler BLUR_sBN { Texture = BLUR_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 // Four independent blue-noise values in (0, 1) (64 x 64 void-and-cluster, one per channel), centred on
 // the 256 levels so they are symmetric about 0.5.
-float4 BLUR_BN(float2 pos) { return tex2Dlod(BLUR_sBN, float4((floor(pos) + 0.5) / 64., 0., 0.)) * (255. / 256.) + 0.5 / 256.; }
+float4 BLUR_BN(float2 pos) { return tex2Dlod(BLUR_sBN, float4((floor(pos) + 0.5) / 64., 0, 0)) * (255. / 256.) + 0.5 / 256.; }
 #endif
 // Interleaved gradient noise (Jimenez 2014), four decorrelated copies.
 float BLUR_IGN(float2 p) { return frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))); }
 float4 BLUR_IGN4(float2 pos)
 {
 	const float2 p = floor(pos);
-	return float4(BLUR_IGN(p), BLUR_IGN(p + float2(47., 17.)), BLUR_IGN(p + float2(13., 61.)), BLUR_IGN(p + float2(71., 29.)));
+	return float4(BLUR_IGN(p), BLUR_IGN(p + float2(47, 17)), BLUR_IGN(p + float2(13, 61)), BLUR_IGN(p + float2(71, 29)));
 }
 float2 BLUR_Noise2(float2 pos) // frosted glass
 {
@@ -371,24 +371,24 @@ float BLUR_Centre(float t)
 
 float3 BLUR_DitherBy(float3 c, float2 pos, int method)
 {
-	pos += float2(32., 17.); // away from the frosted-glass noise
+	pos += float2(32, 17); // away from the frosted-glass noise
 	float3 d = 0.;
 #if BLUR_NEED_BN
 	if (method == 1) d = BLUR_Tri(BLUR_BN(pos).rgb);
-	if (method == 2) d = BLUR_BN(pos).rgb + BLUR_BN(pos + float2(11., 45.)).rgb - 1.;
+	if (method == 2) d = BLUR_BN(pos).rgb + BLUR_BN(pos + float2(11, 45)).rgb - 1.;
 	if (method == 3) d = BLUR_BN(pos).rgb - 0.5;
 	if (method == 4) d = BLUR_Tri(BLUR_BN(pos).rrr);
 #endif
 	if (method == 5) d = BLUR_Tri(BLUR_IGN4(pos).rgb);
-	if (method == 6) d = float3(BLUR_Bayer8(pos), BLUR_Bayer8(pos + float2(3., 5.)), BLUR_Bayer8(pos + float2(6., 2.))) - 0.5;
+	if (method == 6) d = float3(BLUR_Bayer8(pos), BLUR_Bayer8(pos + float2(3, 5)), BLUR_Bayer8(pos + float2(6, 2))) - 0.5;
 	const float2 pc = pos; // pixel centres: SV_Position plus whole offsets (no floor needed)
-	if (method == 7) d = float3(-1., 1., -1.) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
-	if (method == 8) d = float3(1., -1., 1.) * (0.5 - frac(dot(pc, float2(1. / 16., 10. / 36.)) + 0.25));
-	if (method == 9) d = float3(-1., 1., -1.) * (BLUR_IGN(floor(pos)) - 0.5);
-	if (method == 11) d = float3(-1., 1., -1.) * BLUR_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
-	if (method == 12) d = float3(-1., 1., -1.) * BLUR_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
+	if (method == 7) d = float3(-1, 1, -1) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
+	if (method == 8) d = float3(1, -1, 1) * (0.5 - frac(dot(pc, float2(1. / 16., 10. / 36.)) + 0.25));
+	if (method == 9) d = float3(-1, 1, -1) * (BLUR_IGN(floor(pos)) - 0.5);
+	if (method == 11) d = float3(-1, 1, -1) * BLUR_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
+	if (method == 12) d = float3(-1, 1, -1) * BLUR_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
 #if BLUR_NEED_BN
-	if (method == 10) d = float3(-1., 1., -1.) * (BLUR_BN(pos).r - 0.5);
+	if (method == 10) d = float3(-1, 1, -1) * (BLUR_BN(pos).r - 0.5);
 #endif
 	return c + d / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.);
 }
@@ -480,7 +480,7 @@ float2 BLUR_Frost(float2 pos, float2 uv)
 #if BLUR_DITHER_TEST
 float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return float4(BLUR_DitherTest(uv, pos.xy), 1.);
+	return float4(BLUR_DitherTest(uv, pos.xy), 1);
 }
 #elif BLUR_LUMA
 // Brightness only: replace the pixel's luma with the blurred luma, keep its colour detail.
@@ -488,9 +488,9 @@ float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 {
 	const float yb = dot(BLUR_Resolve(BLUR_Frost(pos.xy, uv)), BLUR_LUMA_W);
 	if (BLUR_ShowBlur)
-		return float4(BLUR_Dither(yb.xxx, pos.xy), 1.);
+		return float4(BLUR_Dither(yb.xxx, pos.xy), 1);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
-	return float4(BLUR_Dither(o + BLUR_Strength * (yb - dot(o, BLUR_LUMA_W)), pos.xy), 1.);
+	return float4(BLUR_Dither(o + BLUR_Strength * (yb - dot(o, BLUR_LUMA_W)), pos.xy), 1);
 }
 #elif BLUR_BLEND
 // The pass blends: screen = blur * a + screen * (1 - a). The shader neither reads
@@ -505,9 +505,9 @@ float4 BLUR_CompositePS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Tar
 {
 	const float3 blur = BLUR_Resolve(BLUR_Frost(pos.xy, uv));
 	if (BLUR_ShowBlur)
-		return float4(BLUR_Dither(blur, pos.xy), 1.);
+		return float4(BLUR_Dither(blur, pos.xy), 1);
 	const float3 o = tex2D(ReShade::BackBuffer, uv).rgb;
-	return float4(BLUR_Dither(lerp(o, blur, BLUR_Strength), pos.xy), 1.);
+	return float4(BLUR_Dither(lerp(o, blur, BLUR_Strength), pos.xy), 1);
 }
 #endif
 

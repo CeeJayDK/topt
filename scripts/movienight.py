@@ -50,6 +50,8 @@ HEAD = r"""/*------------------.
 	  centre outward, so subtitles in the bars do not count; then the
 	  near-black fringe next to the picture, which the glow covers) and
 	  stores them for the Bars setting "Detected".
+	* Bar adjust: widens or narrows each bar by a few pixels (the added lines
+	  are always covered by the glow), e.g. over a thin edge from sharpening.
 	* Test option: fill the whole bars (ignore their content).
 	* Blue-noise dither against banding (BLUR_DITHER, on by default;
 	  needs Textures/topt_bn64_RGBA8.png, or BLUR_NOISE 1 for IGN);
@@ -95,6 +97,13 @@ uniform float Left <
 uniform float Right <
 	ui_type = "drag"; ui_min = 0.0; ui_max = 1000.0; ui_step = 1.0;
 	ui_label = "Right bar (px)";
+> = 0.0;
+
+uniform float BarAdjust <
+	ui_type = "drag"; ui_min = -8.0; ui_max = 8.0; ui_step = 1.0;
+	ui_label = "Bar adjust (px)";
+	ui_tooltip = "Widens (+) or narrows (-) each bar by a few pixels, manual or detected. + covers the outermost\n"
+	             "lines of the picture with the glow, e.g. a thin bright edge from sharpening.";
 > = 0.0;
 
 uniform float Opacity <
@@ -165,9 +174,20 @@ uniform int MN_Frame < source = "framecount"; >;
 bool MN_Detecting() { return MN_Frame - tex2Dlod(MN_sTrigger, float4(0.5, 0.5, 0.0, 0.0)).x <= 1.0; }
 
 // The bars in pixels: top, bottom, left, right.
-float4 MN_Bars() { return BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right); }
-// The near-black lines (compression bleed) the detection found inside each bar, next to the picture (px).
-float4 MN_Bleed() { return BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) - tex2Dfetch(MN_sBars, int2(1, 0)) : 0.0; }
+// The bars (px): manual or detected, each bar there is widened by Bar adjust.
+float4 MN_Bars()
+{
+	const float4 b = BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right);
+	return max(b + BarAdjust * step(0.5, b), 0.0);
+}
+// The lines next to the picture inside each bar the glow always covers (px): the near-black lines
+// (compression bleed) the detection found, plus the lines Bar adjust added.
+float4 MN_Bleed()
+{
+	const float4 b = BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right);
+	const float4 bleed = BarSource == 1 ? b - tex2Dfetch(MN_sBars, int2(1, 0)) : 0.0;
+	return max(bleed + BarAdjust, 0.0) * step(0.5, b);
+}
 
 // The picture rectangle (uv), between the bars.
 float2 MN_PicMin() { return MN_Bars().zx * MN_PX; }

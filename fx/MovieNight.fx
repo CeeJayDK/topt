@@ -38,6 +38,8 @@
 	  centre outward, so subtitles in the bars do not count; then the
 	  near-black fringe next to the picture, which the glow covers) and
 	  stores them for the Bars setting "Detected".
+	* Bar adjust: widens or narrows each bar by a few pixels (the added lines
+	  are always covered by the glow), e.g. over a thin edge from sharpening.
 	* Test option: fill the whole bars (ignore their content).
 	* Blue-noise dither against banding (BLUR_DITHER, on by default;
 	  needs Textures/topt_bn64_RGBA8.png, or BLUR_NOISE 1 for IGN);
@@ -83,6 +85,13 @@ uniform float Left <
 uniform float Right <
 	ui_type = "drag"; ui_min = 0.; ui_max = 1000.; ui_step = 1.;
 	ui_label = "Right bar (px)";
+> = 0.;
+
+uniform float BarAdjust <
+	ui_type = "drag"; ui_min = -8.; ui_max = 8.; ui_step = 1.;
+	ui_label = "Bar adjust (px)";
+	ui_tooltip = "Widens (+) or narrows (-) each bar by a few pixels, manual or detected. + covers the outermost\n"
+	             "lines of the picture with the glow, e.g. a thin bright edge from sharpening.";
 > = 0.;
 
 uniform float Opacity <
@@ -150,12 +159,23 @@ sampler MN_sBars { Texture = MN_tBars; MagFilter = POINT; MinFilter = POINT; Mip
 texture MN_tTrigger { Width = 1; Height = 1; Format = R32F; };
 sampler MN_sTrigger { Texture = MN_tTrigger; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 uniform int MN_Frame < source = "framecount"; >;
-bool MN_Detecting() { return MN_Frame - tex2Dlod(MN_sTrigger, float4(0.5, 0.5, 0., 0.)).x <= 1.; }
+bool MN_Detecting() { return MN_Frame - tex2Dlod(MN_sTrigger, float4(0.5, 0.5, 0, 0)).x <= 1.; }
 
 // The bars in pixels: top, bottom, left, right.
-float4 MN_Bars() { return BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right); }
-// The near-black lines (compression bleed) the detection found inside each bar, next to the picture (px).
-float4 MN_Bleed() { return BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) - tex2Dfetch(MN_sBars, int2(1, 0)) : 0.; }
+// The bars (px): manual or detected, each bar there is widened by Bar adjust.
+float4 MN_Bars()
+{
+	const float4 b = BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right);
+	return max(b + BarAdjust * step(0.5, b), 0.);
+}
+// The lines next to the picture inside each bar the glow always covers (px): the near-black lines
+// (compression bleed) the detection found, plus the lines Bar adjust added.
+float4 MN_Bleed()
+{
+	const float4 b = BarSource == 1 ? tex2Dfetch(MN_sBars, int2(0, 0)) : float4(Top, Bottom, Left, Right);
+	const float4 bleed = BarSource == 1 ? b - tex2Dfetch(MN_sBars, int2(1, 0)) : 0.;
+	return max(bleed + BarAdjust, 0.) * step(0.5, b);
+}
 
 // The picture rectangle (uv), between the bars.
 float2 MN_PicMin() { return MN_Bars().zx * MN_PX; }
@@ -250,13 +270,13 @@ static const float3 BLUR_LUMA_W = float3(0.2126, 0.7152, 0.0722); // Rec. 709 we
 	#define BLUR_T float
 	#define BLUR_CH r
 	#define BLUR_TO_LOW(c) dot(c, BLUR_LUMA_W)
-	#define BLUR_OUT(c) float4(c, 0., 0., 1.)
+	#define BLUR_OUT(c) float4(c, 0, 0, 1)
 #else
 	#define BLUR_FMT BLUR_FORMAT
 	#define BLUR_T float3
 	#define BLUR_CH rgb
 	#define BLUR_TO_LOW(c) c
-	#define BLUR_OUT(c) float4(c, 1.)
+	#define BLUR_OUT(c) float4(c, 1)
 #endif
 
 #if BLUR_SMALL
@@ -267,7 +287,7 @@ float3 BLUR_Resolve(float2 uv)
 	const float sigma = clamp(BLUR_SIZE * BLUR_KEEP * BLUR_SizeTune * BUFFER_HEIGHT / 108000., 0.7, 1.3);
 	const float k = -0.5 / (sigma * sigma);
 	const int n = BLUR_ARM_BLOCKS(sigma); // blocks per arm: the same for every pixel
-	float3 c = tex2Dlod(BLUR_sBackBuffer, float4(uv, 0., 0.)).rgb;
+	float3 c = tex2Dlod(BLUR_sBackBuffer, float4(uv, 0, 0)).rgb;
 	float wsum = 1.;
 	[unroll] for (int i = 0; i < 4; i++)
 	{
@@ -277,10 +297,10 @@ float3 BLUR_Resolve(float2 uv)
 			const float4 g = exp(k * float4(b.x, b.x + 1., b.y, b.y + 1.) * float4(b.x, b.x + 1., b.y, b.y + 1.));
 			const float2 o = float2(b.x + g.y / (g.x + g.y), b.y + g.w / (g.z + g.w)); // pixels
 			const float w = (g.x + g.y) * (g.z + g.w);
-			c += w * (tex2Dlod(BLUR_sBackBuffer, float4(uv + o * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
-			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(-o.y, o.x) * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
-			        + tex2Dlod(BLUR_sBackBuffer, float4(uv - o * BUFFER_PIXEL_SIZE, 0., 0.)).rgb
-			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(o.y, -o.x) * BUFFER_PIXEL_SIZE, 0., 0.)).rgb);
+			c += w * (tex2Dlod(BLUR_sBackBuffer, float4(uv + o * BUFFER_PIXEL_SIZE, 0, 0)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(-o.y, o.x) * BUFFER_PIXEL_SIZE, 0, 0)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv - o * BUFFER_PIXEL_SIZE, 0, 0)).rgb
+			        + tex2Dlod(BLUR_sBackBuffer, float4(uv + float2(o.y, -o.x) * BUFFER_PIXEL_SIZE, 0, 0)).rgb);
 			wsum += 4. * w;
 		}
 	}
@@ -326,7 +346,7 @@ float4 BLUR_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = BUFFER_PIXEL_SIZE;
 	float3 c = 0.; // backbuffer colour; converted to brightness once at the end (it is linear)
 	[unroll] for (int i = 0; i < BLUR_ND1; i++)
-		c += BLUR_DOWN1_W(i) * tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0., 0.)).rgb;
+		c += BLUR_DOWN1_W(i) * tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0, 0)).rgb;
 	return BLUR_OUT(BLUR_TO_LOW(c));
 }
 
@@ -336,7 +356,7 @@ float4 BLUR_Down2PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIV1, BUFFER_HEIGHT / BLUR_DIV1);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_ND2; i++)
-		c += BLUR_DOWN2_W(i) * tex2Dlod(BLUR_sDown1, float4(BLUR_LOW_UV(uv + BLUR_DOWN2[i].xy * px, px), 0., 0.)).BLUR_CH;
+		c += BLUR_DOWN2_W(i) * tex2Dlod(BLUR_sDown1, float4(BLUR_LOW_UV(uv + BLUR_DOWN2[i].xy * px, px), 0, 0)).BLUR_CH;
 	return BLUR_OUT(c);
 }
 #endif
@@ -368,7 +388,7 @@ float4 BLUR_GaussPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float k = -0.5 / (sl * sl);
 
 	float2 t[BLUR_NP + 1];
-	t[0] = float2(0., 1.);
+	t[0] = float2(0, 1);
 	float wsum = 1.;
 	[unroll] for (int m = 1; m <= BLUR_NP; m++)
 	{
@@ -388,7 +408,7 @@ float4 BLUR_GaussPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 				{
 					const float2 tx = t[abs(x)];
 					const float2 o = float2(x < 0 ? -tx.x : tx.x, y < 0 ? -ty.x : ty.x);
-					c += tx.y * ty.y * tex2Dlod(BLUR_sLow, float4(BLUR_LOW_UV(uv + o * px, px), 0., 0.)).BLUR_CH;
+					c += tx.y * ty.y * tex2Dlod(BLUR_sLow, float4(BLUR_LOW_UV(uv + o * px, px), 0, 0)).BLUR_CH;
 				}
 			}
 		}
@@ -406,15 +426,15 @@ BLUR_T BLUR_Gauss1D(sampler s, float2 uv, float2 dir)
 	const float k = -0.5 / (sl * sl);
 
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
-	BLUR_T c = tex2Dlod(s, float4(BLUR_LOW_UV(uv, px), 0., 0.)).BLUR_CH;
+	BLUR_T c = tex2Dlod(s, float4(BLUR_LOW_UV(uv, px), 0, 0)).BLUR_CH;
 	float wsum = 1.;
 	[unroll] for (int m = 1; m <= BLUR_NP; m++)
 	{
 		[branch] if (m <= np)
 		{
 			const float2 p = BLUR_Pair(m, k, r);
-			c += p.y * (tex2Dlod(s, float4(BLUR_LOW_UV(uv + p.x * d, px), 0., 0.)).BLUR_CH
-			          + tex2Dlod(s, float4(BLUR_LOW_UV(uv - p.x * d, px), 0., 0.)).BLUR_CH);
+			c += p.y * (tex2Dlod(s, float4(BLUR_LOW_UV(uv + p.x * d, px), 0, 0)).BLUR_CH
+			          + tex2Dlod(s, float4(BLUR_LOW_UV(uv - p.x * d, px), 0, 0)).BLUR_CH);
 			wsum += 2. * p.y;
 		}
 	}
@@ -423,12 +443,12 @@ BLUR_T BLUR_Gauss1D(sampler s, float2 uv, float2 dir)
 
 float4 BLUR_GaussHPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return BLUR_OUT(BLUR_Gauss1D(BLUR_sLow, uv, float2(1., 0.)));
+	return BLUR_OUT(BLUR_Gauss1D(BLUR_sLow, uv, float2(1, 0)));
 }
 
 float4 BLUR_GaussVPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
-	return BLUR_OUT(BLUR_Gauss1D(BLUR_sGaussH, uv, float2(0., 1.)));
+	return BLUR_OUT(BLUR_Gauss1D(BLUR_sGaussH, uv, float2(0, 1)));
 }
 #endif
 
@@ -438,7 +458,7 @@ float4 BLUR_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVL, BUFFER_HEIGHT / BLUR_DIVL);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_NUP; i++)
-		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sGauss, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0., 0.)).BLUR_CH;
+		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sGauss, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0, 0)).BLUR_CH;
 	return BLUR_OUT(c);
 }
 #endif
@@ -450,7 +470,7 @@ float3 BLUR_Resolve(float2 uv)
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVF, BUFFER_HEIGHT / BLUR_DIVF);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_NUP; i++)
-		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sFinal, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0., 0.)).BLUR_CH;
+		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sFinal, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0, 0)).BLUR_CH;
 	return c; // brightness-only: the blurred luma in all three channels
 }
 #endif // BLUR_SMALL
@@ -462,14 +482,14 @@ texture BLUR_tBN < source = "topt_bn64_RGBA8.png"; > { Width = 64; Height = 64; 
 sampler BLUR_sBN { Texture = BLUR_tBN; AddressU = WRAP; AddressV = WRAP; MagFilter = POINT; MinFilter = POINT; MipFilter = POINT; };
 // Four independent blue-noise values in (0, 1) (64 x 64 void-and-cluster, one per channel), centred on
 // the 256 levels so they are symmetric about 0.5.
-float4 BLUR_BN(float2 pos) { return tex2Dlod(BLUR_sBN, float4((floor(pos) + 0.5) / 64., 0., 0.)) * (255. / 256.) + 0.5 / 256.; }
+float4 BLUR_BN(float2 pos) { return tex2Dlod(BLUR_sBN, float4((floor(pos) + 0.5) / 64., 0, 0)) * (255. / 256.) + 0.5 / 256.; }
 #endif
 // Interleaved gradient noise (Jimenez 2014), four decorrelated copies.
 float BLUR_IGN(float2 p) { return frac(52.9829189 * frac(dot(p, float2(0.06711056, 0.00583715)))); }
 float4 BLUR_IGN4(float2 pos)
 {
 	const float2 p = floor(pos);
-	return float4(BLUR_IGN(p), BLUR_IGN(p + float2(47., 17.)), BLUR_IGN(p + float2(13., 61.)), BLUR_IGN(p + float2(71., 29.)));
+	return float4(BLUR_IGN(p), BLUR_IGN(p + float2(47, 17)), BLUR_IGN(p + float2(13, 61)), BLUR_IGN(p + float2(71, 29)));
 }
 float2 BLUR_Noise2(float2 pos) // frosted glass
 {
@@ -529,24 +549,24 @@ float BLUR_Centre(float t)
 
 float3 BLUR_DitherBy(float3 c, float2 pos, int method)
 {
-	pos += float2(32., 17.); // away from the frosted-glass noise
+	pos += float2(32, 17); // away from the frosted-glass noise
 	float3 d = 0.;
 #if BLUR_NEED_BN
 	if (method == 1) d = BLUR_Tri(BLUR_BN(pos).rgb);
-	if (method == 2) d = BLUR_BN(pos).rgb + BLUR_BN(pos + float2(11., 45.)).rgb - 1.;
+	if (method == 2) d = BLUR_BN(pos).rgb + BLUR_BN(pos + float2(11, 45)).rgb - 1.;
 	if (method == 3) d = BLUR_BN(pos).rgb - 0.5;
 	if (method == 4) d = BLUR_Tri(BLUR_BN(pos).rrr);
 #endif
 	if (method == 5) d = BLUR_Tri(BLUR_IGN4(pos).rgb);
-	if (method == 6) d = float3(BLUR_Bayer8(pos), BLUR_Bayer8(pos + float2(3., 5.)), BLUR_Bayer8(pos + float2(6., 2.))) - 0.5;
+	if (method == 6) d = float3(BLUR_Bayer8(pos), BLUR_Bayer8(pos + float2(3, 5)), BLUR_Bayer8(pos + float2(6, 2))) - 0.5;
 	const float2 pc = pos; // pixel centres: SV_Position plus whole offsets (no floor needed)
-	if (method == 7) d = float3(-1., 1., -1.) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
-	if (method == 8) d = float3(1., -1., 1.) * (0.5 - frac(dot(pc, float2(1. / 16., 10. / 36.)) + 0.25));
-	if (method == 9) d = float3(-1., 1., -1.) * (BLUR_IGN(floor(pos)) - 0.5);
-	if (method == 11) d = float3(-1., 1., -1.) * BLUR_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
-	if (method == 12) d = float3(-1., 1., -1.) * BLUR_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
+	if (method == 7) d = float3(-1, 1, -1) * (frac(dot(pc, float2(0.2, 0.4)) + 0.8) - 0.5); // levels (k + 0.5) / 5 - 0.5
+	if (method == 8) d = float3(1, -1, 1) * (0.5 - frac(dot(pc, float2(1. / 16., 10. / 36.)) + 0.25));
+	if (method == 9) d = float3(-1, 1, -1) * (BLUR_IGN(floor(pos)) - 0.5);
+	if (method == 11) d = float3(-1, 1, -1) * BLUR_Centre(dot(pc, float2(0.7548776662, 0.5698402910)));
+	if (method == 12) d = float3(-1, 1, -1) * BLUR_Centre(dot(pc, float2(0.25, 0.40625)) + 0.1875); // levels (k + 0.5) / 32 - 0.5, exact
 #if BLUR_NEED_BN
-	if (method == 10) d = float3(-1., 1., -1.) * (BLUR_BN(pos).r - 0.5);
+	if (method == 10) d = float3(-1, 1, -1) * (BLUR_BN(pos).r - 0.5);
 #endif
 	return c + d / (exp2(BUFFER_COLOR_BIT_DEPTH) - 1.);
 }
@@ -659,29 +679,29 @@ void MN_StripVS(in uint id : SV_VertexID, out float4 position : SV_Position, out
 	float2 a = 0., b = 0.; // strip corners
 	if (side == 0 && bars.x > 0.)
 	{
-		a = float2(0., min(0.5 * d.y, lo.y) - m.y);
-		b = float2(1., lo.y + (0.5 - lo.y) * d.y + m.y);
+		a = float2(0, min(0.5 * d.y, lo.y) - m.y);
+		b = float2(1, lo.y + (0.5 - lo.y) * d.y + m.y);
 	}
 	else if (side == 1 && bars.y > 0.)
 	{
-		a = float2(0., hi.y + (0.5 - hi.y) * d.y - m.y);
-		b = float2(1., max(1. - 0.5 * d.y, hi.y) + m.y);
+		a = float2(0, hi.y + (0.5 - hi.y) * d.y - m.y);
+		b = float2(1, max(1. - 0.5 * d.y, hi.y) + m.y);
 	}
 	else if (side == 2 && bars.z > 0.)
 	{
-		a = float2(min(0.5 * d.x, lo.x) - m.x, 0.);
-		b = float2(lo.x + (0.5 - lo.x) * d.x + m.x, 1.);
+		a = float2(min(0.5 * d.x, lo.x) - m.x, 0);
+		b = float2(lo.x + (0.5 - lo.x) * d.x + m.x, 1);
 	}
 	else if (side == 3 && bars.w > 0.)
 	{
-		a = float2(hi.x + (0.5 - hi.x) * d.x - m.x, 0.);
-		b = float2(max(1. - 0.5 * d.x, hi.x) + m.x, 1.);
+		a = float2(hi.x + (0.5 - hi.x) * d.x - m.x, 0);
+		b = float2(max(1. - 0.5 * d.x, hi.x) + m.x, 1);
 	}
 	a = clamp(a, lo, hi);
 	b = clamp(b, lo, hi);
 	const uint k = id % 6; // two triangles: a, (b.x a.y), (a.x b.y) and (b.x a.y), b, (a.x b.y)
 	texcoord = float2(k == 1 || k == 3 || k == 4 ? b.x : a.x, k == 2 || k == 4 || k == 5 ? b.y : a.y);
-	position = float4(texcoord * float2(2., -2.) + float2(-1., 1.), 0., 1.);
+	position = float4(texcoord * float2(2, -2) + float2(-1, 1), 0, 1);
 }
 
 /*
@@ -709,19 +729,19 @@ void MN_BarsVS(in uint id : SV_VertexID, out float4 position : SV_Position, out 
 	[call] switch (id)
 	{
 		default: texcoord = float2(ID6, ID0);  break; // top
-		case 1:  texcoord = float2(ID6, -1.); break;
-		case 2:  texcoord = float2(2., ID0);  break;
+		case 1:  texcoord = float2(ID6, -1); break;
+		case 2:  texcoord = float2(2, ID0);  break;
 		case 3:  texcoord = float2(ID9, ID3);  break; // bottom
-		case 4:  texcoord = float2(ID9, 2.);  break;
-		case 5:  texcoord = float2(-1., ID3); break;
+		case 4:  texcoord = float2(ID9, 2);  break;
+		case 5:  texcoord = float2(-1, ID3); break;
 		case 6:  texcoord = float2(ID6, ID3);  break; // left
-		case 7:  texcoord = float2(-1., ID3); break;
-		case 8:  texcoord = float2(ID6, -1.); break;
+		case 7:  texcoord = float2(-1, ID3); break;
+		case 8:  texcoord = float2(ID6, -1); break;
 		case 9:  texcoord = float2(ID9, ID0);  break; // right
-		case 10: texcoord = float2(2., ID0);  break;
-		case 11: texcoord = float2(ID9, 2.);  break;
+		case 10: texcoord = float2(2, ID0);  break;
+		case 11: texcoord = float2(ID9, 2);  break;
 	}
-	position = float4(texcoord * float2(2., -2.) + float2(-1., 1.), 1., Zoom);
+	position = float4(texcoord * float2(2, -2) + float2(-1, 1), 1, Zoom);
 	if (MN_Detecting())
 		position = 0.; // the bar detection is running: leave the bars black for it
 }
@@ -747,8 +767,8 @@ sampler MN_sBNLinear { Texture = BLUR_tBN; AddressU = WRAP; AddressV = WRAP; Mag
 #endif
 
 #if MOVIENIGHT_SOFT_GLOW == 1
-static const float2 MN_RING[8] = { float2(1., 0.), float2(0.7071068, 0.7071068), float2(0., 1.), float2(-0.7071068, 0.7071068),
-                                   float2(-1., 0.), float2(-0.7071068, -0.7071068), float2(0., -1.), float2(0.7071068, -0.7071068) };
+static const float2 MN_RING[8] = { float2(1, 0), float2(0.7071068, 0.7071068), float2(0, 1), float2(-0.7071068, 0.7071068),
+                                   float2(-1, 0), float2(-0.7071068, -0.7071068), float2(0, -1), float2(0.7071068, -0.7071068) };
 #endif
 
 // The glow a bar pixel shows: the blur at its picture point, wider towards the outer edge of the bar with
@@ -769,14 +789,14 @@ float3 MN_Glow(float2 uv, float2 pos)
 		const float2 fpx = 1. / float2(BUFFER_WIDTH / BLUR_DIVF, BUFFER_HEIGHT / BLUR_DIVF);
 		BLUR_T r = 0.;
 		[unroll] for (int i = 0; i < 8; i++)
-			r += tex2Dlod(BLUR_sFinal, float4(MN_Inside(p + MN_RING[i] * rho * MN_PX, fpx), 0., 0.)).BLUR_CH;
+			r += tex2Dlod(BLUR_sFinal, float4(MN_Inside(p + MN_RING[i] * rho * MN_PX, fpx), 0, 0)).BLUR_CH;
 		c += (0.125 * w) * r;
 	}
 	return c;
 #elif MOVIENIGHT_SOFT_GLOW == 2
 	// frosted glass: the read moved by the radius in a direction from the zoomed blue noise, so it glides
 	// around the circle from pixel to pixel like glass bends the light; the radius grows into the bar
-	const float n = tex2Dlod(MN_sBNLinear, float4(pos / (64. * FrostGrain), 0., 0.)).r;
+	const float n = tex2Dlod(MN_sBNLinear, float4(pos / (64. * FrostGrain), 0, 0)).r;
 	float2 o;
 	sincos(6.2831853 * n, o.y, o.x);
 	const float r = smoothstep(0., 1., MN_Depth(uv)) * MN_SoftMax();
@@ -940,13 +960,13 @@ float4 MN_RowLinePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_
 // (min, max) of each block of MN_BLOCK lines
 float4 MN_Block(sampler lines, int b, int n)
 {
-	float2 mm = float2(1e30, 0.);
+	float2 mm = float2(1e30, 0);
 	[loop] for (int i = b * MN_BLOCK; i < min(n, (b + 1) * MN_BLOCK); i++)
 	{
 		const float v = tex2Dfetch(lines, int2(i, 0)).x;
 		mm = float2(min(mm.x, v), max(mm.y, v));
 	}
-	return float4(mm, 0., 0.);
+	return float4(mm, 0, 0);
 }
 float4 MN_ColBlockPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return MN_Block(MN_sColLine, int(vpos.x), BUFFER_WIDTH); }
 float4 MN_RowBlockPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target { return MN_Block(MN_sRowLine, int(vpos.x), BUFFER_HEIGHT); }
@@ -1069,7 +1089,7 @@ float4 MN_CombinePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_
 	const float4 tb = tex2Dfetch(MN_sTB, int2(0, 0)), lr = tex2Dfetch(MN_sSidesB, int2(0, 0));
 	const bool found = tb.x >= 0. && lr.x >= 0.;
 	if (vpos.x >= 2.)
-		return float4(MN_Frame, found ? 1. : 0., 0., 0.);
+		return float4(MN_Frame, found ? 1. : 0., 0, 0);
 	if (!found)
 		return tex2Dfetch(MN_sBars, int2(vpos.xy));
 	return vpos.x < 1. ? float4(tb.y, tb.w, lr.y, lr.w) : float4(tb.x, tb.z, lr.x, lr.z);

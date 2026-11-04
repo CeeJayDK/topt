@@ -120,7 +120,9 @@ smooth change over twice the side bar's width.
 * `MOVIENIGHT_BLUR_SIZE`: blur sigma in pixels at 1080p (default 32, at least 2
   px at the running resolution).
 * Bars: Manual (Top / Bottom / Left / Right, in pixels) or Detected (below);
-  Opacity; Zoom shrinks the bar geometry (for testing).
+  Bar adjust (-8..8 px) widens or narrows each bar there, manual or detected,
+  and the glow always covers the lines it adds (e.g. a thin bright edge from
+  sharpening); Opacity; Zoom shrinks the bar geometry (for testing).
 * Bar content: pure black shows the glow. Feather (8-bit levels, default 0 =
   only pure black): bar pixels from 0 up to this level get the glow too, less
   the brighter they are (opacity = level / Feather), so a subtitle shadow set

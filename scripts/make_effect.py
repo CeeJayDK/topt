@@ -149,9 +149,30 @@ def _w(v: float) -> str:
     return f"{q.numerator}." if q.denominator == 1 else f"{q.numerator}. / {q.denominator}"
 
 
+_CTOR = re.compile(r"\bfloat[234]?\s*\($")
+_WHOLE = re.compile(r"\s*-?\s*\d+\.\s*")
+
+
 def short_floats(code: str) -> str:
-    """1.0 -> 1., 2.0 -> 2. in generated code (not in exponents or longer decimals)."""
-    return re.sub(r"(?<![\w.])(\d+)\.0(?![\d\w])", r"\1.", code)
+    """1.0 -> 1., 2.0 -> 2. in generated code (not in exponents or longer decimals); a whole number that is
+    a whole argument of a float / floatN constructor loses the point too: float2(1., 0.) -> float2(1, 0)
+    (the constructor makes it a float; elsewhere it stays 1. so it is not read as an int)."""
+    code = re.sub(r"(?<![\w.])(\d+)\.0(?![\d\w])", r"\1.", code)
+    out, stack, arg = [], [], 0      # stack: is each open bracket a float constructor; arg: start of its argument
+    for i, ch in enumerate(code):
+        if ch in "([":
+            stack.append((ch == "(" and bool(_CTOR.search(code[max(0, i - 12):i + 1])), len(out) + 1))
+        elif ch in ",)]" and stack:
+            ctor, start = stack[-1]
+            if ctor and _WHOLE.fullmatch("".join(out[start:])):
+                a = "".join(out[start:])
+                out[start:] = list(a.replace(".", "", 1))
+            if ch == ",":
+                stack[-1] = (ctor, len(out) + 1)
+            else:
+                stack.pop()
+        out.append(ch)
+    return "".join(out)
 
 
 def class_info(rmax: int) -> dict:

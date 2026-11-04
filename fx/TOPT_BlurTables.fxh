@@ -689,7 +689,7 @@
 
 #if BLUR_CLASS == 0 // '1': single pass, sigma 0.7..1.3 px
 	#define BLUR_SMALL 1
-	static const float2 BLUR_ARM[4] = { float2(1., -1.), float2(2., 1.), float2(3., -1.), float2(3., -3.) };
+	static const float2 BLUR_ARM[4] = { float2(1, -1), float2(2, 1), float2(3, -1), float2(3, -3) };
 	#define BLUR_ARM_BLOCKS(sigma) (sigma <= 0.9 ? 2 : sigma <= 1.1 ? 3 : 4)
 #elif BLUR_CLASS == 1 // '2': sigma 2...6.8 px: downsample x2, Gaussian at 1/2, upsample Pinwheel4
 	#define BLUR_SMALL 0
@@ -780,7 +780,7 @@
 	#define BLUR_UP_W(i) BLUR_UP[i].z
 	static const float3 BLUR_UP[5] = {
 		float3(0.328208186, 0.15456871, 0.186856012), float3(-0.15456871, 0.328208186, 0.186856012), float3(-0.328208186, -0.15456871, 0.186856012), float3(0.15456871, -0.328208186, 0.186856012),
-		float3(0., 0., 0.252575952)
+		float3(0, 0, 0.252575952)
 	};
 #elif BLUR_CLASS == 4 // '8': sigma 13.4..27.1 px: downsample x8, Gaussian at 1/8, upsample Pinwheel4
 	#define BLUR_SMALL 0
@@ -800,12 +800,12 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_NUP 4
@@ -833,12 +833,12 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 4
@@ -872,20 +872,20 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 9
 	// x4 downsample of the x8 level, kernel box 4 * binomial 3: 9 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN2_W(i) BLUR_DOWN2[i].z
 	static const float3 BLUR_DOWN2[9] = {
-		float3(-1.75, -1.75, 1. / 16), float3(-1.75, 0., 1. / 8), float3(-1.75, 1.75, 1. / 16), float3(0., -1.75, 1. / 8),
-		float3(0., 0., 1. / 4), float3(0., 1.75, 1. / 8), float3(1.75, -1.75, 1. / 16), float3(1.75, 0., 1. / 8),
+		float3(-1.75, -1.75, 1. / 16), float3(-1.75, 0, 1. / 8), float3(-1.75, 1.75, 1. / 16), float3(0, -1.75, 1. / 8),
+		float3(0, 0, 1. / 4), float3(0, 1.75, 1. / 8), float3(1.75, -1.75, 1. / 16), float3(1.75, 0, 1. / 8),
 		float3(1.75, 1.75, 1. / 16)
 	};
 	#define BLUR_NUP 4
@@ -913,24 +913,24 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 25
 	// x8 downsample of the x8 level, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN2_W(i) BLUR_DOWN2[i].z
 	static const float3 BLUR_DOWN2[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_NUP 4
@@ -958,38 +958,38 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 81
 	// x16 downsample of the x8 level, kernel box 16 * binomial 3: 81 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN2_W(i) BLUR_DOWN2[i].z
 	static const float3 BLUR_DOWN2[81] = {
-		float3(-7.75, -7.75, 1. / 256), float3(-7.75, -6., 1. / 128), float3(-7.75, -4., 1. / 128), float3(-7.75, -2., 1. / 128),
-		float3(-7.75, 0., 1. / 128), float3(-7.75, 2., 1. / 128), float3(-7.75, 4., 1. / 128), float3(-7.75, 6., 1. / 128),
-		float3(-7.75, 7.75, 1. / 256), float3(-6., -7.75, 1. / 128), float3(-6., -6., 1. / 64), float3(-6., -4., 1. / 64),
-		float3(-6., -2., 1. / 64), float3(-6., 0., 1. / 64), float3(-6., 2., 1. / 64), float3(-6., 4., 1. / 64),
-		float3(-6., 6., 1. / 64), float3(-6., 7.75, 1. / 128), float3(-4., -7.75, 1. / 128), float3(-4., -6., 1. / 64),
-		float3(-4., -4., 1. / 64), float3(-4., -2., 1. / 64), float3(-4., 0., 1. / 64), float3(-4., 2., 1. / 64),
-		float3(-4., 4., 1. / 64), float3(-4., 6., 1. / 64), float3(-4., 7.75, 1. / 128), float3(-2., -7.75, 1. / 128),
-		float3(-2., -6., 1. / 64), float3(-2., -4., 1. / 64), float3(-2., -2., 1. / 64), float3(-2., 0., 1. / 64),
-		float3(-2., 2., 1. / 64), float3(-2., 4., 1. / 64), float3(-2., 6., 1. / 64), float3(-2., 7.75, 1. / 128),
-		float3(0., -7.75, 1. / 128), float3(0., -6., 1. / 64), float3(0., -4., 1. / 64), float3(0., -2., 1. / 64),
-		float3(0., 0., 1. / 64), float3(0., 2., 1. / 64), float3(0., 4., 1. / 64), float3(0., 6., 1. / 64),
-		float3(0., 7.75, 1. / 128), float3(2., -7.75, 1. / 128), float3(2., -6., 1. / 64), float3(2., -4., 1. / 64),
-		float3(2., -2., 1. / 64), float3(2., 0., 1. / 64), float3(2., 2., 1. / 64), float3(2., 4., 1. / 64),
-		float3(2., 6., 1. / 64), float3(2., 7.75, 1. / 128), float3(4., -7.75, 1. / 128), float3(4., -6., 1. / 64),
-		float3(4., -4., 1. / 64), float3(4., -2., 1. / 64), float3(4., 0., 1. / 64), float3(4., 2., 1. / 64),
-		float3(4., 4., 1. / 64), float3(4., 6., 1. / 64), float3(4., 7.75, 1. / 128), float3(6., -7.75, 1. / 128),
-		float3(6., -6., 1. / 64), float3(6., -4., 1. / 64), float3(6., -2., 1. / 64), float3(6., 0., 1. / 64),
-		float3(6., 2., 1. / 64), float3(6., 4., 1. / 64), float3(6., 6., 1. / 64), float3(6., 7.75, 1. / 128),
-		float3(7.75, -7.75, 1. / 256), float3(7.75, -6., 1. / 128), float3(7.75, -4., 1. / 128), float3(7.75, -2., 1. / 128),
-		float3(7.75, 0., 1. / 128), float3(7.75, 2., 1. / 128), float3(7.75, 4., 1. / 128), float3(7.75, 6., 1. / 128),
+		float3(-7.75, -7.75, 1. / 256), float3(-7.75, -6, 1. / 128), float3(-7.75, -4, 1. / 128), float3(-7.75, -2, 1. / 128),
+		float3(-7.75, 0, 1. / 128), float3(-7.75, 2, 1. / 128), float3(-7.75, 4, 1. / 128), float3(-7.75, 6, 1. / 128),
+		float3(-7.75, 7.75, 1. / 256), float3(-6, -7.75, 1. / 128), float3(-6, -6, 1. / 64), float3(-6, -4, 1. / 64),
+		float3(-6, -2, 1. / 64), float3(-6, 0, 1. / 64), float3(-6, 2, 1. / 64), float3(-6, 4, 1. / 64),
+		float3(-6, 6, 1. / 64), float3(-6, 7.75, 1. / 128), float3(-4, -7.75, 1. / 128), float3(-4, -6, 1. / 64),
+		float3(-4, -4, 1. / 64), float3(-4, -2, 1. / 64), float3(-4, 0, 1. / 64), float3(-4, 2, 1. / 64),
+		float3(-4, 4, 1. / 64), float3(-4, 6, 1. / 64), float3(-4, 7.75, 1. / 128), float3(-2, -7.75, 1. / 128),
+		float3(-2, -6, 1. / 64), float3(-2, -4, 1. / 64), float3(-2, -2, 1. / 64), float3(-2, 0, 1. / 64),
+		float3(-2, 2, 1. / 64), float3(-2, 4, 1. / 64), float3(-2, 6, 1. / 64), float3(-2, 7.75, 1. / 128),
+		float3(0, -7.75, 1. / 128), float3(0, -6, 1. / 64), float3(0, -4, 1. / 64), float3(0, -2, 1. / 64),
+		float3(0, 0, 1. / 64), float3(0, 2, 1. / 64), float3(0, 4, 1. / 64), float3(0, 6, 1. / 64),
+		float3(0, 7.75, 1. / 128), float3(2, -7.75, 1. / 128), float3(2, -6, 1. / 64), float3(2, -4, 1. / 64),
+		float3(2, -2, 1. / 64), float3(2, 0, 1. / 64), float3(2, 2, 1. / 64), float3(2, 4, 1. / 64),
+		float3(2, 6, 1. / 64), float3(2, 7.75, 1. / 128), float3(4, -7.75, 1. / 128), float3(4, -6, 1. / 64),
+		float3(4, -4, 1. / 64), float3(4, -2, 1. / 64), float3(4, 0, 1. / 64), float3(4, 2, 1. / 64),
+		float3(4, 4, 1. / 64), float3(4, 6, 1. / 64), float3(4, 7.75, 1. / 128), float3(6, -7.75, 1. / 128),
+		float3(6, -6, 1. / 64), float3(6, -4, 1. / 64), float3(6, -2, 1. / 64), float3(6, 0, 1. / 64),
+		float3(6, 2, 1. / 64), float3(6, 4, 1. / 64), float3(6, 6, 1. / 64), float3(6, 7.75, 1. / 128),
+		float3(7.75, -7.75, 1. / 256), float3(7.75, -6, 1. / 128), float3(7.75, -4, 1. / 128), float3(7.75, -2, 1. / 128),
+		float3(7.75, 0, 1. / 128), float3(7.75, 2, 1. / 128), float3(7.75, 4, 1. / 128), float3(7.75, 6, 1. / 128),
 		float3(7.75, 7.75, 1. / 256)
 	};
 	#define BLUR_NUP 4
@@ -1016,19 +1016,19 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 10 // '16e': sigma 36...54.3 px: downsample x16, Gaussian at 1/16, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1049,12 +1049,12 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 4
@@ -1067,7 +1067,7 @@
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 11 // '32e': sigma 83.5..108.1 px: downsample x32, Gaussian at 1/32, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1088,22 +1088,22 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 1: 16 bilinear reads at (x, y) offsets, each weighted 1. / 16
 	#define BLUR_DOWN1_W(i) (1. / 16)
 	static const float2 BLUR_DOWN1[16] = {
-		float2(-3., -3.), float2(-3., -1.), float2(-3., 1.), float2(-3., 3.),
-		float2(-1., -3.), float2(-1., -1.), float2(-1., 1.), float2(-1., 3.),
-		float2(1., -3.), float2(1., -1.), float2(1., 1.), float2(1., 3.),
-		float2(3., -3.), float2(3., -1.), float2(3., 1.), float2(3., 3.)
+		float2(-3, -3), float2(-3, -1), float2(-3, 1), float2(-3, 3),
+		float2(-1, -3), float2(-1, -1), float2(-1, 1), float2(-1, 3),
+		float2(1, -3), float2(1, -1), float2(1, 1), float2(1, 3),
+		float2(3, -3), float2(3, -1), float2(3, 1), float2(3, 3)
 	};
 	#define BLUR_ND2 4
 	// x4 downsample of the x8 level, kernel box 4 * binomial 1: 4 bilinear reads at (x, y) offsets, each weighted 1. / 4
 	#define BLUR_DOWN2_W(i) (1. / 4)
 	static const float2 BLUR_DOWN2[4] = {
-		float2(-1., -1.), float2(-1., 1.), float2(1., -1.), float2(1., 1.)
+		float2(-1, -1), float2(-1, 1), float2(1, -1), float2(1, 1)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 12 // '64e': sigma 167.1..216.2 px: downsample x64, Gaussian at 1/64, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1124,25 +1124,25 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 1: 16 bilinear reads at (x, y) offsets, each weighted 1. / 16
 	#define BLUR_DOWN1_W(i) (1. / 16)
 	static const float2 BLUR_DOWN1[16] = {
-		float2(-3., -3.), float2(-3., -1.), float2(-3., 1.), float2(-3., 3.),
-		float2(-1., -3.), float2(-1., -1.), float2(-1., 1.), float2(-1., 3.),
-		float2(1., -3.), float2(1., -1.), float2(1., 1.), float2(1., 3.),
-		float2(3., -3.), float2(3., -1.), float2(3., 1.), float2(3., 3.)
+		float2(-3, -3), float2(-3, -1), float2(-3, 1), float2(-3, 3),
+		float2(-1, -3), float2(-1, -1), float2(-1, 1), float2(-1, 3),
+		float2(1, -3), float2(1, -1), float2(1, 1), float2(1, 3),
+		float2(3, -3), float2(3, -1), float2(3, 1), float2(3, 3)
 	};
 	#define BLUR_ND2 16
 	// x8 downsample of the x8 level, kernel box 8 * binomial 1: 16 bilinear reads at (x, y) offsets, each weighted 1. / 16
 	#define BLUR_DOWN2_W(i) (1. / 16)
 	static const float2 BLUR_DOWN2[16] = {
-		float2(-3., -3.), float2(-3., -1.), float2(-3., 1.), float2(-3., 3.),
-		float2(-1., -3.), float2(-1., -1.), float2(-1., 1.), float2(-1., 3.),
-		float2(1., -3.), float2(1., -1.), float2(1., 1.), float2(1., 3.),
-		float2(3., -3.), float2(3., -1.), float2(3., 1.), float2(3., 3.)
+		float2(-3, -3), float2(-3, -1), float2(-3, 1), float2(-3, 3),
+		float2(-1, -3), float2(-1, -1), float2(-1, 1), float2(-1, 3),
+		float2(1, -3), float2(1, -1), float2(1, 1), float2(1, 3),
+		float2(3, -3), float2(3, -1), float2(3, 1), float2(3, 3)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 13 // '128e': sigma 334.2..432.5 px: downsample x128, Gaussian at 1/128, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1163,37 +1163,37 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 1: 16 bilinear reads at (x, y) offsets, each weighted 1. / 16
 	#define BLUR_DOWN1_W(i) (1. / 16)
 	static const float2 BLUR_DOWN1[16] = {
-		float2(-3., -3.), float2(-3., -1.), float2(-3., 1.), float2(-3., 3.),
-		float2(-1., -3.), float2(-1., -1.), float2(-1., 1.), float2(-1., 3.),
-		float2(1., -3.), float2(1., -1.), float2(1., 1.), float2(1., 3.),
-		float2(3., -3.), float2(3., -1.), float2(3., 1.), float2(3., 3.)
+		float2(-3, -3), float2(-3, -1), float2(-3, 1), float2(-3, 3),
+		float2(-1, -3), float2(-1, -1), float2(-1, 1), float2(-1, 3),
+		float2(1, -3), float2(1, -1), float2(1, 1), float2(1, 3),
+		float2(3, -3), float2(3, -1), float2(3, 1), float2(3, 3)
 	};
 	#define BLUR_ND2 64
 	// x16 downsample of the x8 level, kernel box 16 * binomial 1: 64 bilinear reads at (x, y) offsets, each weighted 1. / 64
 	#define BLUR_DOWN2_W(i) (1. / 64)
 	static const float2 BLUR_DOWN2[64] = {
-		float2(-7., -7.), float2(-7., -5.), float2(-7., -3.), float2(-7., -1.),
-		float2(-7., 1.), float2(-7., 3.), float2(-7., 5.), float2(-7., 7.),
-		float2(-5., -7.), float2(-5., -5.), float2(-5., -3.), float2(-5., -1.),
-		float2(-5., 1.), float2(-5., 3.), float2(-5., 5.), float2(-5., 7.),
-		float2(-3., -7.), float2(-3., -5.), float2(-3., -3.), float2(-3., -1.),
-		float2(-3., 1.), float2(-3., 3.), float2(-3., 5.), float2(-3., 7.),
-		float2(-1., -7.), float2(-1., -5.), float2(-1., -3.), float2(-1., -1.),
-		float2(-1., 1.), float2(-1., 3.), float2(-1., 5.), float2(-1., 7.),
-		float2(1., -7.), float2(1., -5.), float2(1., -3.), float2(1., -1.),
-		float2(1., 1.), float2(1., 3.), float2(1., 5.), float2(1., 7.),
-		float2(3., -7.), float2(3., -5.), float2(3., -3.), float2(3., -1.),
-		float2(3., 1.), float2(3., 3.), float2(3., 5.), float2(3., 7.),
-		float2(5., -7.), float2(5., -5.), float2(5., -3.), float2(5., -1.),
-		float2(5., 1.), float2(5., 3.), float2(5., 5.), float2(5., 7.),
-		float2(7., -7.), float2(7., -5.), float2(7., -3.), float2(7., -1.),
-		float2(7., 1.), float2(7., 3.), float2(7., 5.), float2(7., 7.)
+		float2(-7, -7), float2(-7, -5), float2(-7, -3), float2(-7, -1),
+		float2(-7, 1), float2(-7, 3), float2(-7, 5), float2(-7, 7),
+		float2(-5, -7), float2(-5, -5), float2(-5, -3), float2(-5, -1),
+		float2(-5, 1), float2(-5, 3), float2(-5, 5), float2(-5, 7),
+		float2(-3, -7), float2(-3, -5), float2(-3, -3), float2(-3, -1),
+		float2(-3, 1), float2(-3, 3), float2(-3, 5), float2(-3, 7),
+		float2(-1, -7), float2(-1, -5), float2(-1, -3), float2(-1, -1),
+		float2(-1, 1), float2(-1, 3), float2(-1, 5), float2(-1, 7),
+		float2(1, -7), float2(1, -5), float2(1, -3), float2(1, -1),
+		float2(1, 1), float2(1, 3), float2(1, 5), float2(1, 7),
+		float2(3, -7), float2(3, -5), float2(3, -3), float2(3, -1),
+		float2(3, 1), float2(3, 3), float2(3, 5), float2(3, 7),
+		float2(5, -7), float2(5, -5), float2(5, -3), float2(5, -1),
+		float2(5, 1), float2(5, 3), float2(5, 5), float2(5, 7),
+		float2(7, -7), float2(7, -5), float2(7, -3), float2(7, -1),
+		float2(7, 1), float2(7, 3), float2(7, 5), float2(7, 7)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 14 // '6e': sigma 14.8..20.3 px: downsample x6, Gaussian at 1/6, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1213,16 +1213,16 @@
 	// x6 downsample of the screen, kernel box 6 * binomial 3: 16 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[16] = {
-		float3(-2.75, -2.75, 1. / 36), float3(-2.75, -1., 1. / 18), float3(-2.75, 1., 1. / 18), float3(-2.75, 2.75, 1. / 36),
-		float3(-1., -2.75, 1. / 18), float3(-1., -1., 1. / 9), float3(-1., 1., 1. / 9), float3(-1., 2.75, 1. / 18),
-		float3(1., -2.75, 1. / 18), float3(1., -1., 1. / 9), float3(1., 1., 1. / 9), float3(1., 2.75, 1. / 18),
-		float3(2.75, -2.75, 1. / 36), float3(2.75, -1., 1. / 18), float3(2.75, 1., 1. / 18), float3(2.75, 2.75, 1. / 36)
+		float3(-2.75, -2.75, 1. / 36), float3(-2.75, -1, 1. / 18), float3(-2.75, 1, 1. / 18), float3(-2.75, 2.75, 1. / 36),
+		float3(-1, -2.75, 1. / 18), float3(-1, -1, 1. / 9), float3(-1, 1, 1. / 9), float3(-1, 2.75, 1. / 18),
+		float3(1, -2.75, 1. / 18), float3(1, -1, 1. / 9), float3(1, 1, 1. / 9), float3(1, 2.75, 1. / 18),
+		float3(2.75, -2.75, 1. / 36), float3(2.75, -1, 1. / 18), float3(2.75, 1, 1. / 18), float3(2.75, 2.75, 1. / 36)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 15 // '12e': sigma 29...40.5 px: downsample x12, Gaussian at 1/12, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1243,23 +1243,23 @@
 	// x4 downsample of the screen, kernel box 4 * binomial 3: 9 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[9] = {
-		float3(-1.75, -1.75, 1. / 16), float3(-1.75, 0., 1. / 8), float3(-1.75, 1.75, 1. / 16), float3(0., -1.75, 1. / 8),
-		float3(0., 0., 1. / 4), float3(0., 1.75, 1. / 8), float3(1.75, -1.75, 1. / 16), float3(1.75, 0., 1. / 8),
+		float3(-1.75, -1.75, 1. / 16), float3(-1.75, 0, 1. / 8), float3(-1.75, 1.75, 1. / 16), float3(0, -1.75, 1. / 8),
+		float3(0, 0, 1. / 4), float3(0, 1.75, 1. / 8), float3(1.75, -1.75, 1. / 16), float3(1.75, 0, 1. / 8),
 		float3(1.75, 1.75, 1. / 16)
 	};
 	#define BLUR_ND2 9
 	// x3 downsample of the x4 level, kernel box 3 * binomial 3: 9 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN2_W(i) BLUR_DOWN2[i].z
 	static const float3 BLUR_DOWN2[9] = {
-		float3(-1.25, -1.25, 1. / 9), float3(-1.25, 0.428571429, 7. / 36), float3(-1.25, 2., 1. / 36), float3(0.428571429, -1.25, 7. / 36),
-		float3(0.428571429, 0.428571429, 49. / 144), float3(0.428571429, 2., 7. / 144), float3(2., -1.25, 1. / 36), float3(2., 0.428571429, 7. / 144),
-		float3(2., 2., 1. / 144)
+		float3(-1.25, -1.25, 1. / 9), float3(-1.25, 0.428571429, 7. / 36), float3(-1.25, 2, 1. / 36), float3(0.428571429, -1.25, 7. / 36),
+		float3(0.428571429, 0.428571429, 49. / 144), float3(0.428571429, 2, 7. / 144), float3(2, -1.25, 1. / 36), float3(2, 0.428571429, 7. / 144),
+		float3(2, 2, 1. / 144)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 16 // '24e': sigma 53.5..81.1 px: downsample x24, Gaussian at 1/24, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1280,27 +1280,27 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 9
 	// x3 downsample of the x8 level, kernel box 3 * binomial 3: 9 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN2_W(i) BLUR_DOWN2[i].z
 	static const float3 BLUR_DOWN2[9] = {
-		float3(-1.25, -1.25, 1. / 9), float3(-1.25, 0.428571429, 7. / 36), float3(-1.25, 2., 1. / 36), float3(0.428571429, -1.25, 7. / 36),
-		float3(0.428571429, 0.428571429, 49. / 144), float3(0.428571429, 2., 7. / 144), float3(2., -1.25, 1. / 36), float3(2., 0.428571429, 7. / 144),
-		float3(2., 2., 1. / 144)
+		float3(-1.25, -1.25, 1. / 9), float3(-1.25, 0.428571429, 7. / 36), float3(-1.25, 2, 1. / 36), float3(0.428571429, -1.25, 7. / 36),
+		float3(0.428571429, 0.428571429, 49. / 144), float3(0.428571429, 2, 7. / 144), float3(2, -1.25, 1. / 36), float3(2, 0.428571429, 7. / 144),
+		float3(2, 2, 1. / 144)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #elif BLUR_CLASS == 17 // '48e': sigma 100.3..162.2 px: downsample x48, Gaussian at 1/48, upsample one bilinear read
 	#define BLUR_SMALL 0
@@ -1321,27 +1321,27 @@
 	// x8 downsample of the screen, kernel box 8 * binomial 3: 25 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN1_W(i) BLUR_DOWN1[i].z
 	static const float3 BLUR_DOWN1[25] = {
-		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2., 1. / 32), float3(-3.75, 0., 1. / 32), float3(-3.75, 2., 1. / 32),
-		float3(-3.75, 3.75, 1. / 64), float3(-2., -3.75, 1. / 32), float3(-2., -2., 1. / 16), float3(-2., 0., 1. / 16),
-		float3(-2., 2., 1. / 16), float3(-2., 3.75, 1. / 32), float3(0., -3.75, 1. / 32), float3(0., -2., 1. / 16),
-		float3(0., 0., 1. / 16), float3(0., 2., 1. / 16), float3(0., 3.75, 1. / 32), float3(2., -3.75, 1. / 32),
-		float3(2., -2., 1. / 16), float3(2., 0., 1. / 16), float3(2., 2., 1. / 16), float3(2., 3.75, 1. / 32),
-		float3(3.75, -3.75, 1. / 64), float3(3.75, -2., 1. / 32), float3(3.75, 0., 1. / 32), float3(3.75, 2., 1. / 32),
+		float3(-3.75, -3.75, 1. / 64), float3(-3.75, -2, 1. / 32), float3(-3.75, 0, 1. / 32), float3(-3.75, 2, 1. / 32),
+		float3(-3.75, 3.75, 1. / 64), float3(-2, -3.75, 1. / 32), float3(-2, -2, 1. / 16), float3(-2, 0, 1. / 16),
+		float3(-2, 2, 1. / 16), float3(-2, 3.75, 1. / 32), float3(0, -3.75, 1. / 32), float3(0, -2, 1. / 16),
+		float3(0, 0, 1. / 16), float3(0, 2, 1. / 16), float3(0, 3.75, 1. / 32), float3(2, -3.75, 1. / 32),
+		float3(2, -2, 1. / 16), float3(2, 0, 1. / 16), float3(2, 2, 1. / 16), float3(2, 3.75, 1. / 32),
+		float3(3.75, -3.75, 1. / 64), float3(3.75, -2, 1. / 32), float3(3.75, 0, 1. / 32), float3(3.75, 2, 1. / 32),
 		float3(3.75, 3.75, 1. / 64)
 	};
 	#define BLUR_ND2 16
 	// x6 downsample of the x8 level, kernel box 6 * binomial 3: 16 bilinear reads at (x, y) offsets, weight z
 	#define BLUR_DOWN2_W(i) BLUR_DOWN2[i].z
 	static const float3 BLUR_DOWN2[16] = {
-		float3(-2.75, -2.75, 1. / 36), float3(-2.75, -1., 1. / 18), float3(-2.75, 1., 1. / 18), float3(-2.75, 2.75, 1. / 36),
-		float3(-1., -2.75, 1. / 18), float3(-1., -1., 1. / 9), float3(-1., 1., 1. / 9), float3(-1., 2.75, 1. / 18),
-		float3(1., -2.75, 1. / 18), float3(1., -1., 1. / 9), float3(1., 1., 1. / 9), float3(1., 2.75, 1. / 18),
-		float3(2.75, -2.75, 1. / 36), float3(2.75, -1., 1. / 18), float3(2.75, 1., 1. / 18), float3(2.75, 2.75, 1. / 36)
+		float3(-2.75, -2.75, 1. / 36), float3(-2.75, -1, 1. / 18), float3(-2.75, 1, 1. / 18), float3(-2.75, 2.75, 1. / 36),
+		float3(-1, -2.75, 1. / 18), float3(-1, -1, 1. / 9), float3(-1, 1, 1. / 9), float3(-1, 2.75, 1. / 18),
+		float3(1, -2.75, 1. / 18), float3(1, -1, 1. / 9), float3(1, 1, 1. / 9), float3(1, 2.75, 1. / 18),
+		float3(2.75, -2.75, 1. / 36), float3(2.75, -1, 1. / 18), float3(2.75, 1, 1. / 18), float3(2.75, 2.75, 1. / 36)
 	};
 	#define BLUR_NUP 1
 	// upsample: one bilinear read: 1 bilinear reads at (x, y) offsets, each weighted 1.
 	#define BLUR_UP_W(i) (1.)
 	static const float2 BLUR_UP[1] = {
-		float2(0., 0.)
+		float2(0, 0)
 	};
 #endif
