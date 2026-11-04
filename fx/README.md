@@ -124,9 +124,10 @@ smooth change over twice the side bar's width.
   and the glow always covers the lines it adds (e.g. a thin bright edge from
   sharpening); Opacity; Zoom shrinks the bar geometry (for testing).
 * Bar content: black shows the glow; Black level (8-bit levels, default 4)
-  sets what counts as black, for the glow and the detection (some videos leave
-  noise or dither in their black bars, which otherwise punches black specks
-  into the glow and hides the bars from the detection). Feather (8-bit levels
+  sets what counts as black for the glow (some videos leave noise or dither in
+  their black bars, which otherwise punches black specks into the glow);
+  Detection black level (default 0) does the same for the bar detection, for
+  such videos only: above 0, dark scenes can count as bar. Feather (8-bit levels
   above the black level, default 0 = only black): bar pixels up to this level
   get the glow too, less the brighter they are (opacity = level / Feather), so a subtitle shadow set
   to near black in the player lies over the glow; brighter (subtitles) covers

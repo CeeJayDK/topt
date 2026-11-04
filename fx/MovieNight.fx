@@ -121,10 +121,18 @@ uniform float FrostGrain <
 uniform float BlackLevel <
 	ui_type = "drag"; ui_min = 0.; ui_max = 32.; ui_step = 1.;
 	ui_label = "Black level (8-bit levels)";
-	ui_tooltip = "Bar pixels up to this level count as pure black (the noise or dither some videos leave in\n"
-	             "their black bars), for the glow and for the bar detection. Feather and Edge feather count\n"
-	             "from it. Raise it if the glow shows a pattern of black specks or the detection misses bars.";
+	ui_tooltip = "Bar pixels up to this level count as black and get the glow (the noise or dither some videos\n"
+	             "leave in their black bars). Feather and Edge feather count from it. Raise it if the glow shows\n"
+	             "a pattern of black specks.";
 > = 4.;
+
+uniform float DetectBlackLevel <
+	ui_type = "drag"; ui_min = 0.; ui_max = 32.; ui_step = 1.;
+	ui_label = "Detection black level (8-bit levels)";
+	ui_tooltip = "The same for the bar detection: lines up to this level count as bar. Keep it at 0 unless the\n"
+	             "video's bars are not pure black and the detection misses them; above 0, dark scenes can\n"
+	             "count as bar, so run the detection on a lit scene.";
+> = 0.;
 
 uniform float Feather <
 	ui_type = "drag"; ui_min = 0.; ui_max = 64.; ui_step = 1.;
@@ -908,7 +916,8 @@ float4 MN_RowSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 	float m = 0.;
 	[loop] for (int x = x0; x < x1; x++)
 		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
-	m = max(m - (BlackLevel + 0.5) / 255., 0.); // up to the black level: 0
+	if (DetectBlackLevel > 0.)
+		m = max(m - (DetectBlackLevel + 0.5) / 255., 0.); // up to the detection's black level: 0
 	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sRowSeg, int2(s, y)).x) : 0.;
 }
 
@@ -919,7 +928,8 @@ float4 MN_ColSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 	float m = 0.;
 	[loop] for (int y = y0; y < y1; y++)
 		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
-	m = max(m - (BlackLevel + 0.5) / 255., 0.);
+	if (DetectBlackLevel > 0.)
+		m = max(m - (DetectBlackLevel + 0.5) / 255., 0.);
 	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sColSeg, int2(x, s)).x) : 0.;
 }
 
