@@ -152,7 +152,7 @@ uniform bool DetectColourLine <
 	             "black, within 2 levels), up to Ignore up to. Their grey near-black noise of some videos' bars\n"
 	             "then counts as black, while dark scenes, which have colour, still count as picture.\n"
 	             "Not for black-and-white films (everything is grey: no bars are found, the old ones are kept).";
-> = false;
+> = true;
 
 uniform float3 SubtitleColour <
 	ui_type = "color";
@@ -768,7 +768,12 @@ float4 MN_SidesBPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 float4 MN_CombinePS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
 	const float4 tb = tex2Dfetch(MN_sTB, int2(0, 0)), lr = tex2Dfetch(MN_sSidesB, int2(0, 0));
-	const bool found = tb.x >= 0.0 && lr.x >= 0.0;
+	// a plausible picture (else the old bars are kept, e.g. stars on black filling the screen): at least
+	// 1/5 of the screen each way, aspect ratio 0.5 to 3 unless it fills the screen
+	const float2 pic = float2(BUFFER_WIDTH - lr.x - lr.z, BUFFER_HEIGHT - tb.x - tb.z);
+	const bool plausible = all(pic >= 0.2 * float2(BUFFER_WIDTH, BUFFER_HEIGHT))
+	                    && ((pic.x >= 0.5 * pic.y && pic.x <= 3.0 * pic.y) || dot(tb.xz, 1.0) + dot(lr.xz, 1.0) == 0.0);
+	const bool found = tb.x >= 0.0 && lr.x >= 0.0 && plausible;
 	if (vpos.x >= 2.0)
 		return float4(MN_Frame, found ? 1.0 : 0.0, 0.0, 0.0);
 	if (!found)

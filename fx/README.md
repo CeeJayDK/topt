@@ -128,7 +128,7 @@ smooth change over twice the side bar's width.
   their black bars, which otherwise punches black specks into the glow);
   Detection black level (default 0) does the same for the bar detection, for
   such videos only: above 0, dark scenes can count as bar.
-  Detection: ignore the subtitle colour (off by default) ignores, in the
+  Detection: ignore the subtitle colour (on by default) ignores, in the
   detection, pixels that are a shade of Subtitle colour (that colour blended
   with black, within 2 levels) up to Ignore up to (default 8 levels): the grey
   near-black noise of such bars then counts as black, while dark scenes, which
@@ -137,7 +137,10 @@ smooth change over twice the side bar's width.
   on the noisy video it finds the bottom bar, 144 px, where it found 101 px
   without the option). At 255 whole subtitles are ignored too, but grey picture areas as
   well (on one frame a grey wall became a side bar). Not for black-and-white
-  films. Feather (8-bit levels
+  films.
+  The detection keeps the old bars when the picture it finds is implausible:
+  less than 1/5 of the screen either way, or an aspect ratio outside 0.5 to 3
+  (unless it fills the screen), e.g. stars on black filling the screen. Feather (8-bit levels
   above the black level, default 0 = only black): bar pixels up to this level
   get the glow too, less the brighter they are (opacity = level / Feather), so a subtitle shadow set
   to near black in the player lies over the glow; brighter (subtitles) covers
