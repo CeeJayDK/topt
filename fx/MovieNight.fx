@@ -134,6 +134,28 @@ uniform float DetectBlackLevel <
 	             "count as bar, so run the detection on a lit scene.";
 > = 0.;
 
+uniform bool DetectColourLine <
+	ui_label = "Detection: ignore the subtitle colour";
+	ui_tooltip = "The bar detection ignores pixels that are a shade of Subtitle colour (that colour blended with\n"
+	             "black, within 2 levels), up to Ignore up to. Their grey near-black noise of some videos' bars\n"
+	             "then counts as black, while dark scenes, which have colour, still count as picture.\n"
+	             "Not for black-and-white films (everything is grey: no bars are found, the old ones are kept).";
+> = false;
+
+uniform float3 SubtitleColour <
+	ui_type = "color";
+	ui_label = "Subtitle colour";
+	ui_tooltip = "The subtitles' primary colour as set in the player (white by default).";
+> = float3(1, 1, 1);
+
+uniform float DetectColourMax <
+	ui_type = "drag"; ui_min = 0.; ui_max = 255.; ui_step = 1.;
+	ui_label = "Ignore up to (8-bit levels)";
+	ui_tooltip = "Shades of Subtitle colour up to this level are ignored. 8: the near-black noise and the darkest\n"
+	             "edges of the subtitles. 255: whole subtitles too, but then grey areas of the picture are ignored\n"
+	             "as well, and a grey wall at the picture's side can be taken for a bar.";
+> = 8.;
+
 uniform float Feather <
 	ui_type = "drag"; ui_min = 0.; ui_max = 64.; ui_step = 1.;
 	ui_label = "Feather (8-bit levels)";
@@ -909,13 +931,27 @@ sampler MN_sDetect { Texture = MN_tDetect; MagFilter = POINT; MinFilter = POINT;
 bool MN_RunGoesOn() { return MN_Frame - tex2Dfetch(MN_sTrigger, int2(0, 0)).x <= 1.; }
 float MN_Max3(float3 c) { return max(c.r, max(c.g, c.b)); }
 
+// A pixel's brightness for the detection: 0 for a shade of Subtitle colour (within 2 levels of the line from
+// black through it) up to Ignore up to, if that option is on.
+float MN_DetectValue(float3 c)
+{
+	const float m = MN_Max3(c);
+	if (DetectColourLine && m * 255. <= DetectColourMax)
+	{
+		const float3 p = normalize(max(SubtitleColour, 1. / 255.));
+		if (length(c - dot(c, p) * p) * 255. <= 2.)
+			return 0.;
+	}
+	return m;
+}
+
 float4 MN_RowSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_Target
 {
 	const int y = int(vpos.y), s = int(vpos.x);
 	const int x0 = s * BUFFER_WIDTH / MN_SEG, x1 = (s + 1) * BUFFER_WIDTH / MN_SEG;
 	float m = 0.;
 	[loop] for (int x = x0; x < x1; x++)
-		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
+		m = max(m, MN_DetectValue(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
 	if (DetectBlackLevel > 0.)
 		m = max(m - (DetectBlackLevel + 0.5) / 255., 0.); // up to the detection's black level: 0
 	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sRowSeg, int2(s, y)).x) : 0.;
@@ -927,7 +963,7 @@ float4 MN_ColSegPS(float4 vpos : SV_Position, float2 texcoord : TEXCOORD) : SV_T
 	const int y0 = s * BUFFER_HEIGHT / MN_SEG, y1 = (s + 1) * BUFFER_HEIGHT / MN_SEG;
 	float m = 0.;
 	[loop] for (int y = y0; y < y1; y++)
-		m = max(m, MN_Max3(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
+		m = max(m, MN_DetectValue(tex2Dfetch(ReShade::BackBuffer, int2(x, y)).rgb));
 	if (DetectBlackLevel > 0.)
 		m = max(m - (DetectBlackLevel + 0.5) / 255., 0.);
 	return MN_RunGoesOn() ? max(m, tex2Dfetch(MN_sColSeg, int2(x, s)).x) : 0.;
