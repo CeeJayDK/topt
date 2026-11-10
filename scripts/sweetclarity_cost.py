@@ -1,8 +1,8 @@
-"""Estimated cost of fx/TOPT_Clarity.fx (cost model, topt.cost), per core GPU: the blur passes on the whole
+"""Estimated cost of fx/SweetClarity.fx (cost model, topt.cost), per core GPU: the blur passes on the whole
 screen (two channels, RG16F: 4 bytes like the blur's RGB10A2) and the final pass (the upsample's reads, the
-screen read, the base layer). Each GPU's class from TOPT_Blur's tables. Writes results/clarity_cost.md.
+screen read, the base layer). Each GPU's class from TOPT_Blur's tables. Writes results/sweetclarity_cost.md.
 
-    python -m scripts.clarity_cost
+    python -m scripts.sweetclarity_cost
 """
 from __future__ import annotations
 
@@ -39,9 +39,9 @@ def cost(gpu, pl, W, H) -> float:
 def main():
     tables = json.loads((ROOT / "results" / "topt_blur_tables.json").read_text())
     rmax = math.ceil(ME.TRUNC * ME.SL_MAX)
-    lines = ["# TOPT Clarity: cost (estimate)", "",
+    lines = ["# SweetClarity: cost (estimate)", "",
              "Cost model estimate (us) of the whole technique: blur passes on (brightness, square) in RG16F,",
-             "then the final pass. Each GPU's class from TOPT_Blur's tables, by CLARITY_SIZE (sigma at 1080p).", ""]
+             "then the final pass. Each GPU's class from TOPT_Blur's tables, by SWEETCLARITY_SIZE (sigma at 1080p).", ""]
     for res, (W, H) in (("1080p", (1920, 1080)), ("4K", (3840, 2160))):
         sizes = (8, 24, 64)
         lines += [f"## {res}", "", "| GPU | " + " | ".join(f"size {s}" for s in sizes) + " |", "|---|" + "---:|" * len(sizes)]
@@ -53,7 +53,7 @@ def main():
                 row.append(f"{cost(gpu, ME.pipeline(name, sl, rmax, sep), W, H):.0f}")
             lines.append(f"| {g} | " + " | ".join(row) + " |")
         lines.append("")
-    (ROOT / "results" / "clarity_cost.md").write_text("\n".join(lines) + "\n")
+    (ROOT / "results" / "sweetclarity_cost.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
 

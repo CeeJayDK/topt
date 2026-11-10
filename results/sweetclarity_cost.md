@@ -1,7 +1,7 @@
-# TOPT Clarity: cost (estimate)
+# SweetClarity: cost (estimate)
 
 Cost model estimate (us) of the whole technique: blur passes on (brightness, square) in RG16F,
-then the final pass. Each GPU's class from TOPT_Blur's tables, by CLARITY_SIZE (sigma at 1080p).
+then the final pass. Each GPU's class from TOPT_Blur's tables, by SWEETCLARITY_SIZE (sigma at 1080p).
 
 ## 1080p
 

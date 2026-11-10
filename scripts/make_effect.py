@@ -299,11 +299,11 @@ def write(info: dict, tables: list, default: list, rmax: int):
     (ROOT / "fx" / "TOPT_BlurTables.fxh").write_text(render_tables(info, tables, default))
     (ROOT / "fx" / "TOPT_Blur.fx").write_text(render(info, tables, default, rmax))
     print("wrote fx/TOPT_BlurTables.fxh, fx/TOPT_Blur.fx")
-    from scripts import movienight, clarity
+    from scripts import movienight, sweetclarity
     (ROOT / "fx" / "MovieNight.fx").write_text(render(info, tables, default, rmax, movienight.TEMPLATE))
     print("wrote fx/MovieNight.fx")
-    (ROOT / "fx" / "TOPT_Clarity.fx").write_text(render(info, tables, default, rmax, clarity.TEMPLATE))
-    print("wrote fx/TOPT_Clarity.fx")
+    (ROOT / "fx" / "SweetClarity.fx").write_text(render(info, tables, default, rmax, sweetclarity.TEMPLATE))
+    print("wrote fx/SweetClarity.fx")
 
 
 VENDOR_NAMES = {0x10DE: "NVIDIA", 0x1002: "AMD", 0x8086: "Intel"}
