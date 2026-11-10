@@ -167,6 +167,12 @@ reference effects afterwards. See `fx/README.md` for settings and modelled cost.
   none of the current test cards do): try `ClearRenderTargets = true` on
   Movie Night's strip passes (they draw only part of each buffer; a cleared
   rest may compress) and keep it if it is faster.
+* TOPT Clarity (`fx/TOPT_Clarity.fx`, from `scripts/clarity.py`): local
+  contrast on the topt blur, brightness only. The base layer is the guided
+  filter of the picture with itself (blur of the brightness and its square),
+  so strong edges get no halos (`scripts/clarity_sim.py`: 1-3 levels of
+  overshoot instead of unsharp masking's 31 at the same boost). See
+  fx/README.md.
 * Movie Night (`fx/MovieNight.fx`, CeeJay.dk's effect on the topt blur, written
   by `scripts/make_effect.py` from `scripts/movienight.py`): the black bars of
   letterboxed / pillarboxed video show a blurred continuation of the picture.

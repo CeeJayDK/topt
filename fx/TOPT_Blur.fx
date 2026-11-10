@@ -87,7 +87,10 @@ sampler BLUR_sBackBuffer { Texture = ReShade::BackBufferTex; AddressU = MIRROR; 
 #endif
 
 static const float3 BLUR_LUMA_W = float3(0.2126, 0.7152, 0.0722); // Rec. 709 weights on the stored values
-#if BLUR_LUMA && !BLUR_SMALL
+#ifdef BLUR_CUSTOM_CHANNELS
+	// the effect defines what the passes blur: BLUR_FMT, BLUR_T, BLUR_CH, BLUR_OUT, and BLUR_FROM_SRC(rgb), the
+	// value of one screen pixel (taken per tap in the first downsample)
+#elif BLUR_LUMA && !BLUR_SMALL
 	#define BLUR_FMT BLUR_LUMA_FORMAT
 	#define BLUR_T float
 	#define BLUR_CH r
@@ -166,10 +169,17 @@ sampler BLUR_sUp { Texture = BLUR_tUp; AddressU = MIRROR; AddressV = MIRROR; };
 float4 BLUR_Down1PS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 {
 	const float2 px = BUFFER_PIXEL_SIZE;
+#ifdef BLUR_CUSTOM_CHANNELS
+	BLUR_T c = 0.;
+	[unroll] for (int i = 0; i < BLUR_ND1; i++)
+		c += BLUR_DOWN1_W(i) * BLUR_FROM_SRC(tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0, 0)).rgb);
+	return BLUR_OUT(c);
+#else
 	float3 c = 0.; // backbuffer colour; converted to brightness once at the end (it is linear)
 	[unroll] for (int i = 0; i < BLUR_ND1; i++)
 		c += BLUR_DOWN1_W(i) * tex2Dlod(BLUR_sBackBuffer, float4(BLUR_SRC_UV(uv + BLUR_DOWN1[i].xy * px), 0, 0)).rgb;
 	return BLUR_OUT(BLUR_TO_LOW(c));
+#endif
 }
 
 #if BLUR_STEPS > 1
@@ -285,16 +295,23 @@ float4 BLUR_UpPS(float4 pos : SV_Position, float2 uv : TEXCOORD) : SV_Target
 }
 #endif
 
-// The blurred image at uv (full resolution): smooth upsample of the low-res
-// blur. Call this from your own composite pass.
-float3 BLUR_Resolve(float2 uv)
+// The blurred values at uv (full resolution), in the passes' own type: smooth upsample of the low-res blur.
+BLUR_T BLUR_ResolveT(float2 uv)
 {
 	const float2 px = 1. / float2(BUFFER_WIDTH / BLUR_DIVF, BUFFER_HEIGHT / BLUR_DIVF);
 	BLUR_T c = 0.;
 	[unroll] for (int i = 0; i < BLUR_NUP; i++)
 		c += BLUR_UP_W(i) * tex2Dlod(BLUR_sFinal, float4(BLUR_LOW_UV(uv + BLUR_UP[i].xy * px, px), 0, 0)).BLUR_CH;
-	return c; // brightness-only: the blurred luma in all three channels
+	return c;
 }
+
+#ifndef BLUR_CUSTOM_CHANNELS
+// The blurred image at uv (full resolution). Call this from your own composite pass.
+float3 BLUR_Resolve(float2 uv)
+{
+	return BLUR_ResolveT(uv); // brightness-only: the blurred luma in all three channels
+}
+#endif
 #endif // BLUR_SMALL
 
 // Noise for the dither and the frosted glass.
